@@ -1,23 +1,22 @@
 package com.goon.gpp
 
-import java.awt.*
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import java.awt.Label
 import java.io.File
+import java.io.PrintWriter
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
-import javax.swing.JEditorPane
-import javax.swing.JFileChooser
-import javax.swing.JFrame
-import javax.swing.JOptionPane
-import javax.swing.filechooser.FileSystemView
-import kotlin.system.exitProcess
+import javax.swing.*
 
 
-class MainFrame() : JFrame() {
+class MainFrame(startingDir: String? = null) : JFrame() {
 
-    private var editor = JEditorPane()
-    private val fileButton = Button("File")
-    private val editButton = Button("Edit")
-    private var nameLabel: Label
+    private var nameLabel: Label = Label("")
+    private var menuBar = JMenuBar()
+    private var editorTabBar: JTabbedPane
+    private var editorTabs: ArrayList<EditorTab> = ArrayList()
+    private var currentTabIdx: Int = 0
 
     init {
         this.defaultCloseOperation = EXIT_ON_CLOSE
@@ -25,22 +24,62 @@ class MainFrame() : JFrame() {
         val pane = this.contentPane
         this.layout = GridBagLayout()
         val gbc = GridBagConstraints()
+        editorTabBar = JTabbedPane()
+        editorTabBar.tabLayoutPolicy = JTabbedPane.SCROLL_TAB_LAYOUT
 
-        val openFile = openFile()
-        editor.isEditable = openFile.canWrite()
-        nameLabel = Label(String.format("Goon++    |     Editing: %s", openFile.name), Label.CENTER)
+        val startTab = EditorTab(startingDir)
+        editorTabBar.addTab(startTab.name, startTab.editor)
+        editorTabs.add(startTab)
+        currentTabIdx = 0
+        setFile(startTab.file)
 
-        if (openFile.canRead()) {
-            editor.text = openFile.readText()
-        } else {
-            JOptionPane.showMessageDialog(this, "File is not readable.\nOpen a new file via File -> Open", "Error", JOptionPane.ERROR_MESSAGE)
-            editor.isEditable = false
-            editor.text = ""
+        GridBagLayout().also { pane.layout = it }
+
+
+        var menu: JMenu
+        menu = JMenu("File")
+
+        var menuItem: JMenuItem
+        menuItem = JMenuItem("Open")
+        menuItem.addActionListener {
+            val newTab = EditorTab(editorTabs[currentTabIdx].file.parent)
+            if (!newTab.isUntitled) {
+                editorTabBar.addTab(newTab.name, newTab.editor)
+                setFile(newTab.file)
+                currentTabIdx = editorTabBar.tabCount - 1
+            }
+        }
+        menu.add(menuItem)
+
+        menuItem = JMenuItem("Save")
+        menuItem.addActionListener {
+            if (editorTabs[currentTabIdx].isUntitled) {
+                JOptionPane.showMessageDialog(this, "You must \"Save As\" to set a file location first!", "Error", JOptionPane.ERROR_MESSAGE)
+            } else {
+                val prw = PrintWriter(editorTabs[currentTabIdx].file)
+                for (line in startTab.editor.text.lines()) {
+                    prw.println(line)
+                }
+                prw.close()
+            }
+        }
+        menu.add(menuItem)
+
+        menuItem = JMenuItem("Save As")
+        menuItem.addActionListener {
+            val currentTab = editorTabs[currentTabIdx]
+            currentTab.setFile(currentTab.file.parent)
+            val prw = PrintWriter(currentTab.file)
+            for (line in currentTab.editor.text.lines()) {
+                prw.println(line)
+            }
+            prw.close()
+            setFile(currentTab.file)
         }
 
-        editor.font = Font("JetBrains Mono", Font.PLAIN, 13)
+        menu.add(menuItem)
 
-        pane.layout = GridBagLayout()
+        menuBar.add(menu)
 
 
         gbc.weightx = 0.0
@@ -49,80 +88,33 @@ class MainFrame() : JFrame() {
         gbc.gridwidth = 1
         gbc.gridx = 0
         gbc.gridy = 0
-        pane.add(fileButton, gbc)
-
-        gbc.fill = GridBagConstraints.NONE
-        gbc.gridwidth = 1
-        gbc.gridx = 1
-        gbc.gridy = 0
-        pane.add(editButton, gbc)
+        pane.add(menuBar, gbc)
 
         gbc.weightx = 1.0
-        gbc.fill = GridBagConstraints.NONE
+        gbc.weighty = 0.0
+        gbc.fill = GridBagConstraints.HORIZONTAL
         gbc.gridwidth = 1
         gbc.gridx = 2
         gbc.gridy = 0
-        gbc.fill = GridBagConstraints.HORIZONTAL
         pane.add(nameLabel, gbc)
+
 
         gbc.weighty = 1.0
         gbc.fill = GridBagConstraints.BOTH
         gbc.gridwidth = 5
         gbc.gridx = 0
         gbc.gridy = 1
-        pane.add(editor, gbc)
+        pane.add(editorTabBar, gbc)
+
+
 
         this.pack()
         this.isVisible = true
     }
 
-    fun setFile(file: File) {
-        editor.text = file.readText()
+    private fun setFile(file: File) {
         nameLabel.text = String.format("Goon++    |     Editing: %s", file.name)
     }
-
-    fun openFile() {
-        return file
-    }
-
-    fun parseFile(opener: JFileChooser): File? {
-        when (opener.showOpenDialog(null)) {
-            JFileChooser.APPROVE_OPTION -> {
-                val file = opener.selectedFile
-                if (file.isFile) {
-                    return file
-                } else {
-                    JOptionPane.showMessageDialog(
-                        null,
-                        "Something went wrong!",
-                        "Error",
-                        JOptionPane.INFORMATION_MESSAGE
-                    )
-                }
-            }
-            JFileChooser.CANCEL_OPTION -> {
-                println("Canceled")
-                JOptionPane.showMessageDialog(
-                    null,
-                    "Operation Cancelled",
-                    "Operation Cancelled",
-                    JOptionPane.INFORMATION_MESSAGE
-                )
-                return null
-            }
-            JFileChooser.ERROR_OPTION -> {
-                JOptionPane.showMessageDialog(
-                    null,
-                    "Something went wrong!",
-                    "Error",
-                    JOptionPane.INFORMATION_MESSAGE
-                )
-                return null
-            }
-        }
-        return null
-    }
-
 
     @Synchronized
     fun playSound(path: String) {
