@@ -21,7 +21,7 @@ class EditorTab(filePath: String?) {
 
     @Throws(NoFileException::class)
     fun setFile(filePath: String?): Boolean {
-        var opener: JFileChooser
+        val opener: JFileChooser
 
 
         if (filePath == null) {
