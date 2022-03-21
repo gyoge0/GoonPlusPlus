@@ -1,4 +1,4 @@
-package com.goon.gpp
+package com.gyoge.gpp
 
 fun main(args: Array<String>) {
     if (args.isEmpty()) {

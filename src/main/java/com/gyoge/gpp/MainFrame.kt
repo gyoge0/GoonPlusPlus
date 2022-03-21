@@ -1,4 +1,4 @@
-package com.goon.gpp
+package com.gyoge.gpp
 
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -35,7 +35,7 @@ class MainFrame(startingDir: String? = null) : JFrame() {
      */
     init {
         this.defaultCloseOperation = EXIT_ON_CLOSE
-        this.title = String.format("Goon++ %s", VERSION)
+        this.title = String.format("Goon++   |   v%s", VERSION)
 
         // Init a bunch of fields
         this.layout = GridBagLayout()
