@@ -12,12 +12,24 @@ import javax.swing.*
 
 class MainFrame(startingDir: String? = null) : JFrame() {
 
+    /** Label displaying the name of the current file. */
     private var nameLabel: Label = Label("")
+
+    /** The menu bar at the top. */
     private var menuBar = JMenuBar()
+
+    /** The tabbed pane with all the editor. */
     private var editorTabBar: JTabbedPane
+
+    /** ArrayList to keep track of where the editors are in the TabbedPane. */
     private var editorTabs: ArrayList<EditorTab> = ArrayList()
+
+    /** Index of the current tab in the TabbedPane in order to get the corresponding editor. */
     private var currentTabIdx: Int = 0
 
+    /**
+     * Initializes the gui.
+     */
     init {
         this.defaultCloseOperation = EXIT_ON_CLOSE
 
@@ -112,6 +124,9 @@ class MainFrame(startingDir: String? = null) : JFrame() {
         this.isVisible = true
     }
 
+    /**
+     * Corrects the name label when a file is opened.
+     */
     private fun setFile(file: File) {
         nameLabel.text = String.format("Goon++    |     Editing: %s", file.name)
     }
