@@ -4,12 +4,15 @@ import java.awt.Font
 import java.io.File
 import javax.swing.JFileChooser
 import javax.swing.JOptionPane
+import javax.swing.JScrollPane
 import javax.swing.JTextArea
 import javax.swing.filechooser.FileSystemView
 
 class EditorTab(filePath: String?) {
 
-    var editor = JTextArea()
+    var textArea = JTextArea()
+        private set
+    var editor = JScrollPane(textArea)
         private set
     var name: String
         private set
@@ -83,10 +86,10 @@ class EditorTab(filePath: String?) {
 
     init {
         if (this.setFile(filePath)) {
-            editor.isEditable = file.canWrite()
+            textArea.isEditable = file.canWrite()
 
             if (file.canRead()) {
-                editor.text = file.readText()
+                textArea.text = file.readText()
             } else {
                 JOptionPane.showMessageDialog(
                     null,
@@ -94,22 +97,26 @@ class EditorTab(filePath: String?) {
                     "Error",
                     JOptionPane.ERROR_MESSAGE
                 )
-                editor.isEditable = false
-                editor.text = "File is not readable.\\nOpen a new file via File -> Open"
+                textArea.isEditable = false
+                textArea.text = "File is not readable.\\nOpen a new file via File -> Open"
             }
             name = file.name
-            editor.name = file.name
+            textArea.name = file.name
 
-            editor.font = Font("JetBrains Mono", Font.PLAIN, 13)
-            editor.name = file.name
+            textArea.font = Font("JetBrains Mono", Font.PLAIN, 13)
+            textArea.name = file.name
+            this.isUntitled = false
         } else {
-            editor.isEditable = true
-            editor.text = ""
-            editor.name = "Untitled"
-            editor.font = Font("JetBrains Mono", Font.PLAIN, 13)
+            textArea.isEditable = true
+            textArea.text = ""
+            this.isUntitled = true
+            textArea.name = "Untitled"
+            textArea.font = Font("JetBrains Mono", Font.PLAIN, 13)
             name = "Untitled"
             this.file = File("Untitled")
         }
+
+        editor = JScrollPane(textArea)
     }
 
     class NoFileException : Exception()
