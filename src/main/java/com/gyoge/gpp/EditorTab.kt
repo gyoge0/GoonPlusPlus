@@ -22,7 +22,7 @@ class EditorTab(filePath: String?) {
         @JvmName("directSetFile")
         private set
 
-    @Throws(NoFileException::class)
+
     fun setFile(filePath: String?): Boolean {
         val opener: JFileChooser
 
@@ -118,8 +118,5 @@ class EditorTab(filePath: String?) {
 
         editor = JScrollPane(textArea)
     }
-
-    class NoFileException : Exception()
-
 
 }
