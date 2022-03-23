@@ -1,8 +1,7 @@
 package com.gyoge.gpp
 
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
-import java.awt.Label
+import java.awt.*
+import java.awt.event.MouseEvent
 import java.io.File
 import java.io.PrintWriter
 import javax.sound.sampled.AudioInputStream
@@ -10,10 +9,11 @@ import javax.sound.sampled.AudioSystem
 import javax.swing.*
 import javax.swing.event.ChangeEvent
 import javax.swing.event.ChangeListener
+import javax.swing.plaf.LayerUI
 
 
 @Suppress("JoinDeclarationAndAssignment")
-class MainFrame(startingDir: String? = null) : JFrame() {
+class MainFrame(startingDir: String = "~") : JFrame() {
 
     /** Label displaying the name of the current file. */
     private var nameLabel: Label = Label("")
@@ -42,8 +42,9 @@ class MainFrame(startingDir: String? = null) : JFrame() {
         editorTabBar = JTabbedPane()
         editorTabBar.tabLayoutPolicy = JTabbedPane.SCROLL_TAB_LAYOUT
 
-        val startTab = EditorTab(startingDir)
-        editorTabBar.addTab(startTab.name, startTab.editor)
+        val startTab = EditorTab()
+        startTab.realTab(startingDir)
+        editorTabBar.addTab(startTab.name + "  ", startTab.editor)
         editorTabs.add(startTab)
         currentTabIdx = 0
 
@@ -75,7 +76,6 @@ class MainFrame(startingDir: String? = null) : JFrame() {
     private inner class TabChangedListener : ChangeListener {
         override fun stateChanged(e: ChangeEvent) {
             currentTabIdx = editorTabBar.selectedIndex
-            setFile(editorTabs[currentTabIdx].file)
         }
     }
 
@@ -89,9 +89,17 @@ class MainFrame(startingDir: String? = null) : JFrame() {
         var menuItem: JMenuItem
         menuItem = JMenuItem("Open")
         menuItem.addActionListener {
-            val newTab = EditorTab(editorTabs[currentTabIdx].file.parent)
+            val newTab = EditorTab()
+
+            // If there are no tabs open
+            if (currentTabIdx != -1) {
+                newTab.realTab(editorTabs[currentTabIdx].file.parent)
+            } else {
+                newTab.realTab("~")
+            }
+
             if (!newTab.isUntitled) {
-                editorTabBar.addTab(newTab.name, newTab.editor)
+                editorTabBar.addTab(newTab.name + "  ", newTab.editor)
                 editorTabs.add(newTab)
                 currentTabIdx = editorTabBar.tabCount - 1
             }
@@ -128,7 +136,17 @@ class MainFrame(startingDir: String? = null) : JFrame() {
             prw.close()
             setFile(currentTab.file)
         }
+        menu.add(menuItem)
 
+        menuItem = JMenuItem("New")
+        menuItem.addActionListener {
+            val newTab = EditorTab()
+            newTab.untitledTab()
+
+            editorTabBar.addTab(newTab.name + "  ", newTab.editor)
+            editorTabs.add(newTab)
+            currentTabIdx = editorTabBar.tabCount - 1
+        }
         menu.add(menuItem)
 
         menuBar.add(menu)
@@ -166,7 +184,8 @@ class MainFrame(startingDir: String? = null) : JFrame() {
         gbc.gridwidth = 5
         gbc.gridx = 0
         gbc.gridy = 1
-        pane.add(editorTabBar, gbc)
+
+        pane.add(JLayer(editorTabBar, CloseableTabbedPaneLayerUI()), gbc)
 
     }
 
@@ -202,4 +221,92 @@ class MainFrame(startingDir: String? = null) : JFrame() {
          */
         const val VERSION = "0.1"
     }
+
+    /**
+     * TabbedPane that allows the user to close tabs.
+     *
+     * @see <a href="http://www.java2s.com/Tutorials/Java/Swing_How_to/JTabbedPane/Create_Closeable_JTabbedPane_alignment_of_the_close_button.htm">Source</a>
+     */
+    inner class CloseableTabbedPaneLayerUI : LayerUI<JTabbedPane>() {
+        private var p = JPanel()
+        private var pt = Point(-100, -100)
+        private var button = MyCloseButton()
+        override fun paint(g: Graphics, c: JComponent) {
+            super.paint(g, c)
+            if (c !is JLayer<*>) {
+                return
+            }
+            val tabPane = c.view as JTabbedPane
+            for (i in 0 until tabPane.tabCount) {
+                val rect = tabPane.getBoundsAt(i)
+                val d = button.preferredSize
+                val x = rect.x + rect.width - d.width + 2
+                val y = rect.y + (rect.height - d.height) / 2
+                val r = Rectangle(x, y, d.width, d.height)
+                button.foreground = if (r.contains(pt)) Color.RED else Color.BLACK
+                SwingUtilities.paintComponent(g, button, p, r)
+            }
+        }
+
+        override fun installUI(c: JComponent) {
+            super.installUI(c)
+            (c as JLayer<*>).layerEventMask = (AWTEvent.MOUSE_EVENT_MASK
+                    or AWTEvent.MOUSE_MOTION_EVENT_MASK)
+        }
+
+        override fun uninstallUI(c: JComponent) {
+            (c as JLayer<*>).layerEventMask = 0
+            super.uninstallUI(c)
+        }
+
+        override fun processMouseEvent(e: MouseEvent, l: JLayer<out JTabbedPane>) {
+            if (e.id != MouseEvent.MOUSE_CLICKED) {
+                return
+            }
+            pt.location = e.point
+            val tabbedPane = l.view as JTabbedPane
+            val index = tabbedPane.indexAtLocation(pt.x, pt.y)
+            if (index >= 0) {
+                val rect = tabbedPane.getBoundsAt(index)
+                val d = button.preferredSize
+                val x = rect.x + rect.width - d.width - 2
+                val y = rect.y + (rect.height - d.height) / 2
+                val r = Rectangle(x, y, d.width, d.height)
+                if (r.contains(pt)) {
+                    tabbedPane.removeTabAt(index)
+                    editorTabs.removeAt(index)
+                }
+            }
+            l.view.repaint()
+        }
+
+        override fun processMouseMotionEvent(
+            e: MouseEvent,
+            l: JLayer<out JTabbedPane>
+        ) {
+            pt.location = e.point
+            val tabbedPane = l.view as JTabbedPane
+            val index = tabbedPane.indexAtLocation(pt.x, pt.y)
+            if (index >= 0) {
+                tabbedPane.repaint(tabbedPane.getBoundsAt(index))
+            } else {
+                tabbedPane.repaint()
+            }
+        }
+
+        inner class MyCloseButton : JButton("X") {
+            init {
+                border = BorderFactory.createEmptyBorder()
+                isFocusPainted = false
+                isBorderPainted = false
+                isContentAreaFilled = false
+                isRolloverEnabled = false
+            }
+
+            override fun getPreferredSize(): Dimension {
+                return Dimension(16, 16)
+            }
+        }
+    }
+
 }

@@ -8,20 +8,20 @@ import javax.swing.JScrollPane
 import javax.swing.JTextArea
 import javax.swing.filechooser.FileSystemView
 
-class EditorTab(filePath: String?) {
+open class EditorTab {
 
     var textArea = JTextArea()
         private set
     var editor = JScrollPane(textArea)
         private set
-    var name: String
+    var name: String = ""
         private set
     var isUntitled: Boolean = true
         private set
     lateinit var file: File
+        /* Private setter for "direct" access. Others should go through the file chooser. */
         @JvmName("directSetFile")
         private set
-
 
     fun setFile(filePath: String?): Boolean {
         val opener: JFileChooser
@@ -84,7 +84,7 @@ class EditorTab(filePath: String?) {
         return false
     }
 
-    init {
+    fun realTab(filePath: String) {
         if (this.setFile(filePath)) {
             textArea.isEditable = file.canWrite()
 
@@ -106,16 +106,20 @@ class EditorTab(filePath: String?) {
             textArea.font = Font("JetBrains Mono", Font.PLAIN, 13)
             textArea.name = file.name
             this.isUntitled = false
+            editor = JScrollPane(textArea)
         } else {
-            textArea.isEditable = true
-            textArea.text = ""
             this.isUntitled = true
-            textArea.name = "Untitled"
-            textArea.font = Font("JetBrains Mono", Font.PLAIN, 13)
-            name = "Untitled"
-            this.file = File("Untitled")
         }
+    }
 
+    fun untitledTab() {
+        textArea.isEditable = true
+        textArea.text = ""
+        this.isUntitled = true
+        textArea.name = "Untitled"
+        textArea.font = Font("JetBrains Mono", Font.PLAIN, 13)
+        name = "Untitled"
+        this.file = File("Untitled")
         editor = JScrollPane(textArea)
     }
 
