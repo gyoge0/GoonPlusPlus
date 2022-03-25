@@ -10,6 +10,7 @@ import javax.swing.*
 import javax.swing.event.ChangeEvent
 import javax.swing.event.ChangeListener
 import javax.swing.plaf.LayerUI
+import kotlin.system.exitProcess
 
 
 @Suppress("JoinDeclarationAndAssignment")
@@ -162,8 +163,7 @@ class MainFrame(startingDir: String = "~") : JFrame() {
 
         menuItem = JMenuItem("Exit")
         menuItem.addActionListener {
-            System.exit(0)
-            println("exit")
+            exitProcess(0)
         }
         menu.add(menuItem)
 
