@@ -18,7 +18,7 @@ open class EditorTab {
         private set
     var isUntitled: Boolean = true
         private set
-    lateinit var file: File
+    var file: File = File("")
         /* Private setter for "direct" access. Others should go through the file chooser. */
         @JvmName("directSetFile")
         private set
