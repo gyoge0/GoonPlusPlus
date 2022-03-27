@@ -139,6 +139,7 @@
       </plugin>
 
 
+      <!-- One jar plugin -->
       <plugin>
         <groupId>com.jolira</groupId>
         <artifactId>onejar-maven-plugin</artifactId>
