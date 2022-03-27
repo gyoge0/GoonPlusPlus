@@ -10,6 +10,7 @@ import javax.swing.*
 import javax.swing.event.ChangeEvent
 import javax.swing.event.ChangeListener
 import javax.swing.plaf.LayerUI
+import kotlin.system.exitProcess
 
 
 @Suppress("JoinDeclarationAndAssignment")
@@ -44,6 +45,9 @@ class MainFrame(startingDir: String = "~") : JFrame() {
 
         val startTab = EditorTab()
         startTab.realTab(startingDir)
+        if (startTab.isUntitled) {
+            startTab.untitledTab()
+        }
         editorTabBar.addTab(startTab.name + "  ", startTab.editor)
         editorTabs.add(startTab)
         currentTabIdx = 0
@@ -83,10 +87,11 @@ class MainFrame(startingDir: String = "~") : JFrame() {
      * Initializes the menu bar.
      */
     private fun initMenu() {
-        val menu: JMenu
+        var menu: JMenu
+        var menuItem: JMenuItem
+
         menu = JMenu("File")
 
-        var menuItem: JMenuItem
         menuItem = JMenuItem("Open")
         menuItem.addActionListener {
             val newTab = EditorTab()
@@ -146,6 +151,19 @@ class MainFrame(startingDir: String = "~") : JFrame() {
             editorTabBar.addTab(newTab.name + "  ", newTab.editor)
             editorTabs.add(newTab)
             currentTabIdx = editorTabBar.tabCount - 1
+        }
+        menu.add(menuItem)
+
+        menuBar.add(menu)
+
+        menu = JMenu("Window")
+
+        menuItem = JMenuItem("Preferences")
+        menu.add(menuItem)
+
+        menuItem = JMenuItem("Exit")
+        menuItem.addActionListener {
+            exitProcess(0)
         }
         menu.add(menuItem)
 
