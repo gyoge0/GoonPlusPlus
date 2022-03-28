@@ -14,7 +14,7 @@ import kotlin.system.exitProcess
 
 
 @Suppress("JoinDeclarationAndAssignment")
-class MainFrame(startingDir: String = "~") : JFrame() {
+class MainFrame(private val config: Config, startingDir: String = "~") : JFrame() {
 
     /** Label displaying the name of the current file. */
     private var nameLabel: Label = Label("")
