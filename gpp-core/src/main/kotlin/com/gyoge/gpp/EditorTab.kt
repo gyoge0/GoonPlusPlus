@@ -109,7 +109,7 @@ open class EditorTab(private val config: Config) {
             name = file.name
             textPane.name = file.name
 
-            textPane.font = Font("JetBrains Mono", Font.PLAIN, 13)
+            textPane.font = Font(config.fontName, Font.PLAIN, 13)
             textPane.name = file.name
             this.isUntitled = false
             editor = JScrollPane(textPane)
