@@ -1,12 +1,11 @@
 package com.gyoge.gpp
 
+import java.awt.Color
 import java.awt.Font
 import java.io.File
-import javax.swing.JFileChooser
-import javax.swing.JOptionPane
-import javax.swing.JScrollPane
-import javax.swing.JTextArea
+import javax.swing.*
 import javax.swing.filechooser.FileSystemView
+import com.gyoge.gpp.nowrap.*
 
 
 open class EditorTab(private val config: Config) {
@@ -90,7 +89,10 @@ open class EditorTab(private val config: Config) {
             textPane.isEditable = file.canWrite()
 
             if (file.canRead()) {
-                textArea.text = file.readText()
+                // No wrap
+                this.textPane.editorKit = WrapEditorKit()
+
+                textPane.text = file.readText()
             } else {
                 JOptionPane.showMessageDialog(
                     null,
@@ -98,8 +100,11 @@ open class EditorTab(private val config: Config) {
                     "Error",
                     JOptionPane.ERROR_MESSAGE
                 )
-                textArea.isEditable = false
-                textArea.text = "File is not readable.\\nOpen a new file via File -> Open"
+                // No wrap
+                this.textPane.editorKit = WrapEditorKit()
+
+                textPane.isEditable = false
+                textPane.text = "File is not readable.\\nOpen a new file via File -> Open"
             }
             name = file.name
             textPane.name = file.name
@@ -111,6 +116,9 @@ open class EditorTab(private val config: Config) {
         } else {
             this.isUntitled = true
         }
+
+
+        this.setStyles()
     }
 
     fun untitledTab() {
@@ -121,7 +129,21 @@ open class EditorTab(private val config: Config) {
         textPane.font = Font("JetBrains Mono", Font.PLAIN, 13)
         name = "Untitled"
         this.file = File("Untitled")
-        editor = JScrollPane(textArea)
+        editor = JScrollPane(textPane)
+
+        this.setStyles()
+    }
+
+
+    private fun setStyles() {
+
+        // Font
+        this.textPane.font = Font(config.fontName, Font.PLAIN, config.fontSize)
+
+        // Colors
+        this.textPane.foreground = Color(config.fontColor)
+        this.textPane.background = Color(config.backgroundColor)
+
     }
 
 }

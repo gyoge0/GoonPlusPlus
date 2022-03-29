@@ -122,7 +122,7 @@ class MainFrame(private val config: Config, startingDir: String = "~") : JFrame(
                 )
             } else {
                 val prw = PrintWriter(editorTabs[currentTabIdx].file)
-                for (line in editorTabs[currentTabIdx].textArea.text.lines()) {
+                for (line in editorTabs[currentTabIdx].textPane.text.lines()) {
                     prw.println(line)
                 }
                 prw.close()
@@ -135,7 +135,7 @@ class MainFrame(private val config: Config, startingDir: String = "~") : JFrame(
             val currentTab = editorTabs[currentTabIdx]
             currentTab.setFile(currentTab.file.parent)
             val prw = PrintWriter(currentTab.file)
-            for (line in currentTab.textArea.text.lines()) {
+            for (line in currentTab.textPane.text.lines()) {
                 prw.println(line)
             }
             prw.close()
