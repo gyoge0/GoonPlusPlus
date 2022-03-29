@@ -8,11 +8,12 @@ import javax.swing.JScrollPane
 import javax.swing.JTextArea
 import javax.swing.filechooser.FileSystemView
 
-open class EditorTab {
 
-    var textArea = JTextArea()
+open class EditorTab(private val config: Config) {
+
+    var textPane = JTextPane()
         private set
-    var editor = JScrollPane(textArea)
+    var editor = JScrollPane(textPane)
         private set
     var name: String = ""
         private set
@@ -86,7 +87,7 @@ open class EditorTab {
 
     fun realTab(filePath: String) {
         if (this.setFile(filePath)) {
-            textArea.isEditable = file.canWrite()
+            textPane.isEditable = file.canWrite()
 
             if (file.canRead()) {
                 textArea.text = file.readText()
@@ -101,23 +102,23 @@ open class EditorTab {
                 textArea.text = "File is not readable.\\nOpen a new file via File -> Open"
             }
             name = file.name
-            textArea.name = file.name
+            textPane.name = file.name
 
-            textArea.font = Font("JetBrains Mono", Font.PLAIN, 13)
-            textArea.name = file.name
+            textPane.font = Font("JetBrains Mono", Font.PLAIN, 13)
+            textPane.name = file.name
             this.isUntitled = false
-            editor = JScrollPane(textArea)
+            editor = JScrollPane(textPane)
         } else {
             this.isUntitled = true
         }
     }
 
     fun untitledTab() {
-        textArea.isEditable = true
-        textArea.text = ""
+        textPane.isEditable = true
+        textPane.text = ""
         this.isUntitled = true
-        textArea.name = "Untitled"
-        textArea.font = Font("JetBrains Mono", Font.PLAIN, 13)
+        textPane.name = "Untitled"
+        textPane.font = Font("JetBrains Mono", Font.PLAIN, 13)
         name = "Untitled"
         this.file = File("Untitled")
         editor = JScrollPane(textArea)
