@@ -45,7 +45,7 @@ class MainFrame(private val config: Config, startingDir: String = "~") : JFrame(
         editorTabBar = JTabbedPane()
         editorTabBar.tabLayoutPolicy = JTabbedPane.SCROLL_TAB_LAYOUT
 
-        val startTab = EditorTab()
+        val startTab = EditorTab(config)
         startTab.realTab(startingDir)
         if (startTab.isUntitled) {
             startTab.untitledTab()
@@ -96,7 +96,7 @@ class MainFrame(private val config: Config, startingDir: String = "~") : JFrame(
 
         menuItem = JMenuItem("Open")
         menuItem.addActionListener {
-            val newTab = EditorTab()
+            val newTab = EditorTab(config)
 
             // If there are no tabs open
             if (currentTabIdx != -1) {
@@ -124,7 +124,7 @@ class MainFrame(private val config: Config, startingDir: String = "~") : JFrame(
                 )
             } else {
                 val prw = PrintWriter(editorTabs[currentTabIdx].file)
-                for (line in editorTabs[currentTabIdx].textArea.text.lines()) {
+                for (line in editorTabs[currentTabIdx].textPane.text.lines()) {
                     prw.println(line)
                 }
                 prw.close()
@@ -137,7 +137,7 @@ class MainFrame(private val config: Config, startingDir: String = "~") : JFrame(
             val currentTab = editorTabs[currentTabIdx]
             currentTab.setFile(currentTab.file.parent)
             val prw = PrintWriter(currentTab.file)
-            for (line in currentTab.textArea.text.lines()) {
+            for (line in currentTab.textPane.text.lines()) {
                 prw.println(line)
             }
             prw.close()
@@ -147,7 +147,7 @@ class MainFrame(private val config: Config, startingDir: String = "~") : JFrame(
 
         menuItem = JMenuItem("New")
         menuItem.addActionListener {
-            val newTab = EditorTab()
+            val newTab = EditorTab(config)
             newTab.untitledTab()
 
             editorTabBar.addTab(newTab.name + "  ", newTab.editor)
