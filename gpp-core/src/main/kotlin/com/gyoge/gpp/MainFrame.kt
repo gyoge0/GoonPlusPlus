@@ -1,6 +1,8 @@
 package com.gyoge.gpp
 
 import java.awt.*
+import java.awt.event.ActionEvent
+import java.awt.event.ActionListener
 import java.awt.event.MouseEvent
 import java.io.File
 import java.io.PrintWriter
@@ -159,6 +161,16 @@ class MainFrame(private val config: Config, startingDir: String = "~") : JFrame(
         menu = JMenu("Window")
 
         menuItem = JMenuItem("Preferences")
+        menuItem.addActionListener(object : ActionListener {
+            override fun actionPerformed(e: ActionEvent?) {
+                createFrame()
+            }
+            fun createFrame() {
+                EventQueue.invokeLater {
+                    val frame = PreferencesFrame(config)
+                }
+            }
+        })
         menu.add(menuItem)
 
         menuItem = JMenuItem("Exit")
