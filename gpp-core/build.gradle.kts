@@ -24,6 +24,7 @@ dependencies {
     implementation("org.jetbrains.dokka:dokka-cli:1.6.10")
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.10")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
 }
 
 group = "com.gyoge"
