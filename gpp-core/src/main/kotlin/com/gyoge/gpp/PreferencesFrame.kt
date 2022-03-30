@@ -16,13 +16,23 @@ class PreferencesFrame(private val config: Config) : JFrame() {
         this.title = String.format("Goon++ :  Preferences   |   v%s", MainFrame.VERSION)
 
 
-        config.javaClass.declaredFields.forEach { f ->
-            f.annotations.forEach { a ->
-                if (a::class == PrettyName::class) {
-                    a as PrettyName
+        // Init a 2 column design
+        val names = JPanel()
+        val values = JPanel()
+        names.layout = BoxLayout(names, BoxLayout.Y_AXIS)
+        values.layout = BoxLayout(values, BoxLayout.Y_AXIS)
+        this.add(names, BorderLayout.WEST)
+        this.add(values, BorderLayout.EAST)
 
-                    // do stuff
-                }
+
+        config::class.memberProperties.forEach { p ->
+            val javaField = p.javaField
+            if (javaField != null && javaField.isAnnotationPresent(PrettyName::class.java)) {
+                val name = JLabel()
+                name.text = javaField.getAnnotation(PrettyName::class.java).name
+                names.add(name)
+
+                // values
             }
         }
 
