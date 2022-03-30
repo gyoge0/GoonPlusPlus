@@ -11,5 +11,4 @@ data class Config(
 )
 
 @Target(AnnotationTarget.FIELD)
-
 annotation class PrettyName(val name: String)
