@@ -7,9 +7,7 @@ import com.gyoge.gpp.filters.IntFilter
 import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
-import javax.swing.BoxLayout
 import javax.swing.JFrame
-import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.text.PlainDocument
 import kotlin.reflect.full.memberProperties
@@ -18,28 +16,33 @@ import kotlin.reflect.jvm.javaField
 
 class PreferencesFrame(private val config: Config) : JFrame() {
     init {
-        val panel = JPanel()
         this.defaultCloseOperation = DISPOSE_ON_CLOSE
         this.title = String.format("Goon++ :  Preferences   |   v%s", MainFrame.VERSION)
         this.layout = GridBagLayout()
 
+        var row = -1
 
-        // Init a 2 column design
-        val names = JPanel()
-        val values = JPanel()
-        names.layout = BoxLayout(names, BoxLayout.Y_AXIS)
-        values.layout = BoxLayout(values, BoxLayout.Y_AXIS)
+        val gbc = GridBagConstraints()
+        gbc.weightx = 1.0
+        gbc.fill = GridBagConstraints.HORIZONTAL
+        gbc.gridwidth = 1
+        gbc.gridy = 0
 
 
 
         config::class.memberProperties.forEach { p ->
             val javaField = p.javaField
             if (javaField != null && javaField.isAnnotationPresent(PrettyName::class.java)) {
+                row++
+                gbc.gridy = row
+
                 val name = JTextField()
                 name.text = javaField.getAnnotation(PrettyName::class.java).name
                 name.horizontalAlignment = JTextField.CENTER
                 name.isEditable = false
-                names.add(name)
+                gbc.gridx = 0
+                this.add(name, gbc)
+
 
                 val value = JTextField()
                 value.text = p.getter.call(config).toString()
@@ -65,24 +68,15 @@ class PreferencesFrame(private val config: Config) : JFrame() {
 
                 value.horizontalAlignment = JTextField.CENTER
                 value.isEditable = true
-                values.add(value)
+                gbc.gridx = 1
+                this.add(value, gbc)
 
             }
         }
-
-        val gbc = GridBagConstraints()
-        gbc.weightx = 1.0
-        gbc.fill = GridBagConstraints.HORIZONTAL
-        gbc.gridwidth = 1
+        gbc.gridx = 2
         gbc.gridy = 0
 
-        gbc.gridx = 0
-        this.add(names, gbc)
-        gbc.gridx = 1
-        this.add(values, gbc)
 
-
-        this.add(panel)
         this.pack()
         this.isLocationByPlatform = true
         this.isVisible = true
@@ -91,7 +85,7 @@ class PreferencesFrame(private val config: Config) : JFrame() {
         // This would be at the top of the method, but it doesn't work for some reason
         this.isResizable = true
         this.size = Dimension(400, 400)
-        this.isResizable = false
+        this.isResizable = true
 
         this.requestFocus()
 
