@@ -1,5 +1,6 @@
 package com.gyoge.gpp
 
+import kotlinx.serialization.json.JsonElement
 import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
@@ -16,7 +17,7 @@ import kotlin.system.exitProcess
 
 
 @Suppress("JoinDeclarationAndAssignment")
-class MainFrame(private val config: Config, startingDir: String = "~") : JFrame() {
+class MainFrame(private val config: JsonElement, startingDir: String = "~") : JFrame() {
 
     /** Label displaying the name of the current file. */
     private var nameLabel: Label = Label("")
