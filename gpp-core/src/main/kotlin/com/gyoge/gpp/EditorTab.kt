@@ -111,7 +111,11 @@ open class EditorTab(config: JsonElement) {
             name = file.name
             textPane.name = file.name
 
-            textPane.font = Font(config.fontName, Font.PLAIN, 13)
+
+
+            textPane.font = Font(
+                jsonGet("Font Name").toString(), Font.PLAIN, 13
+            )
             textPane.name = file.name
             this.isUntitled = false
             editor = JScrollPane(textPane)
@@ -128,7 +132,11 @@ open class EditorTab(config: JsonElement) {
         textPane.text = ""
         this.isUntitled = true
         textPane.name = "Untitled"
-        textPane.font = Font("JetBrains Mono", Font.PLAIN, 13)
+        textPane.font = Font(
+            jsonGet("Font Name").toString(),
+            Font.PLAIN,
+            jsonGet("Font Size").int
+        )
         name = "Untitled"
         this.file = File("Untitled")
         editor = JScrollPane(textPane)
@@ -140,11 +148,16 @@ open class EditorTab(config: JsonElement) {
     private fun setStyles() {
 
         // Font
-        this.textPane.font = Font(config.fontName, Font.PLAIN, config.fontSize)
+        this.textPane.font = Font(
+            jsonGet("Font Name").toString(),
+            Font.PLAIN,
+            jsonGet("Font Size").jsonPrimitive.int
+        )
 
         // Colors
-        this.textPane.foreground = Color(config.fontColor)
-        this.textPane.background = Color(config.backgroundColor)
+        this.textPane.foreground = Color(jsonGet("Font Color").int)
+        this.textPane.background =
+            Color(jsonGet("Background Color").int)
 
     }
 
