@@ -148,4 +148,6 @@ open class EditorTab(config: JsonElement) {
 
     }
 
+    private fun jsonGet(key: String) = config[key]!!.jsonObject["v"]!!.jsonPrimitive
+
 }
