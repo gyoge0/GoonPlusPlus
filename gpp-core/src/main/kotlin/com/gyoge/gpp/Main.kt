@@ -2,6 +2,7 @@ package com.gyoge.gpp
 
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import java.io.File
 import javax.swing.UIManager
@@ -19,26 +20,27 @@ fun main(args: Array<String>) {
     val configDir = File("${System.getProperty("user.home")}/.gpp")
     val configFile = File("${configDir.absolutePath}/config.json")
     val config: Config
+    val configJson: JsonElement
 
     if (!configDir.exists()) {
         configDir.mkdir()
         configFile.createNewFile()
         config = Config()
-        configFile.writeText(format.encodeToJsonElement(config).toString())
+        configJson = format.encodeToJsonElement(config)
+        configFile.writeText(configJson.toString())
     } else if (!configFile.exists()) {
         configFile.createNewFile()
         config = Config()
-        configFile.writeText(format.encodeToJsonElement(config).toString())
+        configJson = format.encodeToJsonElement(config)
+        configFile.writeText(configJson.toString())
     } else {
-        config = format.decodeFromString(configFile.readText())
+        configJson = format.encodeToJsonElement(format.decodeFromString<Config>(configFile.readText()))
     }
-
-    println("config = $config")
 
 
     if (args.isEmpty()) {
-        val mf = MainFrame(config)
+        val mf = MainFrame(configJson)
     } else {
-        val mf = MainFrame(config, args[0])
+        val mf = MainFrame(configJson, args[0])
     }
 }
