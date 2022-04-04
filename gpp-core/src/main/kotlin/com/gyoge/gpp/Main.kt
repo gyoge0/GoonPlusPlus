@@ -1,7 +1,9 @@
 package com.gyoge.gpp
 
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import java.io.File
 import javax.swing.UIManager
@@ -11,34 +13,42 @@ val format = Json {
     encodeDefaults = true
     ignoreUnknownKeys = true
     prettyPrint = true
+    coerceInputValues = true
 }
+
+val configDir = File("${System.getProperty("user.home")}/.gpp")
+val configFile = File("${configDir.absolutePath}/config.json")
 
 fun main(args: Array<String>) {
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
-    val configDir = File("${System.getProperty("user.home")}/.gpp")
-    val configFile = File("${configDir.absolutePath}/config.json")
     val config: Config
+    val configJson: JsonElement
 
     if (!configDir.exists()) {
         configDir.mkdir()
         configFile.createNewFile()
         config = Config()
-        configFile.writeText(format.encodeToJsonElement(config).toString())
+        configJson = format.encodeToJsonElement(config)
+        configFile.writeText(configJson.toString())
     } else if (!configFile.exists()) {
         configFile.createNewFile()
         config = Config()
-        configFile.writeText(format.encodeToJsonElement(config).toString())
+        configJson = format.encodeToJsonElement(config)
+        configFile.writeText(configJson.toString())
     } else {
-        config = format.decodeFromString(configFile.readText())
+        configJson =
+            format.encodeToJsonElement(format.decodeFromString<Config>(configFile.readText()))
     }
 
-    println("config = $config")
 
-
-    if (args.isEmpty()) {
-        val mf = MainFrame(config)
+    var mf = if (args.isEmpty()) {
+        MainFrame(ConfigWrapper(configJson))
     } else {
-        val mf = MainFrame(config, args[0])
+        MainFrame(ConfigWrapper(configJson), args[0])
     }
+}
+
+fun saveConfig(config: ConfigWrapper) {
+    configFile.writeText(format.encodeToString(config.json))
 }

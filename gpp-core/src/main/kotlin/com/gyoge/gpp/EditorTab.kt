@@ -1,14 +1,20 @@
 package com.gyoge.gpp
 
+import com.gyoge.gpp.nowrap.WrapEditorKit
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.awt.Color
 import java.awt.Font
 import java.io.File
-import javax.swing.*
+import javax.swing.JFileChooser
+import javax.swing.JOptionPane
+import javax.swing.JScrollPane
+import javax.swing.JTextPane
 import javax.swing.filechooser.FileSystemView
-import com.gyoge.gpp.nowrap.*
 
 
-open class EditorTab(private val config: Config) {
+open class EditorTab(private val config: ConfigWrapper) {
 
     var textPane = JTextPane()
         private set
@@ -109,7 +115,11 @@ open class EditorTab(private val config: Config) {
             name = file.name
             textPane.name = file.name
 
-            textPane.font = Font(config.fontName, Font.PLAIN, 13)
+
+
+            textPane.font = Font(
+                jsonGet("Font Name").toString(), Font.PLAIN, 13
+            )
             textPane.name = file.name
             this.isUntitled = false
             editor = JScrollPane(textPane)
@@ -126,7 +136,11 @@ open class EditorTab(private val config: Config) {
         textPane.text = ""
         this.isUntitled = true
         textPane.name = "Untitled"
-        textPane.font = Font("JetBrains Mono", Font.PLAIN, 13)
+        textPane.font = Font(
+            jsonGet("Font Name").toString(),
+            Font.PLAIN,
+            jsonGet("Font Size").int
+        )
         name = "Untitled"
         this.file = File("Untitled")
         editor = JScrollPane(textPane)
@@ -138,12 +152,19 @@ open class EditorTab(private val config: Config) {
     private fun setStyles() {
 
         // Font
-        this.textPane.font = Font(config.fontName, Font.PLAIN, config.fontSize)
+        this.textPane.font = Font(
+            jsonGet("Font Name").toString(),
+            Font.PLAIN,
+            jsonGet("Font Size").jsonPrimitive.int
+        )
 
         // Colors
-        this.textPane.foreground = Color(config.fontColor)
-        this.textPane.background = Color(config.backgroundColor)
+        this.textPane.foreground = Color(jsonGet("Font Color").int)
+        this.textPane.background =
+            Color(jsonGet("Background Color").int)
 
     }
+
+    private fun jsonGet(key: String) = config.json.jsonObject[key]!!.jsonObject["v"]!!.jsonPrimitive
 
 }
