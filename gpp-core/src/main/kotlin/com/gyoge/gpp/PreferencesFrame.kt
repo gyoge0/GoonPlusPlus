@@ -32,10 +32,14 @@ class PreferencesFrame(configElem: JsonElement) : JFrame() {
         gbc.gridy = 0
 
 
+        var name: JTextField
         for ((k, v) in config) {
             v as JsonObject
 
-            val name = JTextField()
+            gbc.gridy = ++row
+
+            gbc.gridx = 0
+            name = JTextField()
             name.text = k
             name.horizontalAlignment = JTextField.CENTER
             name.isEditable = false
@@ -46,14 +50,12 @@ class PreferencesFrame(configElem: JsonElement) : JFrame() {
             value.text = v["v"].toString()
 
             val doc = value.document as PlainDocument
-            println("v[\"t\"] = ${v["t"]}")
 
             doc.documentFilter = when (v["t"]!!.toString()) {
                 "\"String\"" -> {
                     // Remove the quotes
                     val vString = v["v"].toString()
                     value.text = vString.substring(1, vString.length - 1)
-
                     AnyFilter()
                 }
                 "\"Double\"" -> {
@@ -71,10 +73,8 @@ class PreferencesFrame(configElem: JsonElement) : JFrame() {
             }
 
             gbc.gridx = 1
-            gbc.gridy = ++row
             value.horizontalAlignment = JTextField.CENTER
             value.isEditable = true
-
             this.add(value, gbc)
         }
 
