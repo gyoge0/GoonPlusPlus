@@ -1,15 +1,20 @@
 package com.gyoge.gpp
 
+import com.gyoge.gpp.nowrap.WrapEditorKit
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.awt.Color
 import java.awt.Font
 import java.io.File
-import javax.swing.*
+import javax.swing.JFileChooser
+import javax.swing.JOptionPane
+import javax.swing.JScrollPane
+import javax.swing.JTextPane
 import javax.swing.filechooser.FileSystemView
-import com.gyoge.gpp.nowrap.*
-import kotlinx.serialization.json.*
 
 
-open class EditorTab(config: JsonElement) {
+open class EditorTab(private val config: ConfigWrapper) {
 
     var textPane = JTextPane()
         private set
@@ -23,7 +28,6 @@ open class EditorTab(config: JsonElement) {
         /* Private setter for "direct" access. Others should go through the file chooser. */
         @JvmName("directSetFile")
         private set
-    private val config = config.jsonObject
 
     fun setFile(filePath: String?): Boolean {
         val opener: JFileChooser
@@ -161,6 +165,6 @@ open class EditorTab(config: JsonElement) {
 
     }
 
-    private fun jsonGet(key: String) = config[key]!!.jsonObject["v"]!!.jsonPrimitive
+    private fun jsonGet(key: String) = config.json.jsonObject[key]!!.jsonObject["v"]!!.jsonPrimitive
 
 }

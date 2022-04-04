@@ -1,10 +1,7 @@
 package com.gyoge.gpp
 
-import kotlinx.serialization.json.JsonElement
 import java.awt.*
-import java.awt.event.ActionEvent
-import java.awt.event.ActionListener
-import java.awt.event.MouseEvent
+import java.awt.event.*
 import java.io.File
 import java.io.PrintWriter
 import javax.sound.sampled.AudioInputStream
@@ -17,7 +14,7 @@ import kotlin.system.exitProcess
 
 
 @Suppress("JoinDeclarationAndAssignment")
-class MainFrame(private val config: JsonElement, startingDir: String = "~") : JFrame() {
+class MainFrame(val config: ConfigWrapper, startingDir: String = "~") : JFrame() {
 
     /** Label displaying the name of the current file. */
     private var nameLabel: Label = Label("")
@@ -38,7 +35,14 @@ class MainFrame(private val config: JsonElement, startingDir: String = "~") : JF
      * Initializes the gui.
      */
     init {
-        this.defaultCloseOperation = EXIT_ON_CLOSE
+        this.defaultCloseOperation = DO_NOTHING_ON_CLOSE
+        this.addWindowListener(object : WindowAdapter() {
+            override fun windowClosing(evt: WindowEvent) {
+                saveConfig(this@MainFrame.config)
+                this@MainFrame.dispose()
+            }
+        })
+
         this.title = String.format("Goon++   |   v%s", VERSION)
 
         // Init a bunch of fields
@@ -166,6 +170,7 @@ class MainFrame(private val config: JsonElement, startingDir: String = "~") : JF
             override fun actionPerformed(e: ActionEvent?) {
                 createFrame()
             }
+
             fun createFrame() {
                 EventQueue.invokeLater {
                     val frame = PreferencesFrame(config)
@@ -339,5 +344,4 @@ class MainFrame(private val config: JsonElement, startingDir: String = "~") : JF
             }
         }
     }
-
 }

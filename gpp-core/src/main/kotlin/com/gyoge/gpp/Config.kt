@@ -3,6 +3,7 @@ package com.gyoge.gpp
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class Config(
@@ -16,4 +17,11 @@ data class Config(
 data class ConfigPair<T : Any>(
     @SerialName("v") @Contextual val value: T,
     @SerialName("t") val type: String = value::class.simpleName!!
+)
+
+/**
+ * Allows swapping out the config with a new one.
+ */
+data class ConfigWrapper(
+    var json: JsonElement
 )

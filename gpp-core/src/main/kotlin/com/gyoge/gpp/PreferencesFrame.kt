@@ -4,24 +4,30 @@ import com.gyoge.gpp.filters.AnyFilter
 import com.gyoge.gpp.filters.BooleanFilter
 import com.gyoge.gpp.filters.DoubleFilter
 import com.gyoge.gpp.filters.IntFilter
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.*
 import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
+import java.awt.event.ActionEvent
+import java.awt.event.ActionListener
+import javax.swing.JButton
 import javax.swing.JFrame
+import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.text.PlainDocument
 
-class PreferencesFrame(configElem: JsonElement) : JFrame() {
 
-    private val config: Map<String, *> = configElem.jsonObject
+class PreferencesFrame(private val configWrap: ConfigWrapper) : JFrame() {
+
+    private val config = configWrap.json.jsonObject
+    private val panel = JPanel()
 
     init {
         this.defaultCloseOperation = DISPOSE_ON_CLOSE
         this.title = String.format("Goon++ :  Preferences   |   v%s", MainFrame.VERSION)
-        this.layout = GridBagLayout()
+        panel.layout = GridBagLayout()
 
         var row = -1
 
@@ -44,7 +50,7 @@ class PreferencesFrame(configElem: JsonElement) : JFrame() {
             name.horizontalAlignment = JTextField.CENTER
             name.isEditable = false
             gbc.gridx = 0
-            this.add(name, gbc)
+            panel.add(name, gbc)
 
             val value = JTextField()
             value.text = v["v"].toString()
@@ -75,12 +81,20 @@ class PreferencesFrame(configElem: JsonElement) : JFrame() {
             gbc.gridx = 1
             value.horizontalAlignment = JTextField.CENTER
             value.isEditable = true
-            this.add(value, gbc)
+            panel.add(value, gbc)
         }
 
-        gbc.gridx = 2
-        gbc.gridy = 0
+        val saveButton = JButton("Save")
+        saveButton.addActionListener(SaveButtonListener())
+        gbc.gridx = 1
+        gbc.gridy = ++row
+        gbc.fill = GridBagConstraints.NONE
+        gbc.weightx = 0.0
+        gbc.weighty = 0.0
+        gbc.anchor = GridBagConstraints.EAST
+        panel.add(saveButton, gbc)
 
+        this.add(panel)
         this.pack()
         this.isLocationByPlatform = true
         this.isVisible = true
@@ -93,5 +107,38 @@ class PreferencesFrame(configElem: JsonElement) : JFrame() {
 
         this.requestFocus()
 
+    }
+
+    /**
+     * Swaps out the config with the new one generated from the current inputs
+     */
+    inner class SaveButtonListener : ActionListener {
+        override fun actionPerformed(e: ActionEvent) {
+            val newConfig: MutableMap<String, JsonElement> = HashMap()
+            newConfig.putAll(config)
+
+
+            for (i in 0..this@PreferencesFrame.panel.componentCount - 2 step 2) {
+                val key = (this@PreferencesFrame.panel.getComponent(i) as JTextField).text!!
+                val value =
+                    JsonPrimitive((this@PreferencesFrame.panel.getComponent(i + 1) as JTextField).text!!)
+                val type = config[key]!!.jsonObject["t"]!!.toString()
+
+                newConfig[key] = JsonObject(
+                    mapOf(
+                        Pair("v", value),
+                        Pair("t", JsonPrimitive(type))
+                    )
+                )
+            }
+
+            // yay for serialization
+            this@PreferencesFrame.configWrap.json = format.encodeToJsonElement(
+                format.decodeFromString<Config>(
+                    format.encodeToString(newConfig)
+                )
+            )
+
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.gyoge.gpp
 
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
@@ -12,13 +13,15 @@ val format = Json {
     encodeDefaults = true
     ignoreUnknownKeys = true
     prettyPrint = true
+    coerceInputValues = true
 }
+
+val configDir = File("${System.getProperty("user.home")}/.gpp")
+val configFile = File("${configDir.absolutePath}/config.json")
 
 fun main(args: Array<String>) {
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
-    val configDir = File("${System.getProperty("user.home")}/.gpp")
-    val configFile = File("${configDir.absolutePath}/config.json")
     val config: Config
     val configJson: JsonElement
 
@@ -34,13 +37,18 @@ fun main(args: Array<String>) {
         configJson = format.encodeToJsonElement(config)
         configFile.writeText(configJson.toString())
     } else {
-        configJson = format.encodeToJsonElement(format.decodeFromString<Config>(configFile.readText()))
+        configJson =
+            format.encodeToJsonElement(format.decodeFromString<Config>(configFile.readText()))
     }
 
 
-    if (args.isEmpty()) {
-        val mf = MainFrame(configJson)
+    var mf = if (args.isEmpty()) {
+        MainFrame(ConfigWrapper(configJson))
     } else {
-        val mf = MainFrame(configJson, args[0])
+        MainFrame(ConfigWrapper(configJson), args[0])
     }
+}
+
+fun saveConfig(config: ConfigWrapper) {
+    configFile.writeText(format.encodeToString(config.json))
 }
