@@ -6,9 +6,10 @@ import java.io.File
 import javax.swing.*
 import javax.swing.filechooser.FileSystemView
 import com.gyoge.gpp.nowrap.*
+import kotlinx.serialization.json.*
 
 
-open class EditorTab(private val config: Config) {
+open class EditorTab(config: JsonElement) {
 
     var textPane = JTextPane()
         private set
@@ -22,6 +23,7 @@ open class EditorTab(private val config: Config) {
         /* Private setter for "direct" access. Others should go through the file chooser. */
         @JvmName("directSetFile")
         private set
+    private val config = config.jsonObject
 
     fun setFile(filePath: String?): Boolean {
         val opener: JFileChooser
