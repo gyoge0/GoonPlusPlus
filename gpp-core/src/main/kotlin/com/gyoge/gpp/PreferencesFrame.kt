@@ -1,9 +1,6 @@
 package com.gyoge.gpp
 
-import com.gyoge.gpp.filters.AnyFilter
-import com.gyoge.gpp.filters.BooleanFilter
-import com.gyoge.gpp.filters.DoubleFilter
-import com.gyoge.gpp.filters.IntFilter
+import com.gyoge.gpp.filters.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
@@ -18,12 +15,15 @@ import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.text.PlainDocument
 
-
+/** A new JFrame to edit the preferences. */
 class PreferencesFrame(private val configWrap: ConfigWrapper) : JFrame() {
 
     private val config = configWrap.json.jsonObject
+
+    /** The panel storing preferences in [JTextField]s. */
     private val panel = JPanel()
 
+    /** Places the config into the panel. */
     init {
         this.defaultCloseOperation = DISPOSE_ON_CLOSE
         this.title = String.format("Goon++ :  Preferences   |   v%s", MainFrame.VERSION)
@@ -109,9 +109,7 @@ class PreferencesFrame(private val configWrap: ConfigWrapper) : JFrame() {
 
     }
 
-    /**
-     * Swaps out the config with the new one generated from the current inputs
-     */
+    /** Swaps out the config with the new one generated from the current inputs. */
     inner class SaveButtonListener : ActionListener {
         override fun actionPerformed(e: ActionEvent) {
             val newConfig: MutableMap<String, JsonElement> = HashMap()
@@ -138,7 +136,6 @@ class PreferencesFrame(private val configWrap: ConfigWrapper) : JFrame() {
                     format.encodeToString(newConfig)
                 )
             )
-
         }
     }
 }
