@@ -9,6 +9,7 @@ import java.io.File
 import javax.swing.UIManager
 
 
+/** Json Formatter that is used in (de)serializing the [Config] class. */
 val format = Json {
     encodeDefaults = true
     ignoreUnknownKeys = true
@@ -16,9 +17,13 @@ val format = Json {
     coerceInputValues = true
 }
 
+/** Parent directory of the config file. */
 val configDir = File("${System.getProperty("user.home")}/.gpp")
+
+/** Path of the config file. */
 val configFile = File("${configDir.absolutePath}/config.json")
 
+/** Loads in config to a [ConfigWrapper] and instantiates a [MainFrame] with it. */
 fun main(args: Array<String>) {
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
@@ -42,13 +47,14 @@ fun main(args: Array<String>) {
     }
 
 
-    var mf = if (args.isEmpty()) {
+    @Suppress("UNUSED_VARIABLE") var mf = if (args.isEmpty()) {
         MainFrame(ConfigWrapper(configJson))
     } else {
         MainFrame(ConfigWrapper(configJson), args[0])
     }
 }
 
+/** Serializes the [Config] from a [ConfigWrapper] into the [configFile] */
 fun saveConfig(config: ConfigWrapper) {
     configFile.writeText(format.encodeToString(config.json))
 }

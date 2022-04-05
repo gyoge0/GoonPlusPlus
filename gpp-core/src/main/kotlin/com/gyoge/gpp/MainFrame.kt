@@ -13,6 +13,9 @@ import javax.swing.plaf.LayerUI
 import kotlin.system.exitProcess
 
 
+/**
+ * Main container of the application.
+ */
 @Suppress("JoinDeclarationAndAssignment")
 class MainFrame(val config: ConfigWrapper, startingDir: String = "~") : JFrame() {
 
@@ -173,7 +176,7 @@ class MainFrame(val config: ConfigWrapper, startingDir: String = "~") : JFrame()
 
             fun createFrame() {
                 EventQueue.invokeLater {
-                    val frame = PreferencesFrame(config)
+                    @Suppress("UNUSED_VARIABLE") val frame = PreferencesFrame(config)
                 }
             }
         })
@@ -235,6 +238,7 @@ class MainFrame(val config: ConfigWrapper, startingDir: String = "~") : JFrame()
     /**
      * Plays the sound at the path specified.
      */
+    @Suppress("unused")
     @Synchronized
     fun playSound(path: String) {
         Thread {
