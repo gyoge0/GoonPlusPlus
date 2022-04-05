@@ -14,21 +14,38 @@ import javax.swing.JTextPane
 import javax.swing.filechooser.FileSystemView
 
 
+/**
+ * Represents a tab in the editor.
+ */
 open class EditorTab(private val config: ConfigWrapper) {
 
+    /** The editing pane of the tab. */
     var textPane = JTextPane()
         private set
+
+    /** Wraps the [EditorTab.textPane] in a scrollable UI. */
     var editor = JScrollPane(textPane)
         private set
+
+    /** Name of the tab. */
     var name: String = ""
         private set
+
+    /** Flag if the tab is untitled or not. */
     var isUntitled: Boolean = true
         private set
+
+    /** The file being edited. */
     var file: File = File("")
         /* Private setter for "direct" access. Others should go through the file chooser. */
         @JvmName("directSetFile")
         private set
 
+    /**
+     * Initializes a new tab with a file path.
+     *
+     * @return if the tab was successfully created.
+     */
     fun setFile(filePath: String?): Boolean {
         val opener: JFileChooser
 
@@ -90,6 +107,7 @@ open class EditorTab(private val config: ConfigWrapper) {
         return false
     }
 
+    /** Sets up the tab if it is a real file. */
     fun realTab(filePath: String) {
         if (this.setFile(filePath)) {
             textPane.isEditable = file.canWrite()
@@ -131,6 +149,7 @@ open class EditorTab(private val config: ConfigWrapper) {
         this.setStyles()
     }
 
+    /** Sets up the file if it is an untitled file. */
     fun untitledTab() {
         textPane.isEditable = true
         textPane.text = ""
@@ -149,6 +168,7 @@ open class EditorTab(private val config: ConfigWrapper) {
     }
 
 
+    /** Sets up the styles of the tab by accessing [EditorTab.config] through [EditorTab.jsonGet]. */
     private fun setStyles() {
 
         // Font
@@ -165,6 +185,7 @@ open class EditorTab(private val config: ConfigWrapper) {
 
     }
 
+    /** Helper function to get values from [EditorTab.config]. */
     private fun jsonGet(key: String) = config.json.jsonObject[key]!!.jsonObject["v"]!!.jsonPrimitive
 
 }
