@@ -47,7 +47,7 @@ fun main(args: Array<String>) {
     }
 
 
-    var mf = if (args.isEmpty()) {
+    @Suppress("UNUSED_VARIABLE") var mf = if (args.isEmpty()) {
         MainFrame(ConfigWrapper(configJson))
     } else {
         MainFrame(ConfigWrapper(configJson), args[0])
