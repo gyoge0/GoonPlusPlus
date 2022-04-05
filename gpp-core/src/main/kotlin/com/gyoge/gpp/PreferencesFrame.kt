@@ -1,6 +1,9 @@
 package com.gyoge.gpp
 
-import com.gyoge.gpp.filters.*
+import com.gyoge.gpp.filters.AnyFilter
+import com.gyoge.gpp.filters.BooleanFilter
+import com.gyoge.gpp.filters.DoubleFilter
+import com.gyoge.gpp.filters.IntFilter
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
@@ -119,13 +122,17 @@ class PreferencesFrame(private val configWrap: ConfigWrapper) : JFrame() {
             for (i in 0..this@PreferencesFrame.panel.componentCount - 2 step 2) {
                 val key = (this@PreferencesFrame.panel.getComponent(i) as JTextField).text!!
                 val value =
-                    JsonPrimitive((this@PreferencesFrame.panel.getComponent(i + 1) as JTextField).text!!)
-                val type = config[key]!!.jsonObject["t"]!!.toString()
+                    (this@PreferencesFrame.panel.getComponent(i + 1) as JTextField) // Get the Text field at i
+                        .text!! // Get the text from it
+                        .replace("\"", "").replace("\\", "") // replace the quotes and backslashes
+                val type = config[key]!!.jsonObject["t"]!! // Get the type of the key
+                    .toString().replace("\"", "")
+                    .replace("\\", "") // replace the quotes and backslashes
 
                 newConfig[key] = JsonObject(
                     mapOf(
-                        Pair("v", value),
-                        Pair("t", JsonPrimitive(type))
+                        "v" to JsonPrimitive(value),
+                        "t" to JsonPrimitive(type)
                     )
                 )
             }
