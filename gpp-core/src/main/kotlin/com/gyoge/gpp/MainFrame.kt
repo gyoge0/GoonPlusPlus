@@ -10,7 +10,6 @@ import javax.swing.*
 import javax.swing.event.ChangeEvent
 import javax.swing.event.ChangeListener
 import javax.swing.plaf.LayerUI
-import kotlin.system.exitProcess
 
 
 /**
@@ -184,7 +183,8 @@ class MainFrame(val config: ConfigWrapper, startingDir: String = "~") : JFrame()
 
         menuItem = JMenuItem("Exit")
         menuItem.addActionListener {
-            exitProcess(0)
+            saveConfig(this.config)
+            this.dispose()
         }
         menu.add(menuItem)
 
