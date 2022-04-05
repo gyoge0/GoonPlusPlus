@@ -13,6 +13,9 @@ import javax.swing.plaf.LayerUI
 import kotlin.system.exitProcess
 
 
+/**
+ * Main container of the application.
+ */
 @Suppress("JoinDeclarationAndAssignment")
 class MainFrame(val config: ConfigWrapper, startingDir: String = "~") : JFrame() {
 
