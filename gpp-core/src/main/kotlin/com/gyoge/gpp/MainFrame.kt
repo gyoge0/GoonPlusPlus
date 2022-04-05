@@ -176,7 +176,7 @@ class MainFrame(val config: ConfigWrapper, startingDir: String = "~") : JFrame()
 
             fun createFrame() {
                 EventQueue.invokeLater {
-                    val frame = PreferencesFrame(config)
+                    @Suppress("UNUSED_VARIABLE") val frame = PreferencesFrame(config)
                 }
             }
         })
@@ -238,6 +238,7 @@ class MainFrame(val config: ConfigWrapper, startingDir: String = "~") : JFrame()
     /**
      * Plays the sound at the path specified.
      */
+    @Suppress("unused")
     @Synchronized
     fun playSound(path: String) {
         Thread {
