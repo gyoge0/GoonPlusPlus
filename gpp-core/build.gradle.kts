@@ -28,7 +28,7 @@ plugins {
 }
 
 group = "com.gyoge"
-version = "0.1"
+version = "1.0"
 description = "gpp"
 
 
