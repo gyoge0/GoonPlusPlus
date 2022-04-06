@@ -12,6 +12,7 @@ import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
+import javax.imageio.ImageIO
 import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JPanel
@@ -30,6 +31,7 @@ class PreferencesFrame(private val configWrap: ConfigWrapper) : JFrame() {
     init {
         this.defaultCloseOperation = DISPOSE_ON_CLOSE
         this.title = String.format("Goon++ :  Preferences   |   v%s", MainFrame.VERSION)
+        this.setIconImage(ImageIO.read(javaClass.getResourceAsStream("/icon.png")))
         panel.layout = GridBagLayout()
 
         var row = -1

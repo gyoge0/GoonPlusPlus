@@ -23,6 +23,7 @@ dependencies {
 plugins {
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.serialization") version "1.6.10"
+    id("edu.sc.seis.launch4j") version "2.5.3"
     application
 }
 
@@ -60,8 +61,22 @@ tasks.named("assemble") {
     finalizedBy("copyDependencies")
 }
 
+
 kotlin {
     jvmToolchain {
         (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(17))
     }
+}
+
+tasks.withType<edu.sc.seis.launch4j.tasks.DefaultLaunch4jTask> {
+    outfile = "GoonPlusPlus.exe"
+    libraryDir = "dependencies"
+    val version = 17
+    jreMinVersion = "1.$version"
+    downloadUrl =
+        "https://download.oracle.com/java/$version/latest/jdk-${version}_windows-x64_bin.exe"
+    messagesJreVersionError =
+        "This program requires the java version listed below. Please run the downloaded installer to install the latest version.\n\n"
+    icon = "$projectDir/icon.ico"
+
 }
