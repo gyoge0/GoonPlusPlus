@@ -4,6 +4,7 @@ import java.awt.*
 import java.awt.event.*
 import java.io.File
 import java.io.PrintWriter
+import javax.imageio.ImageIO
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 import javax.swing.*
@@ -46,6 +47,7 @@ class MainFrame(val config: ConfigWrapper, startingDir: String = "~") : JFrame()
         })
 
         this.title = String.format("Goon++   |   v%s", VERSION)
+        this.setIconImage(ImageIO.read(javaClass.getResourceAsStream("/icon.png")))
 
         // Init a bunch of fields
         this.layout = GridBagLayout()
