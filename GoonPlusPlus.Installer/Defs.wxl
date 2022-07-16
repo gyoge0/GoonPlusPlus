@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+
+	<String Id="ProductNameSimple">Goon++</String>
+
+	<String Id="ProductName_x86">Goon++ (32-bit)</String>
+	<String Id="ProductName_x64">Goon++ (64-bit)</String>
+
+	<String Id="Language">1033</String>
+
+	<String Id="Company">gyoge</String>
+
+	<String Id="Description">The premier text editor used by several people worldwide</String>
+
+	<String Id="Keywords">text-editor</String>
+
+	<String Id="Comments_x86">Installs Goon++ for 32-bit CPU architectures</String>
+	<String Id="Comments_x64">Installs Goon++ for 64-bit CPU architectures</String>
+
+
+	<String Id="DowngradeErrorMessage">A newer version of Goon++ is already installed.</String>
+
+</WixLocalization>

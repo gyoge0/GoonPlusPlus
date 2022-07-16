@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+	<!-- TODO: Make new GUID for new versions -->
+	<!-- Set product code based on CPU architecture -->
+	<?if $(var.Platform)=x64?>
+	<?define ProductCode = "{BED6E907-2FE0-4BBD-8576-24DDEBEB5A38}"?>
+	<?else?>
+	<?define ProductCode = "{4D0F96D5-51D3-4C63-AB56-B6C68B77AE45}"?>
+	<?endif?>
+
+	<!-- Fixed GUID upgrading product when installing multiple version -->
+	<?define UpgradeCode = "{657113F8-191A-4818-9F88-B15103EEED03}"?>
+
+
+	<!-- Define product -->
+	<Product Id="$(var.ProductCode)"
+	         Name="!(loc.ProductName_$(var.Platform))"
+	         Language="!(loc.Language)"
+	         Version="$(var.BuildVersion)"
+	         Manufacturer="!(loc.Company)"
+	         UpgradeCode="$(var.UpgradeCode)">
+
+		<!-- Package details -->
+		<Package InstallerVersion="200"
+		         Compressed="yes"
+		         InstallScope="perMachine"
+		         Platform="$(var.Platform)"
+		         Manufacturer="!(loc.Company)"
+				 Description="!(loc.Description)"
+				 Keywords="!(loc.Keywords)"
+				 Comments="!(loc.Comments_$(var.Platform))"
+				 Languages="!(loc.Language)"/>
+
+		<!-- Message when attempting to install older version -->
+		<MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeErrorMessage)" />
+
+		<!-- Include extra .cab file into the msi -->
+		<MediaTemplate EmbedCab="yes"/>
+
+		<!-- Define logo icon -->
+		<Icon Id="logo.ico" SourceFile="$(var.GoonPlusPlus.ProjectDir)\assets\logo.ico"/>
+
+		<!-- Set installer icon to logo.ico -->
+		<Property Id="ARPPRODUCTICON">logo.ico</Property>
+		<!-- Website -->
+		<Property Id="ARPURLINFOABOUT">https://github.com/gyoge/goonplusplus</Property>
+
+		<!-- Get the installer's UI -->
+		<UIRef Id="WixUI_Minimal" />
+
+		<!-- License -->
+		<WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\assets\license.rtf" />
+
+		<!-- Change background images of the installer's UI-->
+		<WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)\assets\background.bmp" />
+		<WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)\assets\banner.bmp" />
+
+
+
+		<!-- TODO Create background.bmp image, 493x312px-->
+		<!-- TODO Create banner.bmp image, 493x58px-->
+
+
+		<!-- Define components, shortcuts, files, etc. for the installer -->
+		<Feature Id="ProductFeature" Title="Goon++" Level="1">
+
+			<ComponentGroupRef Id="ProductComponents" />
+			<ComponentGroupRef Id="PublishedComponents" />
+
+		</Feature>
+
+	</Product>
+
+</Wix>

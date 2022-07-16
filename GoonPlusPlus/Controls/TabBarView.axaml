@@ -1,0 +1,44 @@
+﻿<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:GoonPlusPlus.ViewModels"
+    xmlns:models="clr-namespace:GoonPlusPlus.Models"
+    xmlns:controls="clr-namespace:GoonPlusPlus.Controls"
+    x:Class="GoonPlusPlus.Controls.TabBarView">
+
+
+    <UserControl.DataContext>
+        <vm:TabBarViewModel />
+    </UserControl.DataContext>
+
+    <TabControl
+        Items="{Binding Tabs}"
+        Name="TabControl"
+        SelectedIndex="{Binding CurrentTabMirror}">
+
+        <TabControl.ItemTemplate>
+            <TreeDataTemplate DataType="models:TabModel">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Name}" />
+                    <Button
+                        Content="X"
+                        Command="{Binding Close}" CommandParameter="{Binding}"
+                        Background="Transparent"
+                        FontSize="17"
+                        CornerRadius="2"
+                        Height="30"
+                        Width="30" />
+                </StackPanel>
+            </TreeDataTemplate>
+        </TabControl.ItemTemplate>
+        <TabControl.ContentTemplate>
+            <TreeDataTemplate DataType="models:TabModel">
+                <controls:BoundEditor
+                    BoundText="{Binding Content, Mode=TwoWay}"
+                    Extension="{Binding Extension}"
+                    Name="BoundEditor"/>
+            </TreeDataTemplate>
+        </TabControl.ContentTemplate>
+    </TabControl>
+
+</UserControl>
