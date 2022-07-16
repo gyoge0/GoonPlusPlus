@@ -1,0 +1,29 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="clr-namespace:GoonPlusPlus.Controls"
+    xmlns:vm="using:GoonPlusPlus.ViewModels"
+    x:Class="GoonPlusPlus.Views.MainWindow"
+
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+
+    Icon="/Assets/logo.ico"
+    Title="Test"
+    TransparencyLevelHint="AcrylicBlur"
+    Background="Transparent"
+    ExtendClientAreaToDecorationsHint="True">
+
+    <Panel>
+
+        <controls:AcrylicBlurView />
+
+        <Grid RowDefinitions="Auto, *">
+            <controls:TopMenuView Grid.Row="0" />
+            <controls:TabBarView Grid.Row="1" />
+        </Grid>
+
+    </Panel>
+
+</Window>

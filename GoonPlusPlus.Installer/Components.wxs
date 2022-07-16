@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+	<Fragment>
+
+		<!-- Product components -->
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+
+			<!-- Shortcut -->
+			<ComponentRef Id="StartMenuShortcut"/>
+
+		</ComponentGroup>
+
+		<!-- Installed files -->
+		<DirectoryRef Id="INSTALLFOLDER" FileSource="..\GoonPlusPlus\bin\Debug\net6.0\win-$(var.Platform)\">
+
+			<Component Id="StartMenuShortcut" Guid="{37FBD386-871F-4E30-BA44-996BE99B750B}">
+				
+				<Shortcut Id="StartMenuShortcut"
+						  Name="Goon++"
+						  Target="[INSTALLFOLDER]GoonPlusPlus.exe"
+						  Directory="ProgramMenuFolder"
+						  WorkingDirectory="INSTALLFOLDER"
+						  Icon="logo.ico"/>
+				
+				<!-- Unique key for the component/shortcut -->
+				<RegistryValue Id="RegShortcutKey" Root="HKCU" Key="SOFTWARE\!(loc.ProductNameSimple)" Name="Shortcut" Value="1" Type="integer" KeyPath="yes" />
+				
+				<!-- Need to remove start menu on uninstall -->
+				<RemoveFolder Id="RemoveStartMenu" Directory="InstallProgramMenuFolder" On="uninstall"/>
+			</Component>
+
+		</DirectoryRef>
+
+	</Fragment>
+
+</Wix>

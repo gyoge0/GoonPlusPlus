@@ -1,2 +1,10 @@
-target\
-.idea\
+# Build output
+**/[Bb]in/
+**/[Oo]bj/
+
+# ides
+**/.idea
+**/.vs
+
+# visual studio per user
+*.csproj.user
