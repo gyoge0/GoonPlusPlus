@@ -10,7 +10,7 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 
     Icon="/Assets/logo.ico"
-    Title="Test"
+    Title="Goon++"
     TransparencyLevelHint="AcrylicBlur"
     Background="Transparent"
     ExtendClientAreaToDecorationsHint="True">
