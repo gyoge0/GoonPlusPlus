@@ -3,19 +3,35 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reactive;
-using AvaloniaEdit;
-using AvaloniaEdit.Editing;
+using GoonPlusPlus.Models;
 using ReactiveUI;
 
-namespace GoonPlusPlus.Models;
+namespace GoonPlusPlus.ViewModels;
 
-public class TabModel : IEquatable<TabModel>
+public class TabModel : ViewModelBase, IEquatable<TabModel>
 {
+    private string _name = null!; // will be set by Name.set
+    private string? _extension;
+    private string _content = null!; // will be set by Content.set
     public string? Path { get; private set; }
-    public string Name { get; set; }
-    public string? Extension { get; set; }
 
-    public string Content { get; set; }
+    public string Name
+    {
+        get => _name;
+        set => this.RaiseAndSetIfChanged(ref _name, value);
+    }
+
+    public string? Extension
+    {
+        get => _extension;
+        set => this.RaiseAndSetIfChanged(ref _extension, value);
+    }
+
+    public string Content
+    {
+        get => _content;
+        set =>this.RaiseAndSetIfChanged(ref _content, value);
+    }
 
     public bool IsUntitled { get; private set; }
 

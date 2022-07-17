@@ -80,11 +80,6 @@ public class TopMenuViewModel : ViewModelBase
         }
 
         tab.LoadFromFile(file);
-        // need to remove and re-add or else the ui won't refresh
-        var idx = TabBuffer.Instance.Buffer.Items.IndexOf(tab);
-        TabBuffer.Instance.RemoveTabs(tab);
-        TabBuffer.Instance.Buffer.Insert(idx, tab);
-
         File.WriteAllTextAsync(
             file,
             tab.Content

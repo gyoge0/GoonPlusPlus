@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using DynamicData;
 using GoonPlusPlus.Controls;
+using GoonPlusPlus.ViewModels;
 
 namespace GoonPlusPlus.Models;
 
