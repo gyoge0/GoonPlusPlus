@@ -17,7 +17,7 @@
         SelectedIndex="{Binding CurrentTabMirror}">
 
         <TabControl.ItemTemplate>
-            <TreeDataTemplate DataType="models:TabModel">
+            <TreeDataTemplate DataType="vm:TabModel">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding Name}" />
                     <Button
@@ -32,7 +32,7 @@
             </TreeDataTemplate>
         </TabControl.ItemTemplate>
         <TabControl.ContentTemplate>
-            <TreeDataTemplate DataType="models:TabModel">
+            <TreeDataTemplate DataType="vm:TabModel">
                 <controls:BoundEditor
                     BoundText="{Binding Content, Mode=TwoWay}"
                     Extension="{Binding Extension}"

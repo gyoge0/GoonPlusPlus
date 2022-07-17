@@ -3,11 +3,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reactive;
-using AvaloniaEdit;
-using AvaloniaEdit.Editing;
+using GoonPlusPlus.Models;
 using ReactiveUI;
 
-namespace GoonPlusPlus.Models;
+namespace GoonPlusPlus.ViewModels;
 
 public class TabModel : IEquatable<TabModel>
 {
