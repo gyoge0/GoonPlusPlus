@@ -5,11 +5,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:GoonPlusPlus.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-    x:Class="GoonPlusPlus.Views.FileExplorerView">
+    x:Class="GoonPlusPlus.Controls.FileExplorerView">
 
-    <Design.DataContext>
+    <UserControl.DataContext>
         <vm:FileExplorerViewModel />
-    </Design.DataContext>
+    </UserControl.DataContext>
 
     <TreeView
         Items="{Binding Root}"

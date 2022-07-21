@@ -3,10 +3,11 @@ using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using GoonPlusPlus.Models;
+using GoonPlusPlus.ViewModels;
 
 namespace GoonPlusPlus.Controls;
 
-public class FileExplorerView : UserControl
+public partial class FileExplorerView : UserControl
 {
     public FileExplorerView()
     {
