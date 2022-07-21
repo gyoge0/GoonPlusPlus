@@ -2,13 +2,21 @@
 using DynamicData;
 using GoonPlusPlus.Controls;
 using GoonPlusPlus.ViewModels;
+using ReactiveUI;
 
 namespace GoonPlusPlus.Models;
 
-public class TabBuffer
+public class TabBuffer : ReactiveObject
 {
+    private TabModel? _currentTab;
     public static TabBuffer Instance { get; } = new();
-    public TabModel? CurrentTab { get; set; }
+
+    public TabModel? CurrentTab
+    {
+        get => _currentTab;
+        set => this.RaiseAndSetIfChanged(ref _currentTab, value);
+    }
+
     public BoundEditor? CurrentEditor { get; set; }
 
     public SourceList<TabModel> Buffer { get; } = new();
@@ -31,4 +39,5 @@ public class TabBuffer
             .ForEach(m => m.Content = "");
         Buffer.RemoveMany(models);
     }
+
 }
