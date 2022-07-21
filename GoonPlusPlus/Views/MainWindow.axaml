@@ -23,7 +23,7 @@
             <controls:TopMenuView Grid.Row="0" />
             
             <Grid ColumnDefinitions="250, 1, *" Grid.Row="1">
-                <controls:FileExplorerView Grid.Column="0"/>
+                <controls:FileExplorerView Grid.Column="0" />
                 <GridSplitter Grid.Column="1" Background="#444444"/>
                 <controls:TabBarView Grid.Column="2" />
             </Grid>
