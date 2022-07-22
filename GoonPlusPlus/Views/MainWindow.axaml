@@ -4,7 +4,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="clr-namespace:GoonPlusPlus.Controls"
-    xmlns:vm="using:GoonPlusPlus.ViewModels"
     x:Class="GoonPlusPlus.Views.MainWindow"
 
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -21,13 +20,13 @@
 
         <Grid RowDefinitions="Auto, *">
             <controls:TopMenuView Grid.Row="0" />
-            
+
             <Grid ColumnDefinitions="250, 1, *" Grid.Row="1">
                 <controls:FileExplorerView Grid.Column="0" />
-                <GridSplitter Grid.Column="1" Background="#444444"/>
+                <GridSplitter Grid.Column="1" Background="#444444" />
                 <controls:TabBarView Grid.Column="2" />
             </Grid>
-            
+
         </Grid>
 
     </Panel>
