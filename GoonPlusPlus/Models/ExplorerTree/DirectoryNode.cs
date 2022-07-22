@@ -19,14 +19,13 @@ public class DirectoryNode : ExplorerNode
         {
             SubNodes.Clear();
             if (this.RaiseAndSetIfChanged(ref _isExpanded, value)) GetSubfolders();
-            else SubNodes.Add(new DirectoryNode("{{ Dummy Node }}"));
+            else if (Directory.GetFiles(FullPath).Length > 0) SubNodes.Add(new FileNode("{{ Dummy Node }}"));
         }
     }
 
     public DirectoryNode(string strFullPath) : base(strFullPath)
     {
-        SubNodes.Add(new FileNode("{{ Dummy Node }}"));
-
+        if (Directory.GetFiles(FullPath).Length > 0) SubNodes.Add(new FileNode("{{ Dummy Node }}"));
     }
 
     private void GetSubfolders()
