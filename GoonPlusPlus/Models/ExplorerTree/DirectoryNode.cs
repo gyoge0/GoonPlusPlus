@@ -4,7 +4,7 @@ using System.IO;
 using Avalonia.Logging;
 using ReactiveUI;
 
-namespace GoonPlusPlus.Models;
+namespace GoonPlusPlus.Models.ExplorerTree;
 
 public class DirectoryNode : ExplorerNode
 {

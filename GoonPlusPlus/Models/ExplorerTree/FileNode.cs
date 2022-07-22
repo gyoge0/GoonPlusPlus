@@ -1,6 +1,4 @@
-﻿using GoonPlusPlus.ViewModels;
-
-namespace GoonPlusPlus.Models;
+﻿namespace GoonPlusPlus.Models.ExplorerTree;
 
 public class FileNode : ExplorerNode
 {

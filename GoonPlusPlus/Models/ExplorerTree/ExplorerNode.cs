@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using GoonPlusPlus.ViewModels;
 
-namespace GoonPlusPlus.Models;
+namespace GoonPlusPlus.Models.ExplorerTree;
 
 public abstract class ExplorerNode : ViewModelBase
 {

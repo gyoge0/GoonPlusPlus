@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using DynamicData.Binding;
 using GoonPlusPlus.Models;
+using GoonPlusPlus.Models.ExplorerTree;
 using ReactiveUI;
 using Path = System.IO.Path;
 

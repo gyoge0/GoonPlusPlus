@@ -2,8 +2,7 @@
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
-using GoonPlusPlus.Models;
-using GoonPlusPlus.ViewModels;
+using GoonPlusPlus.Models.ExplorerTree;
 
 namespace GoonPlusPlus.Controls;
 
