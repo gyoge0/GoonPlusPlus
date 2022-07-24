@@ -13,7 +13,8 @@
 
     <TreeView
         Items="{Binding Root}"
-        HorizontalAlignment="Left"
+        HorizontalAlignment="Stretch"
+        Margin="0, 0, 2, 0"
         Name="ExplorerTree">
 
         <TreeView.Styles>
