@@ -26,31 +26,31 @@
                 </Style>
             </StackPanel.Styles>
 
-            <Button>
+            <Button Command="{Binding Undo}">
                 <PathIcon Data="{StaticResource CaretLeftRegular}" />
                 <ToolTip.Tip>
                     <TextBlock Text="Go back" />
                 </ToolTip.Tip>
             </Button>
-            <Button>
+            <Button Command="{Binding Redo}">
                 <PathIcon Data="{StaticResource CaretRightRegular}" />
                 <ToolTip.Tip>
                     <TextBlock Text="Go forward" />
                 </ToolTip.Tip>
             </Button>
-            <Button>
+            <Button Command="{Binding GoToParent}">
                 <PathIcon Data="{StaticResource ArrowUploadRegular}" />
                 <ToolTip.Tip>
                     <TextBlock Text="Go up a folder" />
                 </ToolTip.Tip>
             </Button>
-            <Button>
+            <Button Command="{Binding OpenFolder}" CommandParameter="{Binding $parent[Window]}">
                 <PathIcon Data="{StaticResource OpenFolderRegular}" />
                 <ToolTip.Tip>
                     <TextBlock Text="Open folder" />
                 </ToolTip.Tip>
             </Button>
-            <Button>
+            <Button Command="{Binding Refresh}">
                 <PathIcon Data="{StaticResource ArrowSyncRegular}" />
                 <ToolTip.Tip>
                     <TextBlock Text="Reload from disk" />
