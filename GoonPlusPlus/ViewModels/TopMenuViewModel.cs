@@ -175,7 +175,7 @@ public class TopMenuViewModel : ViewModelBase
         {
             vm.CompileOutput += "<-- Standard Error -->\n\n";
             vm.CompileOutput += stderr;
-            vm.CompileOutput += "<-- End Standard Error --> \n\n";
+            vm.CompileOutput += "\n<-- End Standard Error --> \n\n";
         }
 
         vm.CompileOutput += $"Process exited with code {compile.ExitCode} --- Compilation ";
