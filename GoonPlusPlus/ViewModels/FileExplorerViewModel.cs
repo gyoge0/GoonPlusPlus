@@ -24,15 +24,4 @@ public class FileExplorerViewModel
         }
     };
 
-    public FileExplorerViewModel()
-    {
-        TabBuffer.Instance
-            .WhenPropertyChanged(x => x.CurrentTab)
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(x =>
-            {
-                if (x.Value == null || x.Value.IsUntitled) return;
-                Root[0] = new DirectoryNode(Path.GetDirectoryName(x.Value.Path!) ?? HomeFolder) { IsExpanded = true };
-            });
-    }
 }
