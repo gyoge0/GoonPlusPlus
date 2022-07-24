@@ -30,7 +30,19 @@
 
                 <controls:FileExplorerView Grid.Column="0" />
                 <GridSplitter Grid.Column="1" Background="#444444" />
-                <controls:TabBarView Grid.Column="2" />
+
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" MinHeight="200" />
+                        <RowDefinition Height="2" />
+                        <RowDefinition Height="250" MinHeight="40" />
+                    </Grid.RowDefinitions>
+
+                    <controls:TabBarView Grid.Row="0" />
+                    <GridSplitter Grid.Row="1" Background="#444444" />
+                    <controls:CodeRunner Grid.Row="2" />
+                </Grid>
+
             </Grid>
 
         </Grid>
