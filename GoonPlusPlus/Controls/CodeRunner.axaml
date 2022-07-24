@@ -9,19 +9,37 @@
 
     <TabControl TabStripPlacement="Bottom" Margin="0, 0, 0, 7">
         <TabItem Header="Compile" Name="Compile" VerticalAlignment="Stretch">
-            
-            <TextBox 
-                FontFamily="Consolas" 
-                Text="{Binding CompileOutput}" 
-                IsReadOnly="true" 
-                CaretBrush="Transparent" 
-                Background="Transparent">
-                
+
+            <TextBox
+                FontFamily="Consolas"
+                Text="{Binding CompileOutput}"
+                IsReadOnly="true"
+                CaretBrush="Transparent"
+                Background="Transparent"
+                BorderThickness="0, 0, 0, 2"
+                BorderBrush="#0078d7">
+
+                <TextBox.Styles>
+                    <Style Selector="TextBox:disabled /template/ Border#PART_BorderElement">
+                        <Setter Property="BorderBrush" Value="#0078d7" />
+                        <Setter Property="Background" Value="Transparent" />
+                    </Style>
+                    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                        <Setter Property="BorderBrush" Value="#0078d7" />
+                        <Setter Property="Background" Value="Transparent" />
+                    </Style>
+                    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+                        <Setter Property="BorderBrush" Value="#0078d7" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderThickness" Value="0, 0, 0, 2"/>
+                    </Style>
+                </TextBox.Styles>
+
                 <TextBox.DataContext>
-                    <vm:CompileViewModel></vm:CompileViewModel>
+                    <vm:CompileViewModel />
                 </TextBox.DataContext>
             </TextBox>
-            
+
         </TabItem>
     </TabControl>
 </UserControl>
