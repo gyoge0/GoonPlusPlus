@@ -8,7 +8,7 @@
     x:Class="GoonPlusPlus.Controls.CodeRunner">
 
     <TabControl TabStripPlacement="Bottom" Margin="0, 0, 0, 7">
-        <TabItem Header="Compile" Name="Compile" VerticalAlignment="Stretch">
+        <TabItem Header="Compile" VerticalAlignment="Stretch" Tapped="Collapse_OnTapped">
 
             <TextBox
                 FontFamily="Consolas"

@@ -35,7 +35,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" MinHeight="200" />
                         <RowDefinition Height="2" />
-                        <RowDefinition Height="250" MinHeight="40" />
+                        <RowDefinition Height="250" MinHeight="120" />
                     </Grid.RowDefinitions>
 
                     <controls:TabBarView Grid.Row="0" />
