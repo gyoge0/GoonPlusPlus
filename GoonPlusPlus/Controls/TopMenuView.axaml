@@ -48,6 +48,13 @@
                     <PathIcon Data="{StaticResource DocumentToolboxRegular}" />
                 </MenuItem.Header>
             </MenuItem>
+            <MenuItem
+                Command="{Binding Run}"
+                IsVisible="{Binding FileCanRun}">
+                <MenuItem.Header>
+                    <PathIcon Data="{StaticResource RunRegular}" />
+                </MenuItem.Header>
+            </MenuItem>
 
         </Menu>
     </StackPanel>
