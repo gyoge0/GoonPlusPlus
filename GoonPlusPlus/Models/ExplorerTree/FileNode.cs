@@ -14,4 +14,9 @@ public class FileNode : ExplorerNode
     {
         "java"
     };
+    
+    public static readonly string[] RunnableExtensions =
+    {
+        "java"
+    };
 }
