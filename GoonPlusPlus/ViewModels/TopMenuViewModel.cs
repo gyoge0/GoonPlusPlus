@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using Avalonia.Controls;
+using DynamicData;
 using DynamicData.Binding;
 using GoonPlusPlus.Models;
 using GoonPlusPlus.Models.ExplorerTree;
@@ -126,6 +127,7 @@ public class TopMenuViewModel : ViewModelBase
     });
 
     private bool _fileCanCompile;
+    private bool _fileCanRun;
 
     public bool FileCanCompile
     {
@@ -133,12 +135,22 @@ public class TopMenuViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _fileCanCompile, value);
     }
 
+    public bool FileCanRun
+    {
+        get => _fileCanRun;
+        set => this.RaiseAndSetIfChanged(ref _fileCanRun, value);
+    }
+
     public TopMenuViewModel()
     {
         TabBuffer.Instance
             .WhenPropertyChanged(x => x.CurrentTab)
             .WhereNotNull()
-            .Subscribe(x => FileCanCompile = FileNode.CompilableExtensions.Contains(x.Value?.Extension));
+            .Subscribe(x =>
+            {
+                FileCanCompile = FileNode.CompilableExtensions.Contains(x.Value?.Extension);
+                FileCanRun = FileNode.RunnableExtensions.Contains(x.Value?.Extension);
+            });
     }
 
     public ReactiveCommand<Unit, Unit> Compile { get; } = ReactiveCommand.CreateFromTask(async () =>
@@ -151,8 +163,12 @@ public class TopMenuViewModel : ViewModelBase
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = "javac", Arguments = currentTab.Path, RedirectStandardOutput = true,
-                RedirectStandardError = true, UseShellExecute = false, CreateNoWindow = true
+                FileName = "javac",
+                Arguments = currentTab.Path,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
             }
         };
 
@@ -181,5 +197,37 @@ public class TopMenuViewModel : ViewModelBase
         vm.CompileOutput += $"Process exited with code {compile.ExitCode} --- Compilation ";
         vm.CompileOutput += compile.ExitCode == 0 ? "Successful" : "Failed";
         vm.CompileOutput += ".";
+    });
+
+    public ReactiveCommand<Unit, Unit> Run { get; } = ReactiveCommand.CreateFromTask(async () =>
+    {
+        var currentTab = TabBuffer.Instance.CurrentTab;
+        if (currentTab == null) return;
+
+        using var run = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = "java",
+                Arguments = string.Join("", currentTab.Name.Split(".").SkipLast(1)),
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WorkingDirectory = Directory.GetParent(TabBuffer.Instance.CurrentTab!.Path!)!.FullName,
+            },
+        };
+
+        run.OutputDataReceived += (_, args) => RunViewModel.Instance.StdOut.Add(args.Data);
+        run.ErrorDataReceived += (_, args) => RunViewModel.Instance.StdErr.Add(args.Data);
+        RunViewModel.Instance.RunProcess = run;
+        
+        run.Start();
+        
+        run.BeginErrorReadLine();
+        run.BeginOutputReadLine();
+
+        await run.WaitForExitAsync();
     });
 }
