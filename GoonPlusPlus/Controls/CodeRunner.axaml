@@ -7,39 +7,40 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="GoonPlusPlus.Controls.CodeRunner">
 
-    <TabControl TabStripPlacement="Bottom" Margin="0, 0, 0, 7">
-        <TabItem Header="Compile" VerticalAlignment="Stretch" Tapped="Collapse_OnTapped">
-
-            <TextBox
-                FontFamily="Consolas"
-                Text="{Binding CompileOutput}"
-                IsReadOnly="true"
-                CaretBrush="Transparent"
-                Background="Transparent"
-                BorderThickness="0, 0, 0, 2"
-                BorderBrush="#0078d7">
-
-                <TextBox.Styles>
-                    <Style Selector="TextBox:disabled /template/ Border#PART_BorderElement">
-                        <Setter Property="BorderBrush" Value="#0078d7" />
-                        <Setter Property="Background" Value="Transparent" />
-                    </Style>
-                    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                        <Setter Property="BorderBrush" Value="#0078d7" />
-                        <Setter Property="Background" Value="Transparent" />
-                    </Style>
-                    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
-                        <Setter Property="BorderBrush" Value="#0078d7" />
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="BorderThickness" Value="0, 0, 0, 2"/>
-                    </Style>
-                </TextBox.Styles>
-
+    <TabControl TabStripPlacement="Bottom" Margin="0, 0, 0, 7" SelectionChanged="TabControl_OnSelectionChanged">
+        <TabControl.Styles>
+            <Style Selector="TabItem">
+                <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
+            </Style>
+            <Style Selector="TextBox">
+                <Setter Property="FontFamily" Value="Consolas" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0, 0, 0, 2" />
+                <Setter Property="BorderBrush" Value="#0078d7" />
+            </Style>
+            <Style Selector="TextBox:disabled /template/ Border#PART_BorderElement">
+                <Setter Property="BorderBrush" Value="#0078d7" />
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                <Setter Property="BorderBrush" Value="#0078d7" />
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+            <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+                <Setter Property="BorderBrush" Value="#0078d7" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0, 0, 0, 2" />
+            </Style>
+        </TabControl.Styles>
+        <TabItem Header="Compile" DoubleTapped="Collapse_OnTapped">
+            <TextBox Text="{Binding CompileOutput}" IsReadOnly="true" CaretBrush="Transparent">
                 <TextBox.DataContext>
                     <vm:CompileViewModel />
                 </TextBox.DataContext>
             </TextBox>
-
+        </TabItem>
+        <TabItem Header="Run" DoubleTapped="Collapse_OnTapped">
+            <TextBox IsReadOnly="False" AcceptsReturn="True"></TextBox>
         </TabItem>
     </TabControl>
 </UserControl>
