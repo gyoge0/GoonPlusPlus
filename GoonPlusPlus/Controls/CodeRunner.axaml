@@ -40,7 +40,11 @@
             </TextBox>
         </TabItem>
         <TabItem Header="Run" DoubleTapped="Collapse_OnTapped">
-            <TextBox IsReadOnly="False" AcceptsReturn="True"></TextBox>
+            <TextBox IsReadOnly="False" AcceptsReturn="True" Name="Run">
+                <TextBox.DataContext>
+                    <vm:RunViewModel />
+                </TextBox.DataContext>
+            </TextBox>
         </TabItem>
     </TabControl>
 </UserControl>
