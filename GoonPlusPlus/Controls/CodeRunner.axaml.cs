@@ -1,8 +1,13 @@
-﻿using Avalonia;
+﻿using System;
+using System.Linq;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
+using DynamicData;
+using GoonPlusPlus.ViewModels;
+using ReactiveUI;
 
 namespace GoonPlusPlus.Controls;
 
@@ -11,7 +16,50 @@ public partial class CodeRunner : UserControl
     public CodeRunner()
     {
         InitializeComponent();
-        this.FindControl<TabItem>("Compile");
+        var run = this.FindControl<TextBox>("Run");
+        run.AddHandler(
+            TextInputEvent,
+            (sender, args) =>
+            {
+                if (args.Text == null) return;
+                if (args.Text.Contains('\n'))
+                {
+                    var lines = args.Text.Split('\n');
+                    lines.SkipLast(1).ToList().ForEach(l =>
+                    {
+                        RunViewModel.Instance.StdInBuilder.AppendLine(l);
+                        RunViewModel.Instance.Enqueue();
+                    });
+                    RunViewModel.Instance.StdInBuilder.Append(lines.Last());
+                }
+                else RunViewModel.Instance.StdInBuilder.Append(args.Text);
+            },
+            RoutingStrategies.Tunnel
+        );
+        var stdout = RunViewModel.Instance.StdOut;
+        var stderr = RunViewModel.Instance.StdErr;
+
+        stdout
+            .Connect()
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .OnItemAdded(_ =>
+            {
+                var lines = stdout.Items.ToList();
+                stdout.Clear();
+                lines.ForEach(l => run.Text += l + "\n");
+            })
+            .Subscribe();
+
+        stderr
+            .Connect()
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .OnItemAdded(_ =>
+            {
+                var lines = stderr.Items.ToList();
+                stdout.Clear();
+                lines.ForEach(l => run.Text += l + "\n");
+            })
+            .Subscribe();
     }
 
     private void InitializeComponent()
@@ -19,7 +67,7 @@ public partial class CodeRunner : UserControl
         AvaloniaXamlLoader.Load(this);
     }
 
-    private void Collapse_OnTapped(object? sender, RoutedEventArgs e)
+    private void Collapse_OnTapped(object? sender, RoutedEventArgs _)
     {
         if (sender is not TabItem { Content: TextBox box } item) return;
         var open = !box.IsVisible;
