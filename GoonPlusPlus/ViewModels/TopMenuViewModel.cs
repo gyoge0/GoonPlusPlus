@@ -8,6 +8,7 @@ using DynamicData;
 using DynamicData.Binding;
 using GoonPlusPlus.Models;
 using GoonPlusPlus.Models.ExplorerTree;
+using GoonPlusPlus.Util;
 using ReactiveUI;
 
 namespace GoonPlusPlus.ViewModels;
@@ -173,6 +174,8 @@ public class TopMenuViewModel : ViewModelBase
         };
 
         compile.Start();
+        BottomBarTabViewModel.Instance.CurrentTabIdx = (int)BottomBarTabViewModel.TabIdx.Compile;
+
         await compile.WaitForExitAsync();
         var vm = CompileViewModel.Instance;
 
@@ -197,6 +200,8 @@ public class TopMenuViewModel : ViewModelBase
         vm.CompileOutput += $"Process exited with code {compile.ExitCode} --- Compilation ";
         vm.CompileOutput += compile.ExitCode == 0 ? "Successful" : "Failed";
         vm.CompileOutput += ".";
+
+        compile.Dispose();
     });
 
     public ReactiveCommand<Unit, Unit> Run { get; } = ReactiveCommand.CreateFromTask(async () =>
@@ -204,30 +209,31 @@ public class TopMenuViewModel : ViewModelBase
         var currentTab = TabBuffer.Instance.CurrentTab;
         if (currentTab == null) return;
 
-        using var run = new Process
+        using var process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = "java",
-                Arguments = string.Join("", currentTab.Name.Split(".").SkipLast(1)),
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                RedirectStandardInput = true,
+                FileName = "java.exe",
+                Arguments = Path.GetFileName(currentTab.Path),
+                WorkingDirectory = Path.GetDirectoryName(currentTab.Path),
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                WorkingDirectory = Directory.GetParent(TabBuffer.Instance.CurrentTab!.Path!)!.FullName,
-            },
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                RedirectStandardInput = true
+            }
         };
-
-        run.OutputDataReceived += (_, args) => RunViewModel.Instance.StdOut.Add(args.Data);
-        run.ErrorDataReceived += (_, args) => RunViewModel.Instance.StdErr.Add(args.Data);
-        RunViewModel.Instance.RunProcess = run;
+        process.Start();
         
-        run.Start();
-        
-        run.BeginErrorReadLine();
-        run.BeginOutputReadLine();
+        var automator = new ConsoleAutomator(process.StandardInput, process.StandardOutput);
 
-        await run.WaitForExitAsync();
+        automator.StandardInputRead += (_, args) => RunViewModel.Instance.StdOut.Add(args.Input);
+        automator.StartAutomating();
+        RunViewModel.Instance.RunProcess = process;
+        BottomBarTabViewModel.Instance.CurrentTabIdx = (int)BottomBarTabViewModel.TabIdx.Run;
+
+        await process.WaitForExitAsync();
+        RunViewModel.Instance.RunProcess = null;
+
     });
 }
