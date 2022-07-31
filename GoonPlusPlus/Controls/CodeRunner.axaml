@@ -4,10 +4,16 @@
     xmlns:vm="using:GoonPlusPlus.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="clr-namespace:GoonPlusPlus.Controls"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="GoonPlusPlus.Controls.CodeRunner">
 
-    <TabControl TabStripPlacement="Bottom" Margin="0, 0, 0, 7" SelectionChanged="TabControl_OnSelectionChanged">
+    <TabControl
+        TabStripPlacement="Bottom"
+        Margin="0, 0, 0, 7"
+        SelectionChanged="TabControl_OnSelectionChanged"
+        SelectedIndex="{Binding CurrentTabIdx, Mode=TwoWay}">
+
         <TabControl.Styles>
             <Style Selector="TabItem">
                 <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
@@ -32,6 +38,11 @@
                 <Setter Property="BorderThickness" Value="0, 0, 0, 2" />
             </Style>
         </TabControl.Styles>
+
+        <TabControl.DataContext>
+            <vm:BottomBarTabViewModel />
+        </TabControl.DataContext>
+
         <TabItem Header="Compile" DoubleTapped="Collapse_OnTapped">
             <TextBox Text="{Binding CompileOutput}" IsReadOnly="true" CaretBrush="Transparent">
                 <TextBox.DataContext>
