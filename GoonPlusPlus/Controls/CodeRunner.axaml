@@ -50,12 +50,22 @@
                 </TextBox.DataContext>
             </TextBox>
         </TabItem>
+
         <TabItem Header="Run" DoubleTapped="Collapse_OnTapped">
-            <TextBox IsReadOnly="False" AcceptsReturn="True" Name="Run">
-                <TextBox.DataContext>
+            <controls:RunOutputBox
+                StdInBuilder="{Binding StdInBuilder, Mode=TwoWay}"
+                EditingBuilder="{Binding EditingBuilder, Mode=TwoWay}"
+                VCaretIndex="{Binding VCaretIndex, Mode=TwoWay}"
+                AccessCaretIndex="{Binding AccessCaretIndex, Mode=TwoWay}"
+                CaretCanMove="{Binding CaretCanMove, Mode=TwoWay}"
+                Text="{Binding Text, Mode=TwoWay}"
+                IsEnabled="{Binding RunProcess, Converter={x:Static ObjectConverters.IsNotNull}}">
+
+                <controls:RunOutputBox.DataContext>
                     <vm:RunViewModel />
-                </TextBox.DataContext>
-            </TextBox>
+                </controls:RunOutputBox.DataContext>
+            </controls:RunOutputBox>
         </TabItem>
+
     </TabControl>
 </UserControl>
