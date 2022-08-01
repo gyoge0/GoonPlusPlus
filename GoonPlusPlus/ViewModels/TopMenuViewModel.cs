@@ -20,26 +20,7 @@ public class TopMenuViewModel : ViewModelBase
     /// Opens an untitled tab.
     /// </summary>
     public ReactiveCommand<Unit, Unit> NewTab { get; } = ReactiveCommand.Create(() =>
-    {
-        var tabs = TabBuffer.Instance
-            .Buffer
-            .Items
-            .Where(k => k.IsUntitled)
-            .Select(k => k.Name.Split(" ").Last())
-            .Select(int.Parse)
-            .ToArray();
-
-        var num = tabs.Any() ? tabs.MaxBy(x => x) : 0;
-
-
-        var tab = new TabModel
-        {
-            Name = $"Untitled {++num}"
-        };
-
-        TabBuffer.Instance
-            .AddTabs(tab);
-    });
+        TabBuffer.Instance.AddTabs(new TabModel { Name = $"Untitled {TabBuffer.Instance.NumUntitiled() + 1}" }));
 
     /// <summary>
     /// Saves the current tab if it is not untitled.
