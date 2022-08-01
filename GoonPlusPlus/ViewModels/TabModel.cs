@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using Avalonia.Logging;
 using GoonPlusPlus.Models;
 using ReactiveUI;
 
@@ -30,18 +31,29 @@ public class TabModel : ViewModelBase, IEquatable<TabModel>
     public string Content
     {
         get => _content;
-        set =>this.RaiseAndSetIfChanged(ref _content, value);
+        set => this.RaiseAndSetIfChanged(ref _content, value);
     }
 
     public bool IsUntitled { get; private set; }
 
     public TabModel(string path)
     {
-        Path = path;
-        Name = Path.Split('\\').Last();
-        Extension = Path.Split("\\").Last().Contains('.') ? Path.Split('.').Last() : null;
-        Content = File.ReadAllText(path);
-        IsUntitled = false;
+        try
+        {
+            Path = path;
+            Name = Path.Split('\\').Last();
+            Extension = Path.Split("\\").Last().Contains('.') ? Path.Split('.').Last() : null;
+            Content = File.ReadAllText(path);
+            IsUntitled = false;
+        }
+        catch (IOException)
+        {
+            Logger.TryGet(LogEventLevel.Warning, LogArea.Binding)?.Log(this, $"{path} in use by another application");
+            Path = null;
+            Name = $"Untitled {TabBuffer.Instance.NumUntitiled() + 1}";
+            Extension = null;
+            Content = $"{path} is in use by another application";
+        }
     }
 
     public TabModel()

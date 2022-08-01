@@ -15,9 +15,9 @@ namespace GoonPlusPlus.ViewModels;
 
 public class TopMenuViewModel : ViewModelBase
 {
-    public ReactiveCommand<Window, Unit> OpenFile { get; } = ReactiveCommand.Create((Window source) =>
+    public ReactiveCommand<Window, Unit> OpenFile { get; } = ReactiveCommand.CreateFromTask(async (Window source) =>
     {
-        var paths = new OpenFileDialog().ShowAsync(source).Result;
+        var paths = await new OpenFileDialog().ShowAsync(source);
         TabBuffer.Instance.AddTabs(paths ?? Array.Empty<string>());
     });
 
@@ -25,35 +25,16 @@ public class TopMenuViewModel : ViewModelBase
     /// Opens an untitled tab.
     /// </summary>
     public ReactiveCommand<Unit, Unit> NewTab { get; } = ReactiveCommand.Create(() =>
-    {
-        var tabs = TabBuffer.Instance
-            .Buffer
-            .Items
-            .Where(k => k.IsUntitled)
-            .Select(k => k.Name.Split(" ").Last())
-            .Select(int.Parse)
-            .ToArray();
-
-        var num = tabs.Any() ? tabs.MaxBy(x => x) : 0;
-
-
-        var tab = new TabModel
-        {
-            Name = $"Untitled {++num}"
-        };
-
-        TabBuffer.Instance
-            .AddTabs(tab);
-    });
+        TabBuffer.Instance.AddTabs(new TabModel { Name = $"Untitled {TabBuffer.Instance.NumUntitiled() + 1}" }));
 
     /// <summary>
     /// Saves the current tab if it is not untitled.
     /// </summary>
-    public ReactiveCommand<Unit, Unit> SaveFile { get; } = ReactiveCommand.Create(() =>
+    public ReactiveCommand<Unit, Unit> SaveFile { get; } = ReactiveCommand.CreateFromTask(async () =>
     {
         var tab = TabBuffer.Instance.CurrentTab;
         if (tab == null || tab.IsUntitled) return;
-        File.WriteAllTextAsync(
+        await File.WriteAllTextAsync(
             tab.Path!,
             tab.Content
         );
@@ -63,13 +44,13 @@ public class TopMenuViewModel : ViewModelBase
     /// Opens a file chooser menu to allow the user to choose what file to save the current tab's content to.
     /// Also modifies the tab's data to match that of the chosen file.
     /// </summary>
-    public ReactiveCommand<Window, Unit> SaveFileAs { get; } = ReactiveCommand.Create((Window source) =>
+    public ReactiveCommand<Window, Unit> SaveFileAs { get; } = ReactiveCommand.CreateFromTask(async (Window source) =>
     {
-        var paths = new OpenFileDialog().ShowAsync(source).Result;
-        if (paths is not { Length: > 0 }) return;
+        var path = await new SaveFileDialog().ShowAsync(source);
+        
+        if (path == null) return;
         var tab = TabBuffer.Instance.CurrentTab;
         if (tab == null) return;
-        var file = paths.First();
 
         // remove the tab if it is open
         // prevents duplicate tabs
@@ -77,15 +58,13 @@ public class TopMenuViewModel : ViewModelBase
             .Buffer
             .Items
             .Where(k => !k.IsUntitled)
-            .FirstOrDefault(k => k.Path!.ToLower().Equals(file.ToLower()));
-        if (dup != null)
-        {
-            TabBuffer.Instance.RemoveTabs(dup);
-        }
+            .FirstOrDefault(k => k.Path!.ToLower().Equals(path.ToLower()));
 
-        tab.LoadFromFile(file);
-        File.WriteAllTextAsync(
-            file,
+        if (dup != null) TabBuffer.Instance.RemoveTabs(dup);
+
+        tab.LoadFromFile(path);
+        await File.WriteAllTextAsync(
+            path,
             tab.Content
         );
     });

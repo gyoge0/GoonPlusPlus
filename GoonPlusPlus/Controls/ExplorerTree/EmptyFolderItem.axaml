@@ -7,7 +7,7 @@
     x:Class="GoonPlusPlus.Controls.ExplorerTree.EmptyFolderItem">
 
     <StackPanel Orientation="Horizontal" Spacing="10">
-        <PathIcon Data="{StaticResource FolderOpenRegular}" />
+        <PathIcon Data="{StaticResource FolderRegular}" />
         <TextBlock Name="Block" />
     </StackPanel>
 

@@ -4,9 +4,9 @@
 	<!-- TODO: Make new GUID for new versions -->
 	<!-- Set product code based on CPU architecture -->
 	<?if $(var.Platform)=x64?>
-	<?define ProductCode = "{BED6E907-2FE0-4BBD-8576-24DDEBEB5A38}"?>
+	<?define ProductCode = "{A69229BE-D039-448F-B0E6-A969335F151F}"?>
 	<?else?>
-	<?define ProductCode = "{4D0F96D5-51D3-4C63-AB56-B6C68B77AE45}"?>
+	<?define ProductCode = "{800F756E-0F9C-4846-9A82-BF8D120BA930}"?>
 	<?endif?>
 
 	<!-- Fixed GUID upgrading product when installing multiple version -->

@@ -40,4 +40,15 @@ public class TabBuffer : ReactiveObject
         Buffer.RemoveMany(models);
     }
 
+    public int NumUntitiled()
+    {
+        var tabs = TabBuffer.Instance
+            .Buffer
+            .Items
+            .Where(k => k.IsUntitled)
+            .Select(k => k.Name.Split(" ").Last())
+            .Select(int.Parse)
+            .ToArray();
+        return tabs.Any() ? tabs.MaxBy(x => x) : 0;
+    }
 }

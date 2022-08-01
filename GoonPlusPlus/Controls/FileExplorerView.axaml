@@ -11,19 +11,68 @@
         <vm:FileExplorerViewModel />
     </UserControl.DataContext>
 
-    <TreeView
-        Items="{Binding Root}"
-        HorizontalAlignment="Stretch"
-        Margin="0, 0, 2, 0"
-        Name="ExplorerTree">
+    <Grid RowDefinitions="Auto, *">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0, 0, 0, 20">
+            <StackPanel.Styles>
+                <Style Selector="Button">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Margin" Value="2, 0"></Setter>
+                    <Setter Property="BorderThickness" Value="0, 0, 0, 2"></Setter>
+                    <Setter Property="BorderBrush" Value="#0078d7"></Setter>
+                </Style>
+                <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="BorderThickness" Value="0, 0, 0, 2"></Setter>
+                    <Setter Property="BorderBrush" Value="#0078d7"></Setter>
+                </Style>
+            </StackPanel.Styles>
 
-        <TreeView.Styles>
-            <Style Selector="TreeViewItem">
-                <!-- This is bound to the Node itself -->
-                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-            </Style>
-        </TreeView.Styles>
+            <Button Command="{Binding Undo}">
+                <PathIcon Data="{StaticResource CaretLeftRegular}" />
+                <ToolTip.Tip>
+                    <TextBlock Text="Go back" />
+                </ToolTip.Tip>
+            </Button>
+            <Button Command="{Binding Redo}">
+                <PathIcon Data="{StaticResource CaretRightRegular}" />
+                <ToolTip.Tip>
+                    <TextBlock Text="Go forward" />
+                </ToolTip.Tip>
+            </Button>
+            <Button Command="{Binding GoToParent}">
+                <PathIcon Data="{StaticResource ArrowUploadRegular}" />
+                <ToolTip.Tip>
+                    <TextBlock Text="Go up a folder" />
+                </ToolTip.Tip>
+            </Button>
+            <Button Command="{Binding OpenFolder}" CommandParameter="{Binding $parent[Window]}">
+                <PathIcon Data="{StaticResource OpenFolderRegular}" />
+                <ToolTip.Tip>
+                    <TextBlock Text="Open folder" />
+                </ToolTip.Tip>
+            </Button>
+            <Button Command="{Binding Refresh}">
+                <PathIcon Data="{StaticResource ArrowSyncRegular}" />
+                <ToolTip.Tip>
+                    <TextBlock Text="Reload from disk" />
+                </ToolTip.Tip>
+            </Button>
+        </StackPanel>
 
-    </TreeView>
+        <TreeView
+            Grid.Row="1"
+            Items="{Binding Root}"
+            HorizontalAlignment="Stretch"
+            Margin="0, 0, 2, 0"
+            Name="ExplorerTree">
+
+            <TreeView.Styles>
+                <Style Selector="TreeViewItem">
+                    <!-- This is bound to the Node itself -->
+                    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                </Style>
+            </TreeView.Styles>
+
+        </TreeView>
+    </Grid>
 </UserControl>
