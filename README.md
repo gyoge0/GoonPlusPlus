@@ -27,14 +27,12 @@ The installer should be built from Visual Studio. Simply right click the `GoonPl
 
 **IMPORTANT**
 
-The installer expects the corresponding windows binaries to have already been built and placed inside of the `GoonPlusPlus\bin\Release\win-{{platform}}\` folder.
+The installer expects the corresponding windows binaries to have already been built and placed inside of the `GoonPlusPlus\bin\Release\net6.0\win-{{platform}}\` folder.
 ## Roadmap
 
 - Create project files to restore tab position.
 
 - Create native MacOS app.
-
-- Create explorer tab.
 
 - Add context menu and entry to `$PATH`.
 
