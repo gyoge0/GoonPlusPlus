@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 
-	<!-- TODO: Make new GUID for new versions -->
+	<!-- TODO: Make new GUID for new major versions -->
 	<!-- Set product code based on CPU architecture -->
 	<?if $(var.Platform)=x64?>
 	<?define ProductCode = "{A69229BE-D039-448F-B0E6-A969335F151F}"?>
@@ -13,6 +13,7 @@
 	<?define UpgradeCode = "{657113F8-191A-4818-9F88-B15103EEED03}"?>
 
 
+	<!-- Minor versions get updated automatically -->
 	<!-- Define product -->
 	<Product Id="$(var.ProductCode)"
 	         Name="!(loc.ProductName_$(var.Platform))"
@@ -22,6 +23,7 @@
 	         UpgradeCode="$(var.UpgradeCode)">
 
 		<!-- Package details -->
+		<!-- TODO: Make new GUID for new installers -->
 		<Package InstallerVersion="200"
 		         Compressed="yes"
 		         InstallScope="perMachine"
@@ -30,7 +32,8 @@
 				 Description="!(loc.Description)"
 				 Keywords="!(loc.Keywords)"
 				 Comments="!(loc.Comments_$(var.Platform))"
-				 Languages="!(loc.Language)"/>
+				 Languages="!(loc.Language)"
+				 Id="{1AC15A3E-4E23-44E6-9E39-FEB8E161025C}"/>
 
 		<!-- Message when attempting to install older version -->
 		<MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeErrorMessage)" />
