@@ -78,19 +78,19 @@
 <!--	  -->
     
 	  <!-- Retrieve assembly version -->
-    <GetAssemblyIdentity AssemblyFiles="..\GoonPlusPlus\bin\Release\win-$(Platform)\GoonPlusPlus.dll">
+    <GetAssemblyIdentity AssemblyFiles="..\GoonPlusPlus\bin\Release\net6.0\win-$(Platform)\publish\GoonPlusPlus.dll">
       <Output TaskParameter="Assemblies" ItemName="AssemblyVersion" />
     </GetAssemblyIdentity>
     <!-- Auto load build version -->
     <PropertyGroup>
-      <DefineConstants>BuildVersion=%(AssemblyVersion.Version);BasePath=..\GoonPlusPlus\bin\Release\win-$(Platform)\</DefineConstants>
+      <DefineConstants>BuildVersion=%(AssemblyVersion.Version);BasePath=..\GoonPlusPlus\bin\Release\net6.0\win-$(Platform)\publish</DefineConstants>
     </PropertyGroup>
 	  
     <!-- Rips file components from publish folder -->
-    <HeatDirectory OutputFile="ComponentsGenerated.wxs" DirectoryRefId="INSTALLFOLDER" ComponentGroupName="PublishedComponents" SuppressCom="true" Directory="..\GoonPlusPlus\bin\Release\win-$(Platform)\" SuppressFragments="true" SuppressRegistry="true" SuppressRootDirectory="true" AutoGenerateGuids="false" GenerateGuidsNow="true" ToolPath="$(WixToolPath)" PreprocessorVariable="var.BasePath" RunAsSeparateProcess="$(RunWixToolsOutOfProc)" />
+    <HeatDirectory OutputFile="ComponentsGenerated.wxs" DirectoryRefId="INSTALLFOLDER" ComponentGroupName="PublishedComponents" SuppressCom="true" Directory="..\GoonPlusPlus\bin\Release\net6.0\win-$(Platform)\publish\" SuppressFragments="true" SuppressRegistry="true" SuppressRootDirectory="true" AutoGenerateGuids="false" GenerateGuidsNow="true" ToolPath="$(WixToolPath)" PreprocessorVariable="var.BasePath" RunAsSeparateProcess="$(RunWixToolsOutOfProc)" />
   </Target>
   <Target Name="AfterBuild">
-	  <Exec Command="move bin\$(Configuration)\$(OutputName).msi bin\Goon++.v%(AssemblyVersion.Version)-$(Configuration)-$(Platform).msi" />
+	  <Exec Command="move bin\$(Platform)\$(Configuration)\$(OutputName).msi bin\Goon++.v%(AssemblyVersion.Version)-$(Configuration)-$(Platform).msi" />
 	  <Exec Command="rd /s /q bin\$(Configuration)" />
   </Target>
 </Project>
