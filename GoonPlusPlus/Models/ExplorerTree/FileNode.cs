@@ -9,4 +9,14 @@ public class FileNode : ExplorerNode
     public FileNode(string strFullPath) : base(strFullPath)
     {
     }
+
+    public static readonly string[] CompilableExtensions =
+    {
+        "java"
+    };
+    
+    public static readonly string[] RunnableExtensions =
+    {
+        "java"
+    };
 }

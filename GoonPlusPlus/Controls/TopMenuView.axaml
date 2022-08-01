@@ -40,6 +40,22 @@
                 <MenuItem Header="Cut" Command="{Binding CutText}" />
                 <MenuItem Header="Paste" Command="{Binding PasteText}" />
             </MenuItem>
+
+            <MenuItem
+                Command="{Binding Compile}"
+                IsVisible="{Binding FileCanCompile}">
+                <MenuItem.Header>
+                    <PathIcon Data="{StaticResource DocumentToolboxRegular}" />
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem
+                Command="{Binding Run}"
+                IsVisible="{Binding FileCanRun}">
+                <MenuItem.Header>
+                    <PathIcon Data="{StaticResource RunRegular}" />
+                </MenuItem.Header>
+            </MenuItem>
+
         </Menu>
     </StackPanel>
 
