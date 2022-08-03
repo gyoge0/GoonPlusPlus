@@ -19,7 +19,7 @@ namespace GoonPlusPlus
             {
                 desktop.MainWindow = new MainWindow
                 {
-                    DataContext = new MainWindowViewModel(),
+                    DataContext = new MainWindowViewModel(desktop.Args),
                 };
             }
 
