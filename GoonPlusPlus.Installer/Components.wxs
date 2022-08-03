@@ -8,6 +8,7 @@
 
 			<!-- Shortcut -->
 			<ComponentRef Id="StartMenuShortcut"/>
+			<ComponentRef Id="PathVariable"/>
 
 		</ComponentGroup>
 
@@ -28,6 +29,18 @@
 				
 				<!-- Need to remove start menu on uninstall -->
 				<RemoveFolder Id="RemoveStartMenu" Directory="InstallProgramMenuFolder" On="uninstall"/>
+			</Component>
+
+			<Component Id="PathVariable" Guid="{41909F03-B1B5-487B-8D27-02E4A5878DD4}">
+				<CreateFolder/>
+				<Environment 
+					Id="PATH" 
+					Name="PATH" 
+					Value="[INSTALLFOLDER]" 
+					Permanent="no" 
+					Part="last" 
+					Action="set" 
+					System="yes" />
 			</Component>
 
 		</DirectoryRef>
