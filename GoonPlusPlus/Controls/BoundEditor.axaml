@@ -15,13 +15,15 @@
     <!-- ReSharper disable once MarkupAttributeTypo -->
     <avaloniaEdit:TextEditor
         Name="Editor"
-        FontFamily="Jetbrains Mono,Courier New,Monospace"
         Margin="30"
-        Foreground="#BBBBBB"
         HorizontalScrollBarVisibility="Auto"
         VerticalScrollBarVisibility="Visible"
-        FontWeight="Light"
-        FontSize="14"
-        Background="Transparent"
-        ShowLineNumbers="True"/>
+
+        Background="{Binding Custom.EditorBackground}"
+        Foreground="{Binding Custom.EditorForeground}"
+        ShowLineNumbers="{Binding Custom.EditorShowLineNumbers}"
+        FontFamily="{Binding Custom.EditorFontFamily}"
+        FontSize="{Binding Custom.EditorFontSize}"
+        FontStyle="{Binding Custom.EditorFontStyle}"
+        FontWeight="{Binding Custom.EditorFontWeight}" />
 </UserControl>
