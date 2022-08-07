@@ -71,26 +71,26 @@
                 IsEnabled="{Binding RunProcess, Converter={x:Static ObjectConverters.IsNotNull}}"
                 BorderThickness="0, 0, 0, 2"
 
-                Background="{Binding Custom.CompileBackground}"
-                Foreground="{Binding Custom.CompileForeground}"
-                BorderBrush="{Binding Custom.CompileAccent}"
-                FontFamily="{Binding Custom.CompileFontFamily}"
-                FontSize="{Binding Custom.CompileFontSize}"
-                FontStyle="{Binding Custom.CompileFontStyle}"
-                FontWeight="{Binding Custom.CompileFontWeight}">
+                Background="{Binding Custom.RunBackground}"
+                Foreground="{Binding Custom.RunForeground}"
+                BorderBrush="{Binding Custom.RunAccent}"
+                FontFamily="{Binding Custom.RunFontFamily}"
+                FontSize="{Binding Custom.RunFontSize}"
+                FontStyle="{Binding Custom.RunFontStyle}"
+                FontWeight="{Binding Custom.RunFontWeight}">
 
                 <controls:RunOutputBox.Styles>
                     <Style Selector="TextBox:disabled /template/ Border#PART_BorderElement">
-                        <Setter Property="Background" Value="{Binding Custom.CompileBackground}" />
-                        <Setter Property="BorderBrush" Value="{Binding Custom.CompileAccent}" />
+                        <Setter Property="Background" Value="{Binding Custom.RunBackground}" />
+                        <Setter Property="BorderBrush" Value="{Binding Custom.RunAccent}" />
                     </Style>
                     <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                        <Setter Property="Background" Value="{Binding Custom.CompileBackground}" />
-                        <Setter Property="BorderBrush" Value="{Binding Custom.CompileAccent}" />
+                        <Setter Property="Background" Value="{Binding Custom.RunBackground}" />
+                        <Setter Property="BorderBrush" Value="{Binding Custom.RunAccent}" />
                     </Style>
                     <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
-                        <Setter Property="Background" Value="{Binding Custom.CompileBackground}" />
-                        <Setter Property="BorderBrush" Value="{Binding Custom.CompileAccent}" />
+                        <Setter Property="Background" Value="{Binding Custom.RunBackground}" />
+                        <Setter Property="BorderBrush" Value="{Binding Custom.RunAccent}" />
                         <Setter Property="BorderThickness" Value="0, 0, 0, 2" />
                     </Style>
                 </controls:RunOutputBox.Styles>
