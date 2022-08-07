@@ -16,7 +16,7 @@
             <StackPanel.Styles>
                 <Style Selector="Button">
                     <Setter Property="Background" Value="{Binding Custom.FileExplorerButtonBackground}" />
-                    <Setter Property="Foreground" Value="{Binding Custom.FileExplorerButtonBackground}" />
+                    <Setter Property="Foreground" Value="{Binding Custom.FileExplorerButtonForeground}" />
                     <Setter Property="BorderBrush" Value="{Binding Custom.FileExplorerButtonAccent}" />
                     <Setter Property="BorderThickness" Value="0, 0, 0, 2" />
                     <Setter Property="Margin" Value="2, 0" />
@@ -28,7 +28,7 @@
                 </Style>
                 <Style Selector="Button:pressed">
                     <Setter Property="Background" Value="{Binding Custom.FileExplorerButtonPressedBackground}" />
-                    <Setter Property="Foreground" Value="{Binding Custom.FileExplorerButtonPressedBackground}" />
+                    <Setter Property="Foreground" Value="{Binding Custom.FileExplorerButtonPressedForeground}" />
                     <Setter Property="BorderBrush" Value="{Binding Custom.FileExplorerButtonPressedAccent}" />
                     <Setter Property="BorderThickness" Value="0, 0, 0, 2" />
                 </Style>
