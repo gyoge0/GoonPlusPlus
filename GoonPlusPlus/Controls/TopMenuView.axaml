@@ -39,6 +39,10 @@
                 <MenuItem Header="Copy" Command="{Binding CopyText}" />
                 <MenuItem Header="Cut" Command="{Binding CutText}" />
                 <MenuItem Header="Paste" Command="{Binding PasteText}" />
+                <MenuItem Header="Preferences">
+                    <MenuItem Header="Edit Config File" Command="{Binding EditCustomCfg}"/>
+                    <MenuItem Header="Reload Preferences" Command="{Binding ReloadCustomCfg}"/>
+                </MenuItem>
             </MenuItem>
 
             <MenuItem
