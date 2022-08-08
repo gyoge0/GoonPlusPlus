@@ -1,133 +1,85 @@
-﻿using Avalonia.Media;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using Avalonia.Logging;
+using Avalonia.Media;
+using GoonPlusPlus.Util.Serialization;
 using Newtonsoft.Json;
-using ReactiveUI;
+using Newtonsoft.Json.Serialization;
 
 namespace GoonPlusPlus.ViewModels;
 
-public class CustomCfg : ViewModelBase
+[JsonObject(MemberSerialization.OptOut, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
+[SuppressMessage("ReSharper", "StringLiteralTypo")]
+public class CustomCfg
 {
-    [JsonIgnore] public static CustomCfg Instance { get; } = new();
+    [JsonIgnore] public static CustomCfg Instance { get; set; } = new();
+
+    [JsonIgnore] public string GppAppDataPath { get; private set; } = null!;
+    [JsonIgnore] public string ConfigFilePath { get; private set; } = null!;
+
+    public void MakePaths()
+    {
+        GppAppDataPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "Goon++"
+        );
+        ConfigFilePath = Path.Combine(GppAppDataPath, "config.json");
+
+        if (!Directory.Exists(GppAppDataPath)) Directory.CreateDirectory(GppAppDataPath);
+        // ReSharper disable once InvertIf
+        if (!File.Exists(ConfigFilePath))
+        {
+            using var writer = File.CreateText(ConfigFilePath);
+            writer.WriteLine("{}");
+        }
+    }
+
+    public void LoadConfig()
+    {
+        try
+        {
+            JsonConvert.PopulateObject(File.ReadAllText(ConfigFilePath), this);
+        }
+        catch (JsonSerializationException)
+        {
+            Logger.TryGet(LogEventLevel.Warning, LogArea.Binding)?.Log(this, "Invalid JSON config found");
+        }
+    }
+
+    public void SaveConfig() => File.WriteAllText(
+        ConfigFilePath,
+        JsonConvert.SerializeObject(
+            this,
+            Formatting.Indented,
+            new CustomCfgSerializer()
+        )
+    );
 
     private CustomCfg()
     {
+        MakePaths();
+        LoadConfig();
+        SaveConfig();
     }
-
-    #region Fields
-
-    private IBrush? _editorBackground = Brushes.Transparent;
-    private IBrush? _editorForeground = SolidColorBrush.Parse("#bbbbbb");
-    private bool _editorShowLineNumbers = true;
-    private FontFamily _editorFontFamily = "Jetbrains Mono,Courier New,Monospace";
-    private double _editorFontSize = 14;
-    private FontStyle _editorFontStyle = FontStyle.Normal;
-    private FontWeight _editorFontWeight = FontWeight.Light;
-    private IBrush? _compileForeground = Brushes.White;
-    private IBrush? _compileBackground = Brushes.Transparent;
-    private IBrush? _compileAccent = SolidColorBrush.Parse("#0078d7");
-    private FontFamily _compileFontFamily = "Consolas";
-    private double _compileFontSize = 14;
-    private FontStyle _compileFontStyle = FontStyle.Normal;
-    private FontWeight _compileFontWeight = FontWeight.Normal;
-    private IBrush? _runForeground = Brushes.White;
-    private IBrush? _runBackground = Brushes.Transparent;
-    private IBrush? _runAccent = SolidColorBrush.Parse("#0078d7");
-    private FontFamily _runFontFamily = "Consolas";
-    private double _runFontSize = 14;
-    private FontStyle _runFontStyle = FontStyle.Normal;
-    private FontWeight _runFontWeight = FontWeight.Normal;
-    private IBrush? _fileExplorerButtonBackground = Brushes.Transparent;
-    private IBrush? _fileExplorerButtonForeground = Brushes.White;
-    private IBrush? _fileExplorerButtonAccent = SolidColorBrush.Parse("#0078d7");
-    private IBrush? _fileExplorerButtonHoverBackground = Brushes.DimGray;
-    private IBrush? _fileExplorerButtonHoverAccent = SolidColorBrush.Parse("#0078d7");
-    private IBrush? _fileExplorerButtonPressedBackground = Brushes.Gray;
-    private IBrush? _fileExplorerButtonPressedForeground = Brushes.White;
-    private IBrush? _fileExplorerButtonPressedAccent = SolidColorBrush.Parse("#0078d7");
-    private IBrush? _fileExplorerItemBackground = Brushes.Transparent;
-    private IBrush? _fileExplorerItemForeground = Brushes.White;
-    private FontFamily _fileExplorerItemFontFamily = FontFamily.Default;
-    private double _fileExplorerItemFontSize = 18;
-    private FontStyle _fileExplorerItemFontStyle = FontStyle.Normal;
-    private FontWeight _fileExplorerItemFontWeight = FontWeight.ExtraLight;
-    private IBrush? _fileExplorerItemHoverForeground = Brushes.White;
-    private FontFamily _fileExplorerItemHoverFontFamily = FontFamily.Default;
-    private double _fileExplorerItemHoverFontSize = 18;
-    private FontStyle _fileExplorerItemHoverFontStyle = FontStyle.Normal;
-    private FontWeight _fileExplorerItemHoverFontWeight = FontWeight.ExtraLight;
-    private IBrush? _fileExplorerItemSelectedBackground = SolidColorBrush.Parse("#0078d7");
-    private IBrush? _fileExplorerItemSelectedForeground = Brushes.White;
-    private FontFamily _fileExplorerItemSelectedFontFamily = FontFamily.Default;
-    private double _fileExplorerItemSelectedFontSize = 18;
-    private FontStyle _fileExplorerItemSelectedFontStyle = FontStyle.Normal;
-    private FontWeight _fileExplorerItemSelectedFontWeight = FontWeight.ExtraLight;
-    private IBrush? _tabBarBackground = Brushes.Transparent;
-    private IBrush? _tabBarHeaderBackground = Brushes.Transparent;
-    private IBrush? _tabBarHeaderFontBackground = Brushes.Transparent;
-    private IBrush? _tabBarHeaderFontForeground = Brushes.White;
-    private FontFamily _tabBarHeaderFontFamily = FontFamily.Default;
-    private double _tabBarHeaderFontSize = 28;
-    private FontStyle _tabBarHeaderFontStyle = FontStyle.Normal;
-    private FontWeight _tabBarHeaderFontWeight = FontWeight.SemiLight;
-    private IBrush? _tabBarHeaderButtonBackground = Brushes.Transparent;
-    private IBrush? _tabBarHeaderButtonForeground = Brushes.White;
-    private double _tabBarHeaderButtonSize = 28;
-    private FontWeight _tabBarHeaderButtonWeight = FontWeight.SemiLight;
-    private IBrush? _tabBarHeaderButtonHoverBackground = Brushes.DimGray;
-    private IBrush? _tabBarHeaderButtonHoverForeground = Brushes.White;
-    private double _tabBarHeaderButtonHoverSize = 28;
-    private FontWeight _tabBarHeaderButtonHoverWeight = FontWeight.SemiLight;
-    private IBrush? _tabBarHeaderButtonPressedBackground = Brushes.LightGray;
-    private IBrush? _tabBarHeaderButtonPressedForeground = Brushes.White;
-    private double _tabBarHeaderButtonPressedSize = 28;
-    private FontWeight _tabBarHeaderButtonPressedWeight = FontWeight.SemiLight;
-
-    #endregion
 
     #region Editor
 
-    public IBrush? EditorBackground
-    {
-        get => _editorBackground;
-        set => this.RaiseAndSetIfChanged(ref _editorBackground, value);
-    }
+    [CustomCfgDefault("\"Transparent\"")] public IBrush? EditorBackground { get; set; } = Brushes.Transparent;
 
-    public IBrush? EditorForeground
-    {
-        get => _editorForeground;
-        set => this.RaiseAndSetIfChanged(ref _editorForeground, value);
-    }
+    [CustomCfgDefault("\"#ffbbbbbb\"")]
+    public IBrush? EditorForeground { get; set; } = SolidColorBrush.Parse("#ffbbbbbb");
 
-    public bool EditorShowLineNumbers
-    {
-        get => _editorShowLineNumbers;
-        set => this.RaiseAndSetIfChanged(ref _editorShowLineNumbers, value);
-    }
+    [CustomCfgDefault("true")] public bool EditorShowLineNumbers { get; set; } = true;
 
     #region EditorFont
 
-    public FontFamily EditorFontFamily
-    {
-        get => _editorFontFamily;
-        set => this.RaiseAndSetIfChanged(ref _editorFontFamily, value);
-    }
+    [CustomCfgDefault("\"Jetbrains Mono,Courier New,Monospace\"")]
+    public FontFamily EditorFontFamily { get; set; } = "Jetbrains Mono,Courier New,Monospace";
 
-    public double EditorFontSize
-    {
-        get => _editorFontSize;
-        set => this.RaiseAndSetIfChanged(ref _editorFontSize, value);
-    }
-
-    public FontStyle EditorFontStyle
-    {
-        get => _editorFontStyle;
-        set => this.RaiseAndSetIfChanged(ref _editorFontStyle, value);
-    }
-
-    public FontWeight EditorFontWeight
-    {
-        get => _editorFontWeight;
-        set => this.RaiseAndSetIfChanged(ref _editorFontWeight, value);
-    }
+    [CustomCfgDefault("14")] public double EditorFontSize { get; set; } = 14;
+    [CustomCfgDefault("\"Normal\"")] public FontStyle EditorFontStyle { get; set; } = FontStyle.Normal;
+    [CustomCfgDefault("\"Light\"")] public FontWeight EditorFontWeight { get; set; } = FontWeight.Light;
 
     #endregion
 
@@ -135,57 +87,26 @@ public class CustomCfg : ViewModelBase
 
     #region Compile
 
-    public IBrush? CompileForeground
-    {
-        get => _compileForeground;
-        set => this.RaiseAndSetIfChanged(ref _compileForeground, value);
-    }
+    [CustomCfgDefault("\"White\"")] public IBrush? CompileForeground { get; set; } = Brushes.White;
 
     #region CompileBackground
 
-    public IBrush? CompileBackground
-    {
-        get => _compileBackground;
-        set => this.RaiseAndSetIfChanged(ref _compileBackground, value);
-    }
+    [CustomCfgDefault("\"Transparent\"")] public IBrush? CompileBackground { get; set; } = Brushes.Transparent;
 
     #endregion
 
     #region CompileAccent
 
-    public IBrush? CompileAccent
-    {
-        get => _compileAccent;
-        set => this.RaiseAndSetIfChanged(ref _compileAccent, value);
-    }
+    [CustomCfgDefault("\"#ff0078d7\"")] public IBrush? CompileAccent { get; set; } = SolidColorBrush.Parse("#ff0078d7");
 
     #endregion
 
     #region CompileFont
 
-    public FontFamily CompileFontFamily
-    {
-        get => _compileFontFamily;
-        set => this.RaiseAndSetIfChanged(ref _compileFontFamily, value);
-    }
-
-    public double CompileFontSize
-    {
-        get => _compileFontSize;
-        set => this.RaiseAndSetIfChanged(ref _compileFontSize, value);
-    }
-
-    public FontStyle CompileFontStyle
-    {
-        get => _compileFontStyle;
-        set => this.RaiseAndSetIfChanged(ref _compileFontStyle, value);
-    }
-
-    public FontWeight CompileFontWeight
-    {
-        get => _compileFontWeight;
-        set => this.RaiseAndSetIfChanged(ref _compileFontWeight, value);
-    }
+    [CustomCfgDefault("\"Consolas\"")] public FontFamily CompileFontFamily { get; set; } = "Consolas";
+    [CustomCfgDefault("14")] public double CompileFontSize { get; set; } = 14;
+    [CustomCfgDefault("\"Normal\"")] public FontStyle CompileFontStyle { get; set; } = FontStyle.Normal;
+    [CustomCfgDefault("\"Normal\"")] public FontWeight CompileFontWeight { get; set; } = FontWeight.Normal;
 
     #endregion
 
@@ -193,57 +114,26 @@ public class CustomCfg : ViewModelBase
 
     #region Run
 
-    public IBrush? RunForeground
-    {
-        get => _runForeground;
-        set => this.RaiseAndSetIfChanged(ref _runForeground, value);
-    }
+    [CustomCfgDefault("\"White\"")] public IBrush? RunForeground { get; set; } = Brushes.White;
 
     #region RunBackground
 
-    public IBrush? RunBackground
-    {
-        get => _runBackground;
-        set => this.RaiseAndSetIfChanged(ref _runBackground, value);
-    }
+    [CustomCfgDefault("\"Transparent\"")] public IBrush? RunBackground { get; set; } = Brushes.Transparent;
 
     #endregion
 
     #region RunAccent
 
-    public IBrush? RunAccent
-    {
-        get => _runAccent;
-        set => this.RaiseAndSetIfChanged(ref _runAccent, value);
-    }
+    [CustomCfgDefault("\"#ff0078d7\"")] public IBrush? RunAccent { get; set; } = SolidColorBrush.Parse("#ff0078d7");
 
     #endregion
 
     #region RunFont
 
-    public FontFamily RunFontFamily
-    {
-        get => _runFontFamily;
-        set => this.RaiseAndSetIfChanged(ref _runFontFamily, value);
-    }
-
-    public double RunFontSize
-    {
-        get => _runFontSize;
-        set => this.RaiseAndSetIfChanged(ref _runFontSize, value);
-    }
-
-    public FontStyle RunFontStyle
-    {
-        get => _runFontStyle;
-        set => this.RaiseAndSetIfChanged(ref _runFontStyle, value);
-    }
-
-    public FontWeight RunFontWeight
-    {
-        get => _runFontWeight;
-        set => this.RaiseAndSetIfChanged(ref _runFontWeight, value);
-    }
+    [CustomCfgDefault("\"Consolas\"")] public FontFamily RunFontFamily { get; set; } = "Consolas";
+    [CustomCfgDefault("14")] public double RunFontSize { get; set; } = 14;
+    [CustomCfgDefault("\"Normal\"")] public FontStyle RunFontStyle { get; set; } = FontStyle.Normal;
+    [CustomCfgDefault("\"Normal\"")] public FontWeight RunFontWeight { get; set; } = FontWeight.Normal;
 
     #endregion
 
@@ -253,140 +143,66 @@ public class CustomCfg : ViewModelBase
 
     #region FileExplorerButton
 
-    public IBrush? FileExplorerButtonBackground
-    {
-        get => _fileExplorerButtonBackground;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerButtonBackground, value);
-    }
+    [CustomCfgDefault("\"Transparent\"")]
+    public IBrush? FileExplorerButtonBackground { get; set; } = Brushes.Transparent;
 
-    public IBrush? FileExplorerButtonForeground
-    {
-        get => _fileExplorerButtonForeground;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerButtonForeground, value);
-    }
+    [CustomCfgDefault("\"White\"")] public IBrush? FileExplorerButtonForeground { get; set; } = Brushes.White;
 
-    public IBrush? FileExplorerButtonAccent
-    {
-        get => _fileExplorerButtonAccent;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerButtonAccent, value);
-    }
+    [CustomCfgDefault("\"#ff0078d7\"")]
+    public IBrush? FileExplorerButtonAccent { get; set; } = SolidColorBrush.Parse("#ff0078d7");
 
     #endregion
 
     #region FileExplorerButtonHover
 
-    public IBrush? FileExplorerButtonHoverBackground
-    {
-        get => _fileExplorerButtonHoverBackground;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerButtonHoverBackground, value);
-    }
+    [CustomCfgDefault("\"DimGray\"")] public IBrush? FileExplorerButtonHoverBackground { get; set; } = Brushes.DimGray;
 
-    public IBrush? FileExplorerButtonHoverAccent
-    {
-        get => _fileExplorerButtonHoverAccent;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerButtonHoverAccent, value);
-    }
+    [CustomCfgDefault("\"#ff0078d7\"")]
+    public IBrush? FileExplorerButtonHoverAccent { get; set; } = SolidColorBrush.Parse("#ff0078d7");
 
     #endregion
 
     #region FileExplorerButtonPressed
 
-    public IBrush? FileExplorerButtonPressedBackground
-    {
-        get => _fileExplorerButtonPressedBackground;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerButtonPressedBackground, value);
-    }
+    [CustomCfgDefault("\"Gray\"")] public IBrush? FileExplorerButtonPressedBackground { get; set; } = Brushes.Gray;
+    [CustomCfgDefault("\"White\"")] public IBrush? FileExplorerButtonPressedForeground { get; set; } = Brushes.White;
 
-    public IBrush? FileExplorerButtonPressedForeground
-    {
-        get => _fileExplorerButtonPressedForeground;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerButtonPressedForeground, value);
-    }
-
-    public IBrush? FileExplorerButtonPressedAccent
-    {
-        get => _fileExplorerButtonPressedAccent;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerButtonPressedAccent, value);
-    }
+    [CustomCfgDefault("\"#ff0078d7\"")]
+    public IBrush? FileExplorerButtonPressedAccent { get; set; } = SolidColorBrush.Parse("#ff0078d7");
 
     #endregion
 
     #region FileExplorerItem
 
-    public IBrush? FileExplorerItemBackground
-    {
-        get => _fileExplorerItemBackground;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemBackground, value);
-    }
-
-    public IBrush? FileExplorerItemForeground
-    {
-        get => _fileExplorerItemForeground;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemForeground, value);
-    }
+    [CustomCfgDefault("\"Transparent\"")] public IBrush? FileExplorerItemBackground { get; set; } = Brushes.Transparent;
+    [CustomCfgDefault("\"White\"")] public IBrush? FileExplorerItemForeground { get; set; } = Brushes.White;
 
     #region FileExplorerItemFont
 
-    public FontFamily FileExplorerItemFontFamily
-    {
-        get => _fileExplorerItemFontFamily;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemFontFamily, value);
-    }
+    [CustomCfgDefault("\"Segoe UI\"")] public FontFamily FileExplorerItemFontFamily { get; set; } = "Segoe UI";
+    [CustomCfgDefault("18")] public double FileExplorerItemFontSize { get; set; } = 18;
+    [CustomCfgDefault("\"Normal\"")] public FontStyle FileExplorerItemFontStyle { get; set; } = FontStyle.Normal;
 
-    public double FileExplorerItemFontSize
-    {
-        get => _fileExplorerItemFontSize;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemFontSize, value);
-    }
-
-    public FontStyle FileExplorerItemFontStyle
-    {
-        get => _fileExplorerItemFontStyle;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemFontStyle, value);
-    }
-
-    public FontWeight FileExplorerItemFontWeight
-    {
-        get => _fileExplorerItemFontWeight;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemFontWeight, value);
-    }
+    [CustomCfgDefault("\"ExtraLight\"")]
+    public FontWeight FileExplorerItemFontWeight { get; set; } = FontWeight.ExtraLight;
 
     #endregion
 
 
     #region FileExplorerItemHover
 
-    public IBrush? FileExplorerItemHoverForeground
-    {
-        get => _fileExplorerItemHoverForeground;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemHoverForeground, value);
-    }
+    [CustomCfgDefault("\"DimGray\"")] public IBrush? FileExplorerItemHoverBackground { get; set; } = Brushes.DimGray;
+
+    [CustomCfgDefault("\"White\"")] public IBrush? FileExplorerItemHoverForeground { get; set; } = Brushes.White;
 
     #region FileExplorerItemHoverFont
 
-    public FontFamily FileExplorerItemHoverFontFamily
-    {
-        get => _fileExplorerItemHoverFontFamily;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemHoverFontFamily, value);
-    }
+    [CustomCfgDefault("\"Segoe UI\"")] public FontFamily FileExplorerItemHoverFontFamily { get; set; } = "Segoe UI";
+    [CustomCfgDefault("18")] public double FileExplorerItemHoverFontSize { get; set; } = 18;
+    [CustomCfgDefault("\"Normal\"")] public FontStyle FileExplorerItemHoverFontStyle { get; set; } = FontStyle.Normal;
 
-    public double FileExplorerItemHoverFontSize
-    {
-        get => _fileExplorerItemHoverFontSize;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemHoverFontSize, value);
-    }
-
-    public FontStyle FileExplorerItemHoverFontStyle
-    {
-        get => _fileExplorerItemHoverFontStyle;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemHoverFontStyle, value);
-    }
-
-    public FontWeight FileExplorerItemHoverFontWeight
-    {
-        get => _fileExplorerItemHoverFontWeight;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemHoverFontWeight, value);
-    }
+    [CustomCfgDefault("\"ExtraLight\"")]
+    public FontWeight FileExplorerItemHoverFontWeight { get; set; } = FontWeight.ExtraLight;
 
     #endregion
 
@@ -395,43 +211,21 @@ public class CustomCfg : ViewModelBase
 
     #region FileExplorerItemSelected
 
-    public IBrush? FileExplorerItemSelectedBackground
-    {
-        get => _fileExplorerItemSelectedBackground;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemSelectedBackground, value);
-    }
+    [CustomCfgDefault("\"#ff0078d7\"")]
+    public IBrush? FileExplorerItemSelectedBackground { get; set; } = SolidColorBrush.Parse("#ff0078d7");
 
-    public IBrush? FileExplorerItemSelectedForeground
-    {
-        get => _fileExplorerItemSelectedForeground;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemSelectedForeground, value);
-    }
+    [CustomCfgDefault("\"White\"")] public IBrush? FileExplorerItemSelectedForeground { get; set; } = Brushes.White;
 
     #region FileExplorerItemSelectedFont
 
-    public FontFamily FileExplorerItemSelectedFontFamily
-    {
-        get => _fileExplorerItemSelectedFontFamily;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemSelectedFontFamily, value);
-    }
+    [CustomCfgDefault("\"Segoe UI\"")] public FontFamily FileExplorerItemSelectedFontFamily { get; set; } = "Segoe UI";
+    [CustomCfgDefault("18")] public double FileExplorerItemSelectedFontSize { get; set; } = 18;
 
-    public double FileExplorerItemSelectedFontSize
-    {
-        get => _fileExplorerItemSelectedFontSize;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemSelectedFontSize, value);
-    }
+    [CustomCfgDefault("\"Normal\"")]
+    public FontStyle FileExplorerItemSelectedFontStyle { get; set; } = FontStyle.Normal;
 
-    public FontStyle FileExplorerItemSelectedFontStyle
-    {
-        get => _fileExplorerItemSelectedFontStyle;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemSelectedFontStyle, value);
-    }
-
-    public FontWeight FileExplorerItemSelectedFontWeight
-    {
-        get => _fileExplorerItemSelectedFontWeight;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerItemSelectedFontWeight, value);
-    }
+    [CustomCfgDefault("\"ExtraLight\"")]
+    public FontWeight FileExplorerItemSelectedFontWeight { get; set; } = FontWeight.ExtraLight;
 
     #endregion
 
@@ -443,139 +237,57 @@ public class CustomCfg : ViewModelBase
 
     #region TabBar
 
-    public IBrush? TabBarBackground
-    {
-        get => _tabBarBackground;
-        set => this.RaiseAndSetIfChanged(ref _tabBarBackground, value);
-    }
+    [CustomCfgDefault("\"Transparent\"")] public IBrush? TabBarBackground { get; set; } = Brushes.Transparent;
 
     #region TabBarHeader
 
-    public IBrush? TabBarHeaderBackground
-    {
-        get => _tabBarHeaderBackground;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderBackground, value);
-    }
+    [CustomCfgDefault("\"Transparent\"")] public IBrush? TabBarHeaderBackground { get; set; } = Brushes.Transparent;
 
     #region TabBarHeaderFont
 
-    public IBrush? TabBarHeaderFontBackground
-    {
-        get => _tabBarHeaderFontBackground;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderFontBackground, value);
-    }
+    [CustomCfgDefault("\"Transparent\"")] public IBrush? TabBarHeaderFontBackground { get; set; } = Brushes.Transparent;
+    [CustomCfgDefault("\"White\"")] public IBrush? TabBarHeaderFontForeground { get; set; } = Brushes.White;
 
-    public IBrush? TabBarHeaderFontForeground
-    {
-        get => _tabBarHeaderFontForeground;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderFontForeground, value);
-    }
+    [CustomCfgDefault("\"Segoe UI\"")] public FontFamily TabBarHeaderFontFamily { get; set; } = "Segoe UI";
+    [CustomCfgDefault("28")] public double TabBarHeaderFontSize { get; set; } = 28;
+    [CustomCfgDefault("\"Normal\"")] public FontStyle TabBarHeaderFontStyle { get; set; } = FontStyle.Normal;
 
-    public FontFamily TabBarHeaderFontFamily
-    {
-        get => _tabBarHeaderFontFamily;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderFontFamily, value);
-    }
-
-    public double TabBarHeaderFontSize
-    {
-        get => _tabBarHeaderFontSize;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderFontSize, value);
-    }
-
-    public FontStyle TabBarHeaderFontStyle
-    {
-        get => _tabBarHeaderFontStyle;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderFontStyle, value);
-    }
-
-    public FontWeight TabBarHeaderFontWeight
-    {
-        get => _tabBarHeaderFontWeight;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderFontWeight, value);
-    }
+    [CustomCfgDefault("\"ExtraLight\"")] public FontWeight TabBarHeaderFontWeight { get; set; } = FontWeight.ExtraLight;
 
     #endregion
 
     #region TabBarHeaderButton
 
-    public IBrush? TabBarHeaderButtonBackground
-    {
-        get => _tabBarHeaderButtonBackground;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderButtonBackground, value);
-    }
+    [CustomCfgDefault("\"Transparent\"")]
+    public IBrush? TabBarHeaderButtonBackground { get; set; } = Brushes.Transparent;
 
-    public IBrush? TabBarHeaderButtonForeground
-    {
-        get => _tabBarHeaderButtonForeground;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderButtonForeground, value);
-    }
+    [CustomCfgDefault("\"White\"")] public IBrush? TabBarHeaderButtonForeground { get; set; } = Brushes.White;
+    [CustomCfgDefault("28")] public double TabBarHeaderButtonSize { get; set; } = 28;
 
-    public double TabBarHeaderButtonSize
-    {
-        get => _tabBarHeaderButtonSize;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderButtonSize, value);
-    }
-
-    public FontWeight TabBarHeaderButtonWeight
-    {
-        get => _tabBarHeaderButtonWeight;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderButtonWeight, value);
-    }
+    [CustomCfgDefault("\"ExtraLight\"")]
+    public FontWeight TabBarHeaderButtonWeight { get; set; } = FontWeight.ExtraLight;
 
     #region TabBarHeaderButtonHover
 
-    public IBrush? TabBarHeaderButtonHoverBackground
-    {
-        get => _tabBarHeaderButtonHoverBackground;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderButtonHoverBackground, value);
-    }
+    [CustomCfgDefault("\"DimGray\"")] public IBrush? TabBarHeaderButtonHoverBackground { get; set; } = Brushes.DimGray;
+    [CustomCfgDefault("\"White\"")] public IBrush? TabBarHeaderButtonHoverForeground { get; set; } = Brushes.White;
+    [CustomCfgDefault("28")] public double TabBarHeaderButtonHoverSize { get; set; } = 28;
 
-    public IBrush? TabBarHeaderButtonHoverForeground
-    {
-        get => _tabBarHeaderButtonHoverForeground;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderButtonHoverForeground, value);
-    }
-
-    public double TabBarHeaderButtonHoverSize
-    {
-        get => _tabBarHeaderButtonHoverSize;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderButtonHoverSize, value);
-    }
-
-    public FontWeight TabBarHeaderButtonHoverWeight
-    {
-        get => _tabBarHeaderButtonHoverWeight;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderButtonHoverWeight, value);
-    }
+    [CustomCfgDefault("\"ExtraLight\"")]
+    public FontWeight TabBarHeaderButtonHoverWeight { get; set; } = FontWeight.ExtraLight;
 
     #endregion
 
     #region TabBarHeaderButtonPressed
 
-    public IBrush? TabBarHeaderButtonPressedBackground
-    {
-        get => _tabBarHeaderButtonPressedBackground;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderButtonPressedBackground, value);
-    }
+    [CustomCfgDefault("\"LightGray\"")]
+    public IBrush? TabBarHeaderButtonPressedBackground { get; set; } = Brushes.LightGray;
 
-    public IBrush? TabBarHeaderButtonPressedForeground
-    {
-        get => _tabBarHeaderButtonPressedForeground;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderButtonPressedForeground, value);
-    }
+    [CustomCfgDefault("\"White\"")] public IBrush? TabBarHeaderButtonPressedForeground { get; set; } = Brushes.White;
+    [CustomCfgDefault("28")] public double TabBarHeaderButtonPressedSize { get; set; } = 28;
 
-    public double TabBarHeaderButtonPressedSize
-    {
-        get => _tabBarHeaderButtonPressedSize;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderButtonPressedSize, value);
-    }
-
-    public FontWeight TabBarHeaderButtonPressedWeight
-    {
-        get => _tabBarHeaderButtonPressedWeight;
-        set => this.RaiseAndSetIfChanged(ref _tabBarHeaderButtonPressedWeight, value);
-    }
+    [CustomCfgDefault("\"ExtraLight\"")]
+    public FontWeight TabBarHeaderButtonPressedWeight { get; set; } = FontWeight.ExtraLight;
 
     #endregion
 
