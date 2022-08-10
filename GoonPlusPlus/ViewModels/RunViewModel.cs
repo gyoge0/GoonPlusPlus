@@ -72,8 +72,7 @@ public class RunViewModel : ViewModelBase
 
     #region StandardBuffers
 
-    public SourceList<string> StdOut { get; } = new();
-    public SourceList<string> StdErr { get; } = new();
+    public SourceList<string> Output { get; } = new();
     public SourceList<string> StdIn { get; } = new();
 
     #endregion
@@ -93,7 +92,7 @@ public class RunViewModel : ViewModelBase
                 StdIn.Clear();
             });
 
-        StdOut
+        Output
             .Connect()
             .OnItemAdded(l =>
             {
