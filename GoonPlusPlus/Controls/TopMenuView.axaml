@@ -53,7 +53,8 @@
                     IsEnabled="{Binding OpenProject, Converter={x:Static BoolConverters.Not}}" />
                 <MenuItem
                     Header="Configure" Command="{Binding Configure}"
-                    IsEnabled="{Binding OpenProject, Converter={x:Static BoolConverters.Not}}" />
+                    IsEnabled="{Binding OpenProject, Converter={x:Static BoolConverters.Not}}"
+                    CommandParameter="{Binding $parent[Window]}" />
             </MenuItem>
 
             <MenuItem

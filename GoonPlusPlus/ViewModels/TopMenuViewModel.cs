@@ -13,6 +13,7 @@ using DynamicData.Binding;
 using GoonPlusPlus.Models;
 using GoonPlusPlus.Models.ExplorerTree;
 using GoonPlusPlus.Util;
+using GoonPlusPlus.Views;
 using ReactiveUI;
 
 namespace GoonPlusPlus.ViewModels;
@@ -132,8 +133,7 @@ public class TopMenuViewModel : ViewModelBase
         WorkspaceViewModel.Instance.Workspace = workspace;
     });
 
-    public ReactiveCommand<Window, Unit> Open { get; } = ReactiveCommand.CreateFromTask(async
-        (Window source) =>
+    public ReactiveCommand<Window, Unit> Open { get; } = ReactiveCommand.CreateFromTask(async (Window source) =>
     {
         var selected = await new OpenFileDialog
         {
@@ -163,7 +163,12 @@ public class TopMenuViewModel : ViewModelBase
     {
         var proj = WorkspaceViewModel.Instance.Workspace!;
         proj.Save(Path.Join(proj.RootPath, "wksp.gpp"));
+        WorkspaceViewModel.Instance.Workspace = null;
     });
+
+    public ReactiveCommand<Window, Unit> Configure { get; } = ReactiveCommand.CreateFromTask(async (Window source)
+        => await new WorkspaceEditor().ShowDialog(source));
+
 
     private bool _fileCanCompile;
     private bool _fileCanRun;
