@@ -222,7 +222,7 @@ public class TopMenuViewModel : ViewModelBase
                 var sb = new StringBuilder();
                 sb.Append($"\"{wksp.OutputDir};");
 
-                wksp.Classpath.ForEach(d => sb.Append($"{d};"));
+                wksp.Classpath.Items.ToList().ForEach(d => sb.Append($"{d};"));
                 sb.Append('\"');
 
                 args.Add(sb.ToString());
@@ -266,7 +266,7 @@ public class TopMenuViewModel : ViewModelBase
         {
             sb.Append(" -cp \"");
             sb.Append($"{wksp.OutputDir};");
-            wksp.Classpath.ForEach(j => sb.Append(j + ";"));
+            wksp.Classpath.Items.ToList().ForEach(j => sb.Append(j + ";"));
             sb.Append("\" ");
         }
 
