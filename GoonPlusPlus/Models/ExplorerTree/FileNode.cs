@@ -2,14 +2,6 @@
 
 public class FileNode : ExplorerNode
 {
-    private readonly bool _isExpanded;
-
-    public bool IsExpanded => _isExpanded;
-
-    public FileNode(string strFullPath) : base(strFullPath)
-    {
-    }
-
     public static readonly string[] CompilableExtensions =
     {
         "java"
@@ -19,4 +11,10 @@ public class FileNode : ExplorerNode
     {
         "java"
     };
+
+    public FileNode(string strFullPath) : base(strFullPath)
+    {
+    }
+
+    public bool IsExpanded { get; }
 }

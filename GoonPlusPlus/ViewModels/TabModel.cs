@@ -14,31 +14,9 @@ namespace GoonPlusPlus.ViewModels;
 [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
 public class TabModel : ViewModelBase, IEquatable<TabModel>
 {
-    private string _name = null!; // will be set by Name.set
-    private string? _extension;
     private string _content = null!; // will be set by Content.set
-    [JsonProperty] public string? Path { get; private set; }
-
-    [JsonProperty]
-    public string Name
-    {
-        get => _name;
-        set => this.RaiseAndSetIfChanged(ref _name, value);
-    }
-
-    public string? Extension
-    {
-        get => _extension;
-        set => this.RaiseAndSetIfChanged(ref _extension, value);
-    }
-
-    public string Content
-    {
-        get => _content;
-        set => this.RaiseAndSetIfChanged(ref _content, value);
-    }
-
-    [JsonProperty] public bool IsUntitled { get; private set; }
+    private string? _extension;
+    private string _name = null!; // will be set by Name.set
 
     public TabModel(string path)
     {
@@ -69,19 +47,34 @@ public class TabModel : ViewModelBase, IEquatable<TabModel>
         IsUntitled = true;
     }
 
-    public void LoadFromFile(string path)
+    [JsonProperty] public string? Path { get; private set; }
+
+    [JsonProperty]
+    public string Name
     {
-        Path = path;
-        Name = Path.Split('\\').Last();
-        Extension = Path.Split("\\").Last().Contains('.') ? Path.Split('.').Last() : null;
-        IsUntitled = false;
+        get => _name;
+        set => this.RaiseAndSetIfChanged(ref _name, value);
     }
 
+    public string? Extension
+    {
+        get => _extension;
+        set => this.RaiseAndSetIfChanged(ref _extension, value);
+    }
+
+    public string Content
+    {
+        get => _content;
+        set => this.RaiseAndSetIfChanged(ref _content, value);
+    }
+
+    [JsonProperty] public bool IsUntitled { get; private set; }
+
     /// <summary>
-    /// Closes the tab.
+    ///     Closes the tab.
     /// </summary>
     public ReactiveCommand<TabModel, Unit> Close { get; } =
-        ReactiveCommand.Create<TabModel>((tab) => TabBuffer.Instance.RemoveTabs(tab));
+        ReactiveCommand.Create<TabModel>(tab => TabBuffer.Instance.RemoveTabs(tab));
 
     public bool Equals(TabModel? other)
     {
@@ -96,12 +89,20 @@ public class TabModel : ViewModelBase, IEquatable<TabModel>
             && IsUntitled == other.IsUntitled;
     }
 
+    public void LoadFromFile(string path)
+    {
+        Path = path;
+        Name = Path.Split('\\').Last();
+        Extension = Path.Split("\\").Last().Contains('.') ? Path.Split('.').Last() : null;
+        IsUntitled = false;
+    }
+
     public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         // ReSharper disable once ConvertIfStatementToReturnStatement
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj.GetType() != GetType()) return false;
         return Equals((TabModel)obj);
     }
 

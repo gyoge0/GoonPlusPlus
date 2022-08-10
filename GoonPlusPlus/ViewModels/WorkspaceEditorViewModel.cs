@@ -13,9 +13,6 @@ public class WorkspaceEditorViewModel : ViewModelBase
 {
     private readonly ReadOnlyObservableCollection<string> _cpItems;
 
-    public ReadOnlyObservableCollection<string> CpItems => _cpItems;
-    public string? Selection { get; set; }
-
     public WorkspaceEditorViewModel()
     {
         var wksp = WorkspaceViewModel.Instance.Workspace!;
@@ -34,6 +31,9 @@ public class WorkspaceEditorViewModel : ViewModelBase
             .ToList()
             .ForEach(p => wksp.Classpath.Add(p)));
     }
+
+    public ReadOnlyObservableCollection<string> CpItems => _cpItems;
+    public string? Selection { get; set; }
 
     public ReactiveCommand<Unit, Unit> RemoveItems { get; }
     public ReactiveCommand<Window, Unit> AddItems { get; }

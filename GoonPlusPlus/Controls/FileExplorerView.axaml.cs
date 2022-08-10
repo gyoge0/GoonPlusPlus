@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
@@ -8,7 +7,6 @@ using Avalonia.Markup.Xaml;
 using GoonPlusPlus.Controls.ExplorerTree;
 using GoonPlusPlus.Models;
 using GoonPlusPlus.Models.ExplorerTree;
-using GoonPlusPlus.ViewModels;
 
 namespace GoonPlusPlus.Controls;
 

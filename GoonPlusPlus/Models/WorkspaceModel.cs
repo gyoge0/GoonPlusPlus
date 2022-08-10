@@ -12,12 +12,6 @@ namespace GoonPlusPlus.Models;
 [JsonObject(MemberSerialization.OptOut, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
 public class WorkspaceModel
 {
-    [JsonIgnore] public SourceList<string> Classpath { get; } = new();
-    [JsonProperty("classpath")] private List<string> CpAsList { get; } = new();
-    public string RootPath { get; set; }
-    public string OutputDir { get; set; }
-    public List<TabModel> Tabs { get; } = new();
-
     public WorkspaceModel(string rootPath)
     {
         RootPath = rootPath;
@@ -32,6 +26,12 @@ public class WorkspaceModel
             .Subscribe();
     }
 
+    [JsonIgnore] public SourceList<string> Classpath { get; } = new();
+    [JsonProperty("classpath")] private List<string> CpAsList { get; } = new();
+    public string RootPath { get; set; }
+    public string OutputDir { get; set; }
+    public List<TabModel> Tabs { get; } = new();
+
     public static WorkspaceModel? Load(string path)
     {
         var ret = JsonConvert.DeserializeObject<WorkspaceModel>(File.ReadAllText(path));
@@ -39,5 +39,8 @@ public class WorkspaceModel
         return ret;
     }
 
-    public void Save(string path) => File.WriteAllText(path, JsonConvert.SerializeObject(this, Formatting.Indented));
+    public void Save(string path)
+    {
+        File.WriteAllText(path, JsonConvert.SerializeObject(this, Formatting.Indented));
+    }
 }

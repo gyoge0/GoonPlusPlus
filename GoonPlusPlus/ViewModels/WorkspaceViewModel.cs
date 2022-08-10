@@ -5,9 +5,17 @@ namespace GoonPlusPlus.ViewModels;
 
 public class WorkspaceViewModel : ViewModelBase
 {
-    public static WorkspaceViewModel Instance { get; private set; } = null!;
+    public delegate void InstantiatedEventHandler(object sender);
 
     private WorkspaceModel? _workspace;
+
+    public WorkspaceViewModel()
+    {
+        Instance = this;
+        OnInstantiated();
+    }
+
+    public static WorkspaceViewModel Instance { get; private set; } = null!;
 
     public WorkspaceModel? Workspace
     {
@@ -15,15 +23,10 @@ public class WorkspaceViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _workspace, value);
     }
 
-
-    public delegate void InstantiatedEventHandler(object sender);
-
     public static event InstantiatedEventHandler? Instantiated;
-    private void OnInstantiated() => Instantiated?.Invoke(this);
 
-    public WorkspaceViewModel()
+    private void OnInstantiated()
     {
-        Instance = this;
-        OnInstantiated();
+        Instantiated?.Invoke(this);
     }
 }

@@ -11,22 +11,7 @@ namespace GoonPlusPlus.ViewModels;
 public class TabBarViewModel
 {
     private readonly ReadOnlyObservableCollection<TabModel> _tabs;
-    public ReadOnlyObservableCollection<TabModel> Tabs => _tabs;
     private int _currentTabMirror;
-
-
-    public int CurrentTabMirror
-    {
-        get => _currentTabMirror;
-        set
-        {
-            _currentTabMirror = value;
-            // no tabs open
-            if (_tabs.Count <= value || value < 0) return;
-            TabBuffer.Instance
-                .CurrentTab = _tabs[value];
-        }
-    }
 
     public TabBarViewModel()
     {
@@ -66,5 +51,21 @@ public class TabBarViewModel
                 TabBuffer.Instance
                     .AddTabs(p.Tabs.ToArray());
             });
+    }
+
+    public ReadOnlyObservableCollection<TabModel> Tabs => _tabs;
+
+
+    public int CurrentTabMirror
+    {
+        get => _currentTabMirror;
+        set
+        {
+            _currentTabMirror = value;
+            // no tabs open
+            if (_tabs.Count <= value || value < 0) return;
+            TabBuffer.Instance
+                .CurrentTab = _tabs[value];
+        }
     }
 }

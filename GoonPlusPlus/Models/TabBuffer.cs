@@ -42,7 +42,7 @@ public class TabBuffer : ReactiveObject
 
     public int NumUntitled()
     {
-        var tabs = TabBuffer.Instance
+        var tabs = Instance
             .Buffer
             .Items
             .Where(k => k.IsUntitled)

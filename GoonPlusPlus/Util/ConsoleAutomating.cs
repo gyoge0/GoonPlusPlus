@@ -32,17 +32,16 @@ public interface IConsoleAutomator
 
 public abstract class ConsoleAutomatorBase : IConsoleAutomator
 {
+    protected readonly byte[] Buffer = new byte[256];
     protected readonly StringBuilder InputAccumulator = new();
 
-    protected readonly byte[] Buffer = new byte[256];
-
     protected volatile bool StopAutomation;
-
-    public StreamWriter StandardInput { get; protected set; }
 
     protected StreamReader StandardOutput { get; set; }
 
     protected StreamReader StandardError { get; set; }
+
+    public StreamWriter StandardInput { get; protected set; }
 
     public event EventHandler<ConsoleInputReadEventArgs> StandardInputRead;
 
@@ -72,10 +71,7 @@ public abstract class ConsoleAutomatorBase : IConsoleAutomator
         var input = StandardOutput.CurrentEncoding.GetString(Buffer, 0, bytesRead);
         InputAccumulator.Append(input);
 
-        if (bytesRead < Buffer.Length)
-        {
-            OnInputRead(InputAccumulator.ToString());
-        }
+        if (bytesRead < Buffer.Length) OnInputRead(InputAccumulator.ToString());
 
         BeginReadAsync();
     }
@@ -84,10 +80,7 @@ public abstract class ConsoleAutomatorBase : IConsoleAutomator
     {
         var handler = StandardInputRead;
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if (handler == null)
-        {
-            return;
-        }
+        if (handler == null) return;
 
         handler(this, new ConsoleInputReadEventArgs(input));
         InputAccumulator.Clear();

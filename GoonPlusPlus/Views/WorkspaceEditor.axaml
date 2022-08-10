@@ -58,8 +58,7 @@
                     <ListBox
                         Name="Box"
                         Items="{Binding CpItems}"
-                        SelectedItem="{Binding Selection, Mode=OneWayToSource}"
-                        >
+                        SelectedItem="{Binding Selection, Mode=OneWayToSource}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding}" FontFamily="Consolas" />

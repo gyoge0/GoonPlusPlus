@@ -1,13 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Reactive.Linq;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
-using DynamicData;
-using GoonPlusPlus.ViewModels;
-using ReactiveUI;
 
 namespace GoonPlusPlus.Controls;
 

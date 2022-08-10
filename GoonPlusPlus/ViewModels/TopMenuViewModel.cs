@@ -20,6 +20,25 @@ namespace GoonPlusPlus.ViewModels;
 
 public class TopMenuViewModel : ViewModelBase
 {
+    private bool _fileCanCompile;
+    private bool _fileCanRun;
+    private bool _openProject;
+
+    public TopMenuViewModel()
+    {
+        TabBuffer.Instance
+            .WhenPropertyChanged(x => x.CurrentTab)
+            .WhereNotNull()
+            .Subscribe(x =>
+            {
+                FileCanCompile = FileNode.CompilableExtensions.Contains(x.Value?.Extension);
+                FileCanRun = FileNode.RunnableExtensions.Contains(x.Value?.Extension);
+            });
+        WorkspaceViewModel.Instantiated += sender => (sender as WorkspaceViewModel)
+            .WhenAnyValue(x => x!.Workspace)
+            .Subscribe(p => OpenProject = p == null);
+    }
+
     public ReactiveCommand<Window, Unit> OpenFile { get; } = ReactiveCommand.CreateFromTask(async (Window source) =>
     {
         var paths = await new OpenFileDialog().ShowAsync(source);
@@ -27,13 +46,13 @@ public class TopMenuViewModel : ViewModelBase
     });
 
     /// <summary>
-    /// Opens an untitled tab.
+    ///     Opens an untitled tab.
     /// </summary>
     public ReactiveCommand<Unit, Unit> NewTab { get; } = ReactiveCommand.Create(() =>
         TabBuffer.Instance.AddTabs(new TabModel { Name = $"Untitled {TabBuffer.Instance.NumUntitled() + 1}" }));
 
     /// <summary>
-    /// Saves the current tab if it is not untitled.
+    ///     Saves the current tab if it is not untitled.
     /// </summary>
     public ReactiveCommand<Unit, Unit> SaveFile { get; } = ReactiveCommand.CreateFromTask(async () =>
     {
@@ -46,8 +65,8 @@ public class TopMenuViewModel : ViewModelBase
     });
 
     /// <summary>
-    /// Opens a file chooser menu to allow the user to choose what file to save the current tab's content to.
-    /// Also modifies the tab's data to match that of the chosen file.
+    ///     Opens a file chooser menu to allow the user to choose what file to save the current tab's content to.
+    ///     Also modifies the tab's data to match that of the chosen file.
     /// </summary>
     public ReactiveCommand<Window, Unit> SaveFileAs { get; } = ReactiveCommand.CreateFromTask(async (Window source) =>
     {
@@ -75,7 +94,7 @@ public class TopMenuViewModel : ViewModelBase
     });
 
     /// <summary>
-    /// Closes the current open tab.
+    ///     Closes the current open tab.
     /// </summary>
     public ReactiveCommand<Unit, Unit> CloseFile { get; } = ReactiveCommand.Create(() =>
     {
@@ -84,7 +103,7 @@ public class TopMenuViewModel : ViewModelBase
     });
 
     /// <summary>
-    /// If the current tab has a selection highlighted, will copy it to the system clipboard.
+    ///     If the current tab has a selection highlighted, will copy it to the system clipboard.
     /// </summary>
     public ReactiveCommand<Unit, Unit> CopyText { get; } = ReactiveCommand.Create(() =>
     {
@@ -93,7 +112,7 @@ public class TopMenuViewModel : ViewModelBase
     });
 
     /// <summary>
-    /// If the current tab has a selection highlighted, will copy it to the system clipboard and delete the selection.
+    ///     If the current tab has a selection highlighted, will copy it to the system clipboard and delete the selection.
     /// </summary>
     public ReactiveCommand<Unit, Unit> CutText { get; } = ReactiveCommand.Create(() =>
     {
@@ -102,8 +121,9 @@ public class TopMenuViewModel : ViewModelBase
     });
 
     /// <summary>
-    /// If the current tab has a selection highlighted, will paste the contents of the system clipboard to replace the selection.
-    /// Otherwise, will insert the contents of the system clipboard at the current cursor position.
+    ///     If the current tab has a selection highlighted, will paste the contents of the system clipboard to replace the
+    ///     selection.
+    ///     Otherwise, will insert the contents of the system clipboard at the current cursor position.
     /// </summary>
     public ReactiveCommand<Unit, Unit> PasteText { get; } = ReactiveCommand.Create(() =>
     {
@@ -150,9 +170,7 @@ public class TopMenuViewModel : ViewModelBase
         if (selected == null
             || selected.Length < 1
             || selected[0].Split(".").Last() != "gpp")
-        {
             return;
-        }
 
         var proj = WorkspaceModel.Load(selected[0]);
         if (proj == null) return;
@@ -168,11 +186,6 @@ public class TopMenuViewModel : ViewModelBase
 
     public ReactiveCommand<Window, Unit> Configure { get; } = ReactiveCommand.CreateFromTask(async (Window source)
         => await new WorkspaceEditor().ShowDialog(source));
-
-
-    private bool _fileCanCompile;
-    private bool _fileCanRun;
-    private bool _openProject;
 
     public bool FileCanCompile
     {
@@ -190,21 +203,6 @@ public class TopMenuViewModel : ViewModelBase
     {
         get => _openProject;
         set => this.RaiseAndSetIfChanged(ref _openProject, value);
-    }
-
-    public TopMenuViewModel()
-    {
-        TabBuffer.Instance
-            .WhenPropertyChanged(x => x.CurrentTab)
-            .WhereNotNull()
-            .Subscribe(x =>
-            {
-                FileCanCompile = FileNode.CompilableExtensions.Contains(x.Value?.Extension);
-                FileCanRun = FileNode.RunnableExtensions.Contains(x.Value?.Extension);
-            });
-        WorkspaceViewModel.Instantiated += sender => (sender as WorkspaceViewModel)
-            .WhenAnyValue(x => x!.Workspace)
-            .Subscribe(p => OpenProject = p == null);
     }
 
     public ReactiveCommand<Unit, Unit> Compile { get; } = ReactiveCommand.CreateFromTask(async () =>

@@ -12,9 +12,19 @@ namespace GoonPlusPlus.ViewModels;
 
 public class FileExplorerViewModel : ViewModelBase
 {
+    public FileExplorerViewModel()
+    {
+        Instance = this;
+        UndoStack.Push(Root[0]);
+        WorkspaceViewModel.Instantiated += sender => (sender as WorkspaceViewModel)
+            .WhenAnyValue(x => x!.Workspace)
+            .WhereNotNull()
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(p => Root[0] = new DirectoryNode(p.RootPath) { IsExpanded = true });
+    }
+
     private static string HomeFolder { get; } = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-    private static FileExplorerViewModel _instance = null!;
-    public static FileExplorerViewModel Instance => _instance;
+    public static FileExplorerViewModel Instance { get; private set; } = null!;
 
     public ObservableCollection<ExplorerNode> SelectedItems { get; } = new();
 
@@ -27,86 +37,87 @@ public class FileExplorerViewModel : ViewModelBase
         }
     };
 
-    public FileExplorerViewModel()
-    {
-        _instance = this;
-        UndoStack.Push(Root[0]);
-        WorkspaceViewModel.Instantiated += sender => (sender as WorkspaceViewModel)
-            .WhenAnyValue(x => x!.Workspace)
-            .WhereNotNull()
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(p => Root[0] = new DirectoryNode(p.RootPath) { IsExpanded = true });
-    }
-
     public Stack<DirectoryNode> UndoStack { get; } = new();
     public Stack<DirectoryNode> RedoStack { get; } = new();
 
     public ReactiveCommand<Unit, Unit> Undo { get; } = ReactiveCommand.Create(() =>
     {
-        if (_instance.UndoStack.Count <= 1) return;
+        if (Instance.UndoStack.Count <= 1) return;
 
-        var current = _instance.UndoStack.Pop();
-        _instance.RedoStack.Push(current);
+        var current = Instance.UndoStack.Pop();
+        Instance.RedoStack.Push(current);
 
-        var node = _instance.UndoStack.Peek();
+        var node = Instance.UndoStack.Peek();
         SwapFolder(node);
     });
 
     public ReactiveCommand<Unit, Unit> Redo { get; } = ReactiveCommand.Create(() =>
     {
-        if (_instance.RedoStack.Count < 1) return;
-        var node = _instance.RedoStack.Pop();
-        _instance.UndoStack.Push(node);
+        if (Instance.RedoStack.Count < 1) return;
+        var node = Instance.RedoStack.Pop();
+        Instance.UndoStack.Push(node);
         SwapFolder(node);
     });
 
     public ReactiveCommand<Unit, Unit> GoToParent { get; } = ReactiveCommand.Create(() =>
     {
-        var parent = Directory.GetParent(_instance.Root[0].FullPath);
+        var parent = Directory.GetParent(Instance.Root[0].FullPath);
         if (parent == null) return;
         var node = new DirectoryNode(parent.FullName);
         SwapFolder(node);
 
-        if (_instance.RedoStack.Count < 1) _instance.UndoStack.Push(node);
-        else if (_instance.RedoStack.Peek() != node)
+        if (Instance.RedoStack.Count < 1)
         {
-            _instance.RedoStack.Clear();
-            _instance.UndoStack.Push(node);
+            Instance.UndoStack.Push(node);
         }
-        else if (_instance.RedoStack.Peek() == node) _instance.UndoStack.Push(_instance.RedoStack.Pop());
+        else if (Instance.RedoStack.Peek() != node)
+        {
+            Instance.RedoStack.Clear();
+            Instance.UndoStack.Push(node);
+        }
+        else if (Instance.RedoStack.Peek() == node)
+        {
+            Instance.UndoStack.Push(Instance.RedoStack.Pop());
+        }
     });
 
     public ReactiveCommand<Window, Unit> OpenFolder { get; } = ReactiveCommand.CreateFromTask(async (Window source) =>
     {
-        var path = await new OpenFolderDialog { Directory = _instance.Root[0].FullPath }.ShowAsync(source);
+        var path = await new OpenFolderDialog { Directory = Instance.Root[0].FullPath }.ShowAsync(source);
         if (path == null) return;
         var node = new DirectoryNode(path);
         SwapFolder(node);
 
-        if (_instance.RedoStack.Count < 1) _instance.UndoStack.Push(node);
-        else if (_instance.RedoStack.Peek() != node)
+        if (Instance.RedoStack.Count < 1)
         {
-            _instance.RedoStack.Clear();
-            _instance.UndoStack.Push(node);
+            Instance.UndoStack.Push(node);
         }
-        else if (_instance.RedoStack.Peek() == node) _instance.UndoStack.Push(_instance.RedoStack.Pop());
+        else if (Instance.RedoStack.Peek() != node)
+        {
+            Instance.RedoStack.Clear();
+            Instance.UndoStack.Push(node);
+        }
+        else if (Instance.RedoStack.Peek() == node)
+        {
+            Instance.UndoStack.Push(Instance.RedoStack.Pop());
+        }
     });
-
-    /// <summary>
-    /// Opens the path in the file explorer tree.
-    /// </summary>
-    /// <param name="node">The path to open.</param>
-    private static void SwapFolder(DirectoryNode node)
-    {
-        var isExpanded = _instance.Root[0].IsExpanded;
-        _instance.Root[0] = node;
-        if (node.IsExpanded != isExpanded) node.IsExpanded = isExpanded;
-    }
 
     public ReactiveCommand<Unit, Unit> Refresh { get; } = ReactiveCommand.Create(() =>
     {
         // this will force a refresh
-        _instance.Root[0].IsExpanded = false;
-        _instance.Root[0].IsExpanded = true;
+        Instance.Root[0].IsExpanded = false;
+        Instance.Root[0].IsExpanded = true;
     });
+
+    /// <summary>
+    ///     Opens the path in the file explorer tree.
+    /// </summary>
+    /// <param name="node">The path to open.</param>
+    private static void SwapFolder(DirectoryNode node)
+    {
+        var isExpanded = Instance.Root[0].IsExpanded;
+        Instance.Root[0] = node;
+        if (node.IsExpanded != isExpanded) node.IsExpanded = isExpanded;
+    }
 }
