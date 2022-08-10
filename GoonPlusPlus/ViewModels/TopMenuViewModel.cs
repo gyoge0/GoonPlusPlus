@@ -110,8 +110,64 @@ public class TopMenuViewModel : ViewModelBase
         TabBuffer.Instance.CurrentEditor.EditArea.Paste();
     });
 
+    public ReactiveCommand<Unit, Unit> Create { get; } = ReactiveCommand.Create(() =>
+    {
+        var fullPath = FileExplorerViewModel.Instance.Root[0].FullPath;
+        var workspace = new WorkspaceModel(fullPath);
+        // ReSharper disable once StringLiteralTypo
+        var path = Path.Join(fullPath, "wksp.gpp");
+        TabBuffer.Instance.Buffer.Items.ToList().ForEach(workspace.Tabs.Add);
+
+        try
+        {
+            File.Create(path).Close();
+            workspace.Save(path);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            Logger.TryGet(LogEventLevel.Warning, LogArea.Binding)?.Log(workspace, $"Access denied to {path}");
+            return;
+        }
+
+        WorkspaceViewModel.Instance.Workspace = workspace;
+    });
+
+    public ReactiveCommand<Window, Unit> Open { get; } = ReactiveCommand.CreateFromTask(async
+        (Window source) =>
+    {
+        var selected = await new OpenFileDialog
+        {
+            Filters =
+            {
+                new FileDialogFilter
+                {
+                    Name = "Goon++ Project (*.gpp)",
+                    Extensions = { "gpp" }
+                }
+            }
+        }.ShowAsync(source);
+
+        if (selected == null
+            || selected.Length < 1
+            || selected[0].Split(".").Last() != "gpp")
+        {
+            return;
+        }
+
+        var proj = WorkspaceModel.Load(selected[0]);
+        if (proj == null) return;
+        WorkspaceViewModel.Instance.Workspace = proj;
+    });
+
+    public ReactiveCommand<Unit, Unit> Exit { get; } = ReactiveCommand.Create(() =>
+    {
+        var proj = WorkspaceViewModel.Instance.Workspace!;
+        proj.Save(Path.Join(proj.RootPath, "wksp.gpp"));
+    });
+
     private bool _fileCanCompile;
     private bool _fileCanRun;
+    private bool _openProject;
 
     public bool FileCanCompile
     {
@@ -125,6 +181,12 @@ public class TopMenuViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _fileCanRun, value);
     }
 
+    public bool OpenProject
+    {
+        get => _openProject;
+        set => this.RaiseAndSetIfChanged(ref _openProject, value);
+    }
+
     public TopMenuViewModel()
     {
         TabBuffer.Instance
@@ -135,6 +197,9 @@ public class TopMenuViewModel : ViewModelBase
                 FileCanCompile = FileNode.CompilableExtensions.Contains(x.Value?.Extension);
                 FileCanRun = FileNode.RunnableExtensions.Contains(x.Value?.Extension);
             });
+        WorkspaceViewModel.Instantiated += sender => (sender as WorkspaceViewModel)
+            .WhenAnyValue(x => x!.Workspace)
+            .Subscribe(p => OpenProject = p == null);
     }
 
     public ReactiveCommand<Unit, Unit> Compile { get; } = ReactiveCommand.CreateFromTask(async () =>
