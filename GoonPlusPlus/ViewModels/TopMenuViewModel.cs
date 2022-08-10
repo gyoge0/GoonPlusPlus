@@ -25,7 +25,7 @@ public class TopMenuViewModel : ViewModelBase
     /// Opens an untitled tab.
     /// </summary>
     public ReactiveCommand<Unit, Unit> NewTab { get; } = ReactiveCommand.Create(() =>
-        TabBuffer.Instance.AddTabs(new TabModel { Name = $"Untitled {TabBuffer.Instance.NumUntitiled() + 1}" }));
+        TabBuffer.Instance.AddTabs(new TabModel { Name = $"Untitled {TabBuffer.Instance.NumUntitled() + 1}" }));
 
     /// <summary>
     /// Saves the current tab if it is not untitled.
@@ -138,49 +138,51 @@ public class TopMenuViewModel : ViewModelBase
         var currentTab = TabBuffer.Instance.CurrentTab;
         if (currentTab == null) return;
 
+        // ReSharper disable once IdentifierTypo
+        var compilevm = CompileViewModel.Instance;
+        var wksp = WorkspaceViewModel.Instance.Workspace;
 
-        using var compile = new Process
-        {
-            StartInfo = new ProcessStartInfo
+        var compile = Cli.Wrap("javac")
+            .WithArguments(args =>
             {
-                FileName = "javac",
-                Arguments = currentTab.Path,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            }
-        };
+                args.Add(currentTab.Path);
+                
+                if (wksp == null) return;
+                args.Add("-cp");
+                
+                var sb = new StringBuilder();
+                sb.Append($"\"{wksp.OutputDir};");
+                
+                wksp.Classpath.ForEach(d => sb.Append($"{d};"));
+                sb.Append('\"');
+                
+                args.Add(sb.ToString());
+            })
+            .WithValidation(CommandResultValidation.None);
 
-        compile.Start();
+        var res = await compile.ExecuteBufferedAsync();
+
         BottomBarTabViewModel.Instance.CurrentTabIdx = (int)BottomBarTabViewModel.TabIdx.Compile;
 
-        await compile.WaitForExitAsync();
-        var vm = CompileViewModel.Instance;
+        compilevm.CompileOutput = string.Empty;
 
-        vm.CompileOutput = string.Empty;
-
-        var stdout = await compile.StandardOutput.ReadToEndAsync();
-        if (stdout != string.Empty)
+        if (res.StandardOutput.Length > 0)
         {
-            vm.CompileOutput += "<-- Standard Output -->\n\n";
-            vm.CompileOutput += stdout;
-            vm.CompileOutput += "<-- End Standard Output --> \n\n";
+            compilevm.CompileOutput += "<-- Standard Output -->\n\n";
+            compilevm.CompileOutput += res.StandardOutput;
+            compilevm.CompileOutput += "<-- End Standard Output --> \n\n";
         }
 
-        var stderr = await compile.StandardError.ReadToEndAsync();
-        if (stderr != string.Empty)
+        if (res.StandardError.Length > 0)
         {
-            vm.CompileOutput += "<-- Standard Error -->\n\n";
-            vm.CompileOutput += stderr;
-            vm.CompileOutput += "\n<-- End Standard Error --> \n\n";
+            compilevm.CompileOutput += "<-- Standard Error -->\n\n";
+            compilevm.CompileOutput += res.StandardError;
+            compilevm.CompileOutput += "\n<-- End Standard Error --> \n\n";
         }
 
-        vm.CompileOutput += $"Process exited with code {compile.ExitCode} --- Compilation ";
-        vm.CompileOutput += compile.ExitCode == 0 ? "Successful" : "Failed";
-        vm.CompileOutput += ".";
-
-        compile.Dispose();
+        compilevm.CompileOutput += $"Process exited with code {res.ExitCode} --- Compilation ";
+        compilevm.CompileOutput += res.ExitCode == 0 ? "Successful" : "Failed";
+        compilevm.CompileOutput += ".";
     });
 
     public ReactiveCommand<Unit, Unit> Run { get; } = ReactiveCommand.CreateFromTask(async () =>
