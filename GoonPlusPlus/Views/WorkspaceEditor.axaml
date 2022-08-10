@@ -1,0 +1,73 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:GoonPlusPlus.ViewModels"
+        xmlns:controls="clr-namespace:GoonPlusPlus.Controls"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="GoonPlusPlus.Views.WorkspaceEditor"
+
+        Width="500"
+        MinWidth="360"
+        Height="500"
+
+        Icon="/Assets/logo.ico"
+        Title="Configure Workspace"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True">
+
+    <Window.DataContext>
+        <vm:WorkspaceEditorViewModel />
+    </Window.DataContext>
+
+    <Panel>
+        <controls:AcrylicBlurView />
+
+        <TabControl TabStripPlacement="Left" FontSize="15" Margin="5, 35, 15, 0">
+            <TabItem Header="Dependencies" FontSize="20">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="5" MaxWidth="5" MinWidth="5" />
+                            <ColumnDefinition Width="75" MinWidth="75" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Column="0"
+                            TextWrapping="WrapWithOverflow"
+                            Text="Edit dependencies for your workspace here" />
+
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                            <Button Command="{Binding AddItems}"
+                                    CommandParameter="{Binding $parent[Window]}">
+                                <PathIcon Data="{StaticResource AddRegular}" />
+                                <ToolTip.Tip>
+                                    <TextBlock Text="Add Item(s)" />
+                                </ToolTip.Tip>
+                            </Button>
+                            <Button Command="{Binding RemoveItems}">
+                                <PathIcon Data="{StaticResource RemoveRegular}" />
+                                <ToolTip.Tip>
+                                    <TextBlock Text="Remove Item(s)" />
+                                </ToolTip.Tip>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <ListBox
+                        Name="Box"
+                        Items="{Binding CpItems}"
+                        SelectedItem="{Binding Selection, Mode=OneWayToSource}"
+                        >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontFamily="Consolas" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </Panel>
+</Window>
