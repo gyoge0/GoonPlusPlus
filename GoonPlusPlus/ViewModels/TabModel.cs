@@ -5,17 +5,22 @@ using System.Linq;
 using System.Reactive;
 using Avalonia.Logging;
 using GoonPlusPlus.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using ReactiveUI;
 
 namespace GoonPlusPlus.ViewModels;
 
+[JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
 public class TabModel : ViewModelBase, IEquatable<TabModel>
 {
     private string _name = null!; // will be set by Name.set
     private string? _extension;
     private string _content = null!; // will be set by Content.set
+    [JsonProperty]
     public string? Path { get; private set; }
 
+    [JsonProperty]
     public string Name
     {
         get => _name;
@@ -34,6 +39,7 @@ public class TabModel : ViewModelBase, IEquatable<TabModel>
         set => this.RaiseAndSetIfChanged(ref _content, value);
     }
 
+    [JsonProperty]
     public bool IsUntitled { get; private set; }
 
     public TabModel(string path)
@@ -50,7 +56,7 @@ public class TabModel : ViewModelBase, IEquatable<TabModel>
         {
             Logger.TryGet(LogEventLevel.Warning, LogArea.Binding)?.Log(this, $"{path} in use by another application");
             Path = null;
-            Name = $"Untitled {TabBuffer.Instance.NumUntitiled() + 1}";
+            Name = $"Untitled {TabBuffer.Instance.NumUntitled() + 1}";
             Extension = null;
             Content = $"{path} is in use by another application";
         }
