@@ -22,5 +22,8 @@ public class MainWindowViewModel : ViewModelBase
             TabBuffer.Instance.AddTabs(models);
             TabBuffer.Instance.CurrentTab = models.First();
         }
+
+        // ReSharper disable once UnusedVariable
+        var projectViewModel = new WorkspaceViewModel();
     }
 }
