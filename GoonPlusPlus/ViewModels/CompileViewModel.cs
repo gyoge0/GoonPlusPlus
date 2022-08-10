@@ -1,10 +1,12 @@
-﻿using ReactiveUI;
+﻿using DynamicData;
+using ReactiveUI;
 
 namespace GoonPlusPlus.ViewModels;
 
 public class CompileViewModel : ViewModelBase
 {
     public static CompileViewModel Instance { get; private set; } = null!;
+    public SourceList<string> Classpath { get; } = new();
 
     public CompileViewModel()
     {
