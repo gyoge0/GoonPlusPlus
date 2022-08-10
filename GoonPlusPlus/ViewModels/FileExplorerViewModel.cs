@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using GoonPlusPlus.Models.ExplorerTree;
 using ReactiveUI;
@@ -13,6 +14,7 @@ public class FileExplorerViewModel : ViewModelBase
 {
     private static string HomeFolder { get; } = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
     private static FileExplorerViewModel _instance = null!;
+    public static FileExplorerViewModel Instance => _instance;
 
     public ObservableCollection<ExplorerNode> SelectedItems { get; } = new();
 
@@ -29,6 +31,11 @@ public class FileExplorerViewModel : ViewModelBase
     {
         _instance = this;
         UndoStack.Push(Root[0]);
+        WorkspaceViewModel.Instantiated += sender => (sender as WorkspaceViewModel)
+            .WhenAnyValue(x => x!.Workspace)
+            .WhereNotNull()
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(p => Root[0] = new DirectoryNode(p.RootPath) { IsExpanded = true });
     }
 
     public Stack<DirectoryNode> UndoStack { get; } = new();
