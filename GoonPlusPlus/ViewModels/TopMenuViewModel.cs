@@ -51,7 +51,7 @@ public class TopMenuViewModel : ViewModelBase
     public ReactiveCommand<Window, Unit> SaveFileAs { get; } = ReactiveCommand.CreateFromTask(async (Window source) =>
     {
         var path = await new SaveFileDialog().ShowAsync(source);
-        
+
         if (path == null) return;
         var tab = TabBuffer.Instance.CurrentTab;
         if (tab == null) return;
@@ -215,16 +215,16 @@ public class TopMenuViewModel : ViewModelBase
             .WithArguments(args =>
             {
                 args.Add(currentTab.Path);
-                
+
                 if (wksp == null) return;
                 args.Add("-cp");
-                
+
                 var sb = new StringBuilder();
                 sb.Append($"\"{wksp.OutputDir};");
-                
+
                 wksp.Classpath.ForEach(d => sb.Append($"{d};"));
                 sb.Append('\"');
-                
+
                 args.Add(sb.ToString());
             })
             .WithValidation(CommandResultValidation.None);
@@ -261,7 +261,7 @@ public class TopMenuViewModel : ViewModelBase
 
         var sb = new StringBuilder();
         var wksp = WorkspaceViewModel.Instance.Workspace;
-        
+
         if (wksp != null)
         {
             sb.Append(" -cp \"");
@@ -269,9 +269,9 @@ public class TopMenuViewModel : ViewModelBase
             wksp.Classpath.ForEach(j => sb.Append(j + ";"));
             sb.Append("\" ");
         }
-        
+
         sb.Append(Path.GetFileNameWithoutExtension(currentTab.Path));
-        
+
         using var process = new Process
         {
             StartInfo = new ProcessStartInfo

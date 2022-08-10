@@ -82,7 +82,7 @@ public class FileExplorerViewModel : ViewModelBase
         if (path == null) return;
         var node = new DirectoryNode(path);
         SwapFolder(node);
-        
+
         if (_instance.RedoStack.Count < 1) _instance.UndoStack.Push(node);
         else if (_instance.RedoStack.Peek() != node)
         {

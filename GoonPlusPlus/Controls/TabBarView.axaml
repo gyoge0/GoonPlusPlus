@@ -36,7 +36,7 @@
                 <controls:BoundEditor
                     BoundText="{Binding Content, Mode=TwoWay}"
                     Extension="{Binding Extension}"
-                    Name="BoundEditor"/>
+                    Name="BoundEditor" />
             </TreeDataTemplate>
         </TabControl.ContentTemplate>
     </TabControl>

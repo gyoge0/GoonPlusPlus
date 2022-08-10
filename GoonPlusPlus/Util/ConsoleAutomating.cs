@@ -48,7 +48,8 @@ public abstract class ConsoleAutomatorBase : IConsoleAutomator
 
     protected void BeginReadAsync()
     {
-        if (!StopAutomation) {
+        if (!StopAutomation)
+        {
             var res = StandardOutput.BaseStream.BeginRead(Buffer, 0, Buffer.Length, ReadHappened, null);
         }
     }
@@ -62,7 +63,8 @@ public abstract class ConsoleAutomatorBase : IConsoleAutomator
     private void ReadHappened(IAsyncResult asyncResult)
     {
         var bytesRead = StandardOutput.BaseStream.EndRead(asyncResult);
-        if (bytesRead == 0) {
+        if (bytesRead == 0)
+        {
             OnAutomationStopped();
             return;
         }
@@ -70,7 +72,8 @@ public abstract class ConsoleAutomatorBase : IConsoleAutomator
         var input = StandardOutput.CurrentEncoding.GetString(Buffer, 0, bytesRead);
         InputAccumulator.Append(input);
 
-        if (bytesRead < Buffer.Length) {
+        if (bytesRead < Buffer.Length)
+        {
             OnInputRead(InputAccumulator.ToString());
         }
 
@@ -81,7 +84,8 @@ public abstract class ConsoleAutomatorBase : IConsoleAutomator
     {
         var handler = StandardInputRead;
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if (handler == null) {
+        if (handler == null)
+        {
             return;
         }
 

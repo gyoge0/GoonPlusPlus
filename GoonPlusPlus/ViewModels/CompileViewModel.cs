@@ -20,5 +20,4 @@ public class CompileViewModel : ViewModelBase
         get => _compileOutput;
         set => this.RaiseAndSetIfChanged(ref _compileOutput, value);
     }
-
 }

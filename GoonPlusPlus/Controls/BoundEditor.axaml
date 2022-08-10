@@ -17,5 +17,5 @@
         FontWeight="Light"
         FontSize="14"
         Background="Transparent"
-        ShowLineNumbers="True"/>
+        ShowLineNumbers="True" />
 </UserControl>

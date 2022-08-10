@@ -17,8 +17,7 @@ public class TabModel : ViewModelBase, IEquatable<TabModel>
     private string _name = null!; // will be set by Name.set
     private string? _extension;
     private string _content = null!; // will be set by Content.set
-    [JsonProperty]
-    public string? Path { get; private set; }
+    [JsonProperty] public string? Path { get; private set; }
 
     [JsonProperty]
     public string Name
@@ -39,8 +38,7 @@ public class TabModel : ViewModelBase, IEquatable<TabModel>
         set => this.RaiseAndSetIfChanged(ref _content, value);
     }
 
-    [JsonProperty]
-    public bool IsUntitled { get; private set; }
+    [JsonProperty] public bool IsUntitled { get; private set; }
 
     public TabModel(string path)
     {
