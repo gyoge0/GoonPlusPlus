@@ -3,7 +3,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Text;
 using Avalonia.Controls;
+using Avalonia.Logging;
+using CliWrap;
+using CliWrap.Buffered;
 using DynamicData;
 using DynamicData.Binding;
 using GoonPlusPlus.Models;
@@ -190,12 +194,25 @@ public class TopMenuViewModel : ViewModelBase
         var currentTab = TabBuffer.Instance.CurrentTab;
         if (currentTab == null) return;
 
+        var sb = new StringBuilder();
+        var wksp = WorkspaceViewModel.Instance.Workspace;
+        
+        if (wksp != null)
+        {
+            sb.Append(" -cp \"");
+            sb.Append($"{wksp.OutputDir};");
+            wksp.Classpath.ForEach(j => sb.Append(j + ";"));
+            sb.Append("\" ");
+        }
+        
+        sb.Append(Path.GetFileNameWithoutExtension(currentTab.Path));
+        
         using var process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
                 FileName = "java.exe",
-                Arguments = Path.GetFileName(currentTab.Path),
+                Arguments = sb.ToString(),
                 WorkingDirectory = Path.GetDirectoryName(currentTab.Path),
                 UseShellExecute = false,
                 CreateNoWindow = true,
@@ -205,10 +222,10 @@ public class TopMenuViewModel : ViewModelBase
             }
         };
         process.Start();
-        
+
         var automator = new ConsoleAutomator(process.StandardInput, process.StandardOutput);
 
-        automator.StandardInputRead += (_, args) => RunViewModel.Instance.StdOut.Add(args.Input);
+        automator.StandardInputRead += (_, args) => RunViewModel.Instance.Output.Add(args.Input);
         automator.StartAutomating();
         RunViewModel.Instance.RunProcess = process;
         BottomBarTabViewModel.Instance.CurrentTabIdx = (int)BottomBarTabViewModel.TabIdx.Run;
@@ -216,5 +233,12 @@ public class TopMenuViewModel : ViewModelBase
         await process.WaitForExitAsync();
         RunViewModel.Instance.RunProcess = null;
 
+        var stderr = process.StandardError.ReadToEnd();
+        if (stderr.Length > 0)
+        {
+            RunViewModel.Instance.Output.Add("\n\n<-- Standard Error -->\n\n");
+            RunViewModel.Instance.Output.Add(stderr);
+            RunViewModel.Instance.Output.Add("\n<-- End Standard Error --> \n\n");
+        }
     });
 }
