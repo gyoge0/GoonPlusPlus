@@ -16,6 +16,8 @@ public class WorkspaceEditorViewModel : ViewModelBase
     public WorkspaceEditorViewModel()
     {
         var wksp = WorkspaceViewModel.Instance.Workspace!;
+        _outputDir = wksp.OutputDir;
+        _sourcePath = wksp.SourcePath;
         _cpItems = new ReadOnlyObservableCollection<string>(new ObservableCollection<string>(wksp.Classpath.Items));
         wksp.Classpath
             .Connect()
@@ -30,10 +32,34 @@ public class WorkspaceEditorViewModel : ViewModelBase
             .Where(i => !wksp.Classpath.Items.Contains(i))
             .ToList()
             .ForEach(p => wksp.Classpath.Add(p)));
+
+        this.WhenAnyValue(x => x.OutputDir)
+            .Throttle(new TimeSpan(1000))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(o => wksp.OutputDir = o);
+        this.WhenAnyValue(x => x.SourcePath)
+            .Throttle(new TimeSpan(1000))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(s => wksp.SourcePath = s);
     }
 
     public ReadOnlyObservableCollection<string> CpItems => _cpItems;
     public string? Selection { get; set; }
+
+    private string _outputDir;
+    private string _sourcePath;
+
+    public string OutputDir
+    {
+        get => _outputDir;
+        set => this.RaiseAndSetIfChanged(ref _outputDir, value);
+    }
+
+    public string SourcePath
+    {
+        get => _sourcePath;
+        set => this.RaiseAndSetIfChanged(ref _sourcePath, value);
+    }
 
     public ReactiveCommand<Unit, Unit> RemoveItems { get; }
     public ReactiveCommand<Window, Unit> AddItems { get; }
