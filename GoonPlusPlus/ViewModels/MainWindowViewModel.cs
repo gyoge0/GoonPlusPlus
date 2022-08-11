@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using GoonPlusPlus.Models;
+using Newtonsoft.Json;
 
 namespace GoonPlusPlus.ViewModels;
 
@@ -7,20 +9,36 @@ public class MainWindowViewModel : ViewModelBase
 {
     public MainWindowViewModel(params string[] paths)
     {
-        if (paths.Length < 1)
+        switch (paths.Length)
         {
-            var untitled = new TabModel();
-            TabBuffer.Instance.AddTabs(untitled);
-            TabBuffer.Instance.CurrentTab = untitled;
-        }
-        else
-        {
-            var models = paths
-                .Select(p => new TabModel(p))
-                .ToArray();
+            case 1 when new FileInfo(paths.Single()).Name == "wksp.gpp":
+                WorkspaceViewModel.Instantiated += (_) =>
+                {
+                    var wksp = JsonConvert.DeserializeObject<WorkspaceModel>(File.ReadAllText(paths.Single()));
+                    if (wksp == null) return;
+                    WorkspaceViewModel.Instance.Workspace = wksp;
+                };
+                break;
+            case < 1:
+            {
+                var untitled = new TabModel();
+                TabBuffer.Instance.AddTabs(untitled);
+                TabBuffer.Instance.CurrentTab = untitled;
+                break;
+            }
+            default:
+            {
+                var models = paths
+                    .Select(p => new TabModel(p))
+                    .ToArray();
 
-            TabBuffer.Instance.AddTabs(models);
-            TabBuffer.Instance.CurrentTab = models.First();
+                TabBuffer.Instance.AddTabs(models);
+                TabBuffer.Instance.CurrentTab = models.First();
+                break;
+            }
         }
+
+        // ReSharper disable once UnusedVariable
+        var projectViewModel = new WorkspaceViewModel();
     }
 }

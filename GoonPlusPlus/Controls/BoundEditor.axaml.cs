@@ -26,7 +26,6 @@ public partial class BoundEditor : UserControl
         AvaloniaProperty.RegisterDirect<BoundEditor, string?>("Extension", o => o.Extension, (o, v) => o.Extension = v);
 
 
-
     public TextEditor EditArea { get; }
 
     public BoundEditor()
@@ -72,7 +71,6 @@ public partial class BoundEditor : UserControl
             {
                 if (BoundText != x) BoundText = x;
             });
-
     }
 
 

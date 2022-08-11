@@ -40,9 +40,9 @@ public class TabBuffer : ReactiveObject
         Buffer.RemoveMany(models);
     }
 
-    public int NumUntitiled()
+    public int NumUntitled()
     {
-        var tabs = TabBuffer.Instance
+        var tabs = Instance
             .Buffer
             .Items
             .Where(k => k.IsUntitled)

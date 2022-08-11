@@ -4,23 +4,24 @@ namespace GoonPlusPlus.ViewModels;
 
 public class BottomBarTabViewModel : ViewModelBase
 {
-    public static BottomBarTabViewModel Instance { get; private set; }
-    private int _currentTabIdx;
-
-    public int CurrentTabIdx
+    public enum TabIdx
     {
-        get => _currentTabIdx;
-        set => this.RaiseAndSetIfChanged(ref _currentTabIdx, value);
+        Compile,
+        Run
     }
+
+    private int _currentTabIdx;
 
     public BottomBarTabViewModel()
     {
         Instance = this;
     }
 
-    public enum TabIdx
+    public static BottomBarTabViewModel Instance { get; private set; }
+
+    public int CurrentTabIdx
     {
-        Compile,
-        Run,
+        get => _currentTabIdx;
+        set => this.RaiseAndSetIfChanged(ref _currentTabIdx, value);
     }
 }

@@ -32,23 +32,23 @@ public interface IConsoleAutomator
 
 public abstract class ConsoleAutomatorBase : IConsoleAutomator
 {
+    protected readonly byte[] Buffer = new byte[256];
     protected readonly StringBuilder InputAccumulator = new();
 
-    protected readonly byte[] Buffer = new byte[256];
-
     protected volatile bool StopAutomation;
-
-    public StreamWriter StandardInput { get; protected set; }
 
     protected StreamReader StandardOutput { get; set; }
 
     protected StreamReader StandardError { get; set; }
 
+    public StreamWriter StandardInput { get; protected set; }
+
     public event EventHandler<ConsoleInputReadEventArgs> StandardInputRead;
 
     protected void BeginReadAsync()
     {
-        if (!StopAutomation) {
+        if (!StopAutomation)
+        {
             var res = StandardOutput.BaseStream.BeginRead(Buffer, 0, Buffer.Length, ReadHappened, null);
         }
     }
@@ -62,7 +62,8 @@ public abstract class ConsoleAutomatorBase : IConsoleAutomator
     private void ReadHappened(IAsyncResult asyncResult)
     {
         var bytesRead = StandardOutput.BaseStream.EndRead(asyncResult);
-        if (bytesRead == 0) {
+        if (bytesRead == 0)
+        {
             OnAutomationStopped();
             return;
         }
@@ -70,9 +71,7 @@ public abstract class ConsoleAutomatorBase : IConsoleAutomator
         var input = StandardOutput.CurrentEncoding.GetString(Buffer, 0, bytesRead);
         InputAccumulator.Append(input);
 
-        if (bytesRead < Buffer.Length) {
-            OnInputRead(InputAccumulator.ToString());
-        }
+        if (bytesRead < Buffer.Length) OnInputRead(InputAccumulator.ToString());
 
         BeginReadAsync();
     }
@@ -81,9 +80,7 @@ public abstract class ConsoleAutomatorBase : IConsoleAutomator
     {
         var handler = StandardInputRead;
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if (handler == null) {
-            return;
-        }
+        if (handler == null) return;
 
         handler(this, new ConsoleInputReadEventArgs(input));
         InputAccumulator.Clear();

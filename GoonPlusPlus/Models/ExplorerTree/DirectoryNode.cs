@@ -31,7 +31,6 @@ public class DirectoryNode : ExplorerNode
     private void GetSubfolders()
     {
         foreach (var path in Directory.GetDirectories(FullPath, "*", SearchOption.TopDirectoryOnly))
-        {
             try
             {
                 SubNodes.Add(new DirectoryNode(path));
@@ -40,10 +39,8 @@ public class DirectoryNode : ExplorerNode
             {
                 Logger.TryGet(LogEventLevel.Warning, LogArea.Binding)?.Log(this, $"Access denied to directory ${path}");
             }
-        }
 
         foreach (var path in Directory.GetFiles(FullPath, "*", SearchOption.TopDirectoryOnly))
-        {
             try
             {
                 SubNodes.Add(new FileNode(path));
@@ -52,6 +49,5 @@ public class DirectoryNode : ExplorerNode
             {
                 Logger.TryGet(LogEventLevel.Warning, LogArea.Binding)?.Log(this, $"Access denied to file ${path}");
             }
-        }
     }
 }

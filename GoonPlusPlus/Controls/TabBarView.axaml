@@ -2,7 +2,6 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:GoonPlusPlus.ViewModels"
-    xmlns:models="clr-namespace:GoonPlusPlus.Models"
     xmlns:controls="clr-namespace:GoonPlusPlus.Controls"
     x:Class="GoonPlusPlus.Controls.TabBarView">
 
@@ -36,7 +35,7 @@
                 <controls:BoundEditor
                     BoundText="{Binding Content, Mode=TwoWay}"
                     Extension="{Binding Extension}"
-                    Name="BoundEditor"/>
+                    Name="BoundEditor" />
             </TreeDataTemplate>
         </TabControl.ContentTemplate>
     </TabControl>

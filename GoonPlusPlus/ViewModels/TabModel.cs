@@ -1,21 +1,71 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reactive;
 using Avalonia.Logging;
 using GoonPlusPlus.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using ReactiveUI;
 
 namespace GoonPlusPlus.ViewModels;
 
-public class TabModel : ViewModelBase, IEquatable<TabModel>
+[JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
+public class TabModel : ViewModelBase
 {
-    private string _name = null!; // will be set by Name.set
-    private string? _extension;
     private string _content = null!; // will be set by Content.set
-    public string? Path { get; private set; }
+    private string? _extension;
+    private string _name = null!; // will be set by Name.set
+    private string? _path;
 
+    public TabModel(string path) => Path = path;
+
+    public TabModel()
+    {
+        Path = null;
+        Name = "Untitled 1";
+        Extension = null;
+        Content = string.Empty;
+        IsUntitled = true;
+    }
+
+    /// <summary>
+    /// Path modifies other properties if it is set.
+    /// </summary>
+    [JsonProperty]
+    public string? Path
+    {
+        get => _path;
+        set
+        {
+            if (value == null)
+            {
+                this.RaiseAndSetIfChanged(ref _path, value);
+                return;
+            }
+
+            try
+            {
+                Content = File.ReadAllText(value);
+                Name = value.Split('\\').Last();
+                Extension = value.Split("\\").Last().Contains('.') ? value.Split('.').Last() : null;
+                IsUntitled = false;
+                this.RaiseAndSetIfChanged(ref _path, value);
+            }
+            catch (IOException)
+            {
+                Logger.TryGet(LogEventLevel.Warning, LogArea.Binding)
+                    ?.Log(this, $"{value} in use by another application");
+
+                Content = $"{value} is in use by another application";
+                Name = $"Untitled {TabBuffer.Instance.NumUntitled() + 1}";
+                Extension = null;
+                IsUntitled = true;
+                this.RaiseAndSetIfChanged(ref _path, null);
+            }
+        }
+    }
+
+    [JsonProperty]
     public string Name
     {
         get => _name;
@@ -34,86 +84,11 @@ public class TabModel : ViewModelBase, IEquatable<TabModel>
         set => this.RaiseAndSetIfChanged(ref _content, value);
     }
 
-    public bool IsUntitled { get; private set; }
-
-    public TabModel(string path)
-    {
-        try
-        {
-            Path = path;
-            Name = Path.Split('\\').Last();
-            Extension = Path.Split("\\").Last().Contains('.') ? Path.Split('.').Last() : null;
-            Content = File.ReadAllText(path);
-            IsUntitled = false;
-        }
-        catch (IOException)
-        {
-            Logger.TryGet(LogEventLevel.Warning, LogArea.Binding)?.Log(this, $"{path} in use by another application");
-            Path = null;
-            Name = $"Untitled {TabBuffer.Instance.NumUntitiled() + 1}";
-            Extension = null;
-            Content = $"{path} is in use by another application";
-        }
-    }
-
-    public TabModel()
-    {
-        Path = null;
-        Name = "Untitled 1";
-        Extension = null;
-        Content = string.Empty;
-        IsUntitled = true;
-    }
-
-    public void LoadFromFile(string path)
-    {
-        Path = path;
-        Name = Path.Split('\\').Last();
-        Extension = Path.Split("\\").Last().Contains('.') ? Path.Split('.').Last() : null;
-        IsUntitled = false;
-    }
+    [JsonProperty] public bool IsUntitled { get; private set; }
 
     /// <summary>
-    /// Closes the tab.
+    ///     Closes the tab.
     /// </summary>
-    public ReactiveCommand<TabModel, Unit> Close { get; } =
-        ReactiveCommand.Create<TabModel>((tab) => TabBuffer.Instance.RemoveTabs(tab));
-
-    public bool Equals(TabModel? other)
-    {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
-
-        return
-            Path == other.Path
-            && Name == other.Name
-            && Extension == other.Extension
-            && Content == other.Content
-            && IsUntitled == other.IsUntitled;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        // ReSharper disable once ConvertIfStatementToReturnStatement
-        if (obj.GetType() != this.GetType()) return false;
-        return Equals((TabModel)obj);
-    }
-
-    [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Path, Name, Extension, Content, IsUntitled);
-    }
-
-    public static bool operator ==(TabModel? left, TabModel? right)
-    {
-        return Equals(left, right);
-    }
-
-    public static bool operator !=(TabModel? left, TabModel? right)
-    {
-        return !Equals(left, right);
-    }
+    public ReactiveCommand<TabModel, Unit> Close { get; } = ReactiveCommand.Create<TabModel>(
+        tab => TabBuffer.Instance.RemoveTabs(tab));
 }
