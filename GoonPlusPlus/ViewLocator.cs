@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using GoonPlusPlus.ViewModels;
 using System;
 
 namespace GoonPlusPlus;

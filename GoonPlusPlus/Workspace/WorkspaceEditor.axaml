@@ -1,0 +1,97 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:workspace="clr-namespace:GoonPlusPlus.Workspace"
+    xmlns:goonPlusPlus="clr-namespace:GoonPlusPlus"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="GoonPlusPlus.Workspace.WorkspaceEditor"
+
+    Width="500"
+    MinWidth="360"
+    Height="500"
+
+    Icon="/Assets/logo.ico"
+    Title="Configure Workspace"
+    TransparencyLevelHint="AcrylicBlur"
+    Background="Transparent"
+    ExtendClientAreaToDecorationsHint="True">
+
+    <Window.DataContext>
+        <workspace:WorkspaceEditorViewModel />
+    </Window.DataContext>
+
+    <Panel>
+        <goonPlusPlus:AcrylicBlurView />
+
+        <TabControl TabStripPlacement="Left" FontSize="15" Margin="5, 35, 15, 15">
+            <TabItem Header="Output" FontSize="20">
+                <StackPanel Orientation="Vertical" Spacing="10">
+                    <TextBlock TextWrapping="WrapWithOverflow" Text="Edit the output directory of compiled files here." />
+                    <TextBox
+                        FontFamily="Consolas"
+                        AcceptsReturn="False"
+                        AcceptsTab="False"
+                        Text="{Binding OutputDir, Mode=TwoWay}" />
+                    <TextBlock TextWrapping="WrapWithOverflow" Text="Edit the location of source files here." />
+                    <TextBox
+                        FontFamily="Consolas"
+                        AcceptsReturn="False"
+                        AcceptsTab="False"
+                        Text="{Binding SourcePath, Mode=TwoWay}" />
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Dependencies" FontSize="20">
+                <Grid RowDefinitions="Auto, *">
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="5" MaxWidth="5" MinWidth="5" />
+                            <ColumnDefinition Width="75" MinWidth="75" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Column="0"
+                            TextWrapping="WrapWithOverflow"
+                            Text="Edit dependencies for your workspace here" />
+
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0, 0, 0, 15">
+                            <Button Command="{Binding AddItems}"
+                                CommandParameter="{Binding $parent[Window]}">
+                                <PathIcon Data="{StaticResource AddRegular}" />
+                                <ToolTip.Tip>
+                                    <TextBlock Text="Add Item(s)" />
+                                </ToolTip.Tip>
+                            </Button>
+                            <Button Command="{Binding RemoveItems}">
+                                <PathIcon Data="{StaticResource RemoveRegular}" />
+                                <ToolTip.Tip>
+                                    <TextBlock Text="Remove Item(s)" />
+                                </ToolTip.Tip>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <ListBox
+                        Grid.Row="1"
+                        Name="Box"
+                        Items="{Binding CpItems}"
+                        Background="#555555"
+                        SelectedItem="{Binding Selection, Mode=OneWayToSource}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <ScrollContentPresenter
+                                    CanVerticallyScroll="False"
+                                    CanHorizontallyScroll="True">
+                                    <ScrollContentPresenter.Content>
+                                        <TextBlock Text="{Binding}" FontFamily="Consolas" />
+                                    </ScrollContentPresenter.Content>
+                                </ScrollContentPresenter>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Panel>
+</Window>
