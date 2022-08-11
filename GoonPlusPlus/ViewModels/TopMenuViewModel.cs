@@ -1,10 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reactive;
-using System.Text;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Logging;
 using CliWrap;
 using CliWrap.Buffered;
@@ -15,6 +9,12 @@ using GoonPlusPlus.Models.ExplorerTree;
 using GoonPlusPlus.Util;
 using GoonPlusPlus.Views;
 using ReactiveUI;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reactive;
+using System.Text;
 
 namespace GoonPlusPlus.ViewModels;
 
@@ -26,8 +26,7 @@ public class TopMenuViewModel : ViewModelBase
 
     public TopMenuViewModel()
     {
-        TabBuffer.Instance
-            .WhenPropertyChanged(x => x.CurrentTab)
+        TabBuffer.Instance.WhenPropertyChanged(x => x.CurrentTab)
             .WhereNotNull()
             .Subscribe(x =>
             {
@@ -60,10 +59,7 @@ public class TopMenuViewModel : ViewModelBase
 
         var tab = TabBuffer.Instance.CurrentTab;
         if (tab == null || tab.IsUntitled) return;
-        await File.WriteAllTextAsync(
-            tab.Path!,
-            tab.Content
-        );
+        await File.WriteAllTextAsync(tab.Path!, tab.Content);
 
         if (wksp == null) return;
         await wksp;
@@ -85,19 +81,13 @@ public class TopMenuViewModel : ViewModelBase
 
         // remove the tab if it is open
         // prevents duplicate tabs
-        var dup = TabBuffer.Instance
-            .Buffer
-            .Items
-            .Where(k => !k.IsUntitled)
+        var dup = TabBuffer.Instance.Buffer.Items.Where(k => !k.IsUntitled)
             .FirstOrDefault(k => k.Path!.ToLower().Equals(path.ToLower()));
 
         if (dup != null) TabBuffer.Instance.RemoveTabs(dup);
 
         tab.Path = path;
-        await File.WriteAllTextAsync(
-            path,
-            tab.Content
-        );
+        await File.WriteAllTextAsync(path, tab.Content);
 
         if (wksp == null) return;
         await wksp;
@@ -141,11 +131,11 @@ public class TopMenuViewModel : ViewModelBase
         TabBuffer.Instance.CurrentEditor.EditArea.Paste();
     });
 
-    public ReactiveCommand<Unit, Unit> EditCustomCfg { get; } = ReactiveCommand.Create(() =>
-        TabBuffer.Instance.AddTabs(CustomCfg.Instance.ConfigFilePath));
+    public ReactiveCommand<Unit, Unit> EditCustomCfg { get; } = ReactiveCommand.Create(
+        () => TabBuffer.Instance.AddTabs(CustomCfg.Instance.ConfigFilePath));
 
-    public ReactiveCommand<Unit, Unit> ReloadCustomCfg { get; } = ReactiveCommand.Create(() =>
-        CustomCfg.Instance.LoadConfig());
+    public ReactiveCommand<Unit, Unit> ReloadCustomCfg { get; } =
+        ReactiveCommand.Create(() => CustomCfg.Instance.LoadConfig());
 
 
     public ReactiveCommand<Unit, Unit> Create { get; } = ReactiveCommand.CreateFromTask(async () =>
@@ -174,20 +164,10 @@ public class TopMenuViewModel : ViewModelBase
     {
         var selected = await new OpenFileDialog
         {
-            Filters =
-            {
-                new FileDialogFilter
-                {
-                    Name = "Goon++ Project (*.gpp)",
-                    Extensions = { "gpp" }
-                }
-            }
+            Filters = { new FileDialogFilter { Name = "Goon++ Project (*.gpp)", Extensions = { "gpp" } } },
         }.ShowAsync(source);
 
-        if (selected == null
-            || selected.Length < 1
-            || selected[0].Split(".").Last() != "gpp")
-            return;
+        if (selected == null || selected.Length < 1 || selected[0].Split(".").Last() != "gpp") return;
 
         var proj = WorkspaceModel.Load(selected[0]);
         if (proj == null) return;
@@ -202,13 +182,9 @@ public class TopMenuViewModel : ViewModelBase
         await task;
     });
 
-    public ReactiveCommand<Window, Unit> Configure { get; } = ReactiveCommand.CreateFromTask(async (Window source)
-        => await new WorkspaceEditor().ShowDialog(source));
+    public ReactiveCommand<Window, Unit> Configure { get; } = ReactiveCommand.CreateFromTask(
+        async (Window source) => await new WorkspaceEditor().ShowDialog(source));
 
-
-    private bool _fileCanCompile;
-    private bool _fileCanRun;
-    
     public bool FileCanCompile
     {
         get => _fileCanCompile;
@@ -245,20 +221,15 @@ public class TopMenuViewModel : ViewModelBase
 
                 args.Add("--source-path");
                 args.Add(wksp.SourcePath);
-                
+
                 args.Add("-cp");
-                
+
                 var sb = new StringBuilder();
-                // sb.Append('"');
                 wksp.Classpath.Items.ToList().ForEach(d => sb.Append($"{d};"));
-                // sb.Append('"');
-                
+
                 args.Add(sb.ToString());
-                
-                if (!Directory.Exists(wksp.OutputDir))
-                {
-                    Directory.CreateDirectory(wksp.OutputDir);
-                }
+
+                if (!Directory.Exists(wksp.OutputDir)) Directory.CreateDirectory(wksp.OutputDir);
 
                 args.Add("-d");
                 args.Add($"{wksp.OutputDir}");
@@ -267,7 +238,7 @@ public class TopMenuViewModel : ViewModelBase
 
         var res = await compile.ExecuteBufferedAsync();
 
-        BottomBarTabViewModel.Instance.CurrentTabIdx = (int)BottomBarTabViewModel.TabIdx.Compile;
+        BottomBarTabViewModel.Instance.CurrentTabIdx = (int) BottomBarTabViewModel.TabIdx.Compile;
 
         compilevm.CompileOutput = string.Empty;
 
@@ -319,8 +290,8 @@ public class TopMenuViewModel : ViewModelBase
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                RedirectStandardInput = true
-            }
+                RedirectStandardInput = true,
+            },
         };
         process.Start();
 
@@ -329,7 +300,7 @@ public class TopMenuViewModel : ViewModelBase
         automator.StandardInputRead += (_, args) => RunViewModel.Instance.Output.Add(args.Input);
         automator.StartAutomating();
         RunViewModel.Instance.RunProcess = process;
-        BottomBarTabViewModel.Instance.CurrentTabIdx = (int)BottomBarTabViewModel.TabIdx.Run;
+        BottomBarTabViewModel.Instance.CurrentTabIdx = (int) BottomBarTabViewModel.TabIdx.Run;
 
         await process.WaitForExitAsync();
         RunViewModel.Instance.RunProcess = null;

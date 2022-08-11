@@ -13,8 +13,5 @@ public partial class EmptyFolderItem : UserControl
 
     public TextBlock TextBlock { get; }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+    private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 }

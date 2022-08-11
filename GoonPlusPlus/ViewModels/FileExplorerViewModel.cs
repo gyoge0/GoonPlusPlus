@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Avalonia.Controls;
+using GoonPlusPlus.Models.ExplorerTree;
+using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
-using Avalonia.Controls;
-using GoonPlusPlus.Models.ExplorerTree;
-using ReactiveUI;
 
 namespace GoonPlusPlus.ViewModels;
 
@@ -31,10 +31,7 @@ public class FileExplorerViewModel : ViewModelBase
     // ReSharper disable once CollectionNeverQueried.Global
     public ObservableCollection<DirectoryNode> Root { get; } = new()
     {
-        new DirectoryNode(HomeFolder)
-        {
-            IsExpanded = true
-        }
+        new DirectoryNode(HomeFolder) { IsExpanded = true },
     };
 
     public Stack<DirectoryNode> UndoStack { get; } = new();

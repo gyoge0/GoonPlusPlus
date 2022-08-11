@@ -1,12 +1,12 @@
-﻿using System;
-using System.Text;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
 using DynamicData;
 using GoonPlusPlus.ViewModels;
+using System;
+using System.Text;
 
 namespace GoonPlusPlus.Controls;
 
@@ -37,6 +37,7 @@ public partial class RunOutputBox : TextBox, IStyleable
         // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
         if (!IsEnabled) return;
 
+        // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
         switch (e.Key)
         {
             case Key.Back:
@@ -75,9 +76,7 @@ public partial class RunOutputBox : TextBox, IStyleable
                 // AccessCaretIndex skips the \n
                 AccessCaretIndex++;
 
-                RunViewModel.Instance
-                    .StdIn
-                    .Add(StdInBuilder.ToString());
+                RunViewModel.Instance.StdIn.Add(StdInBuilder.ToString());
                 StdInBuilder.Clear();
 
                 break;
@@ -119,10 +118,7 @@ public partial class RunOutputBox : TextBox, IStyleable
         base.OnTextInput(e);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+    private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 
     #region DirectProperties
 
@@ -164,32 +160,27 @@ public partial class RunOutputBox : TextBox, IStyleable
 
 
     public static readonly DirectProperty<RunOutputBox, StringBuilder> StdInBuilderProperty =
-        AvaloniaProperty.RegisterDirect<RunOutputBox, StringBuilder>
-        ("StdInBuilder",
+        AvaloniaProperty.RegisterDirect<RunOutputBox, StringBuilder>("StdInBuilder",
             o => o.StdInBuilder,
             (o, v) => o.StdInBuilder = v);
 
     public static readonly DirectProperty<RunOutputBox, StringBuilder> EditingBuilderProperty =
-        AvaloniaProperty.RegisterDirect<RunOutputBox, StringBuilder>
-        ("EditingBuilder",
+        AvaloniaProperty.RegisterDirect<RunOutputBox, StringBuilder>("EditingBuilder",
             o => o.EditingBuilder,
             (o, v) => o.EditingBuilder = v);
 
     public static readonly DirectProperty<RunOutputBox, int> VCaretIndexProperty =
-        AvaloniaProperty.RegisterDirect<RunOutputBox, int>
-        ("VCaretIndex",
+        AvaloniaProperty.RegisterDirect<RunOutputBox, int>("VCaretIndex",
             o => o.VCaretIndex,
             (o, v) => o.VCaretIndex = v);
 
     public static readonly DirectProperty<RunOutputBox, int> AccessCaretIndexProperty =
-        AvaloniaProperty.RegisterDirect<RunOutputBox, int>
-        ("AccessCaretIndex",
+        AvaloniaProperty.RegisterDirect<RunOutputBox, int>("AccessCaretIndex",
             o => o.AccessCaretIndex,
             (o, v) => o.AccessCaretIndex = v);
 
     public static readonly DirectProperty<RunOutputBox, bool> CaretCanMoveProperty =
-        AvaloniaProperty.RegisterDirect<RunOutputBox, bool>
-        ("CaretCanMove",
+        AvaloniaProperty.RegisterDirect<RunOutputBox, bool>("CaretCanMove",
             o => o.CaretCanMove,
             (o, v) => o.CaretCanMove = v);
 

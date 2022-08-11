@@ -14,10 +14,7 @@ namespace GoonPlusPlus.Util;
 
 public class ConsoleInputReadEventArgs : EventArgs
 {
-    public ConsoleInputReadEventArgs(string input)
-    {
-        Input = input;
-    }
+    public ConsoleInputReadEventArgs(string input) => Input = input;
 
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public string Input { get; }
@@ -101,8 +98,5 @@ public class ConsoleAutomator : ConsoleAutomatorBase
         BeginReadAsync();
     }
 
-    public void StopAutomating()
-    {
-        OnAutomationStopped();
-    }
+    public void StopAutomating() => OnAutomationStopped();
 }

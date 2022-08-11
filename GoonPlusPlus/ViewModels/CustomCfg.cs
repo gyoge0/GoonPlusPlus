@@ -1,12 +1,12 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using Avalonia.Logging;
+﻿using Avalonia.Logging;
 using Avalonia.Media;
 using GoonPlusPlus.Util.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ReactiveUI;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace GoonPlusPlus.ViewModels;
 
@@ -14,6 +14,13 @@ namespace GoonPlusPlus.ViewModels;
 [SuppressMessage("ReSharper", "StringLiteralTypo")]
 public class CustomCfg : ViewModelBase
 {
+    private CustomCfg()
+    {
+        MakePaths();
+        LoadConfig();
+        SaveConfig();
+    }
+
     [JsonIgnore] public static CustomCfg Instance { get; set; } = new();
 
     [JsonIgnore] public string GppAppDataPath { get; private set; } = null!;
@@ -21,10 +28,7 @@ public class CustomCfg : ViewModelBase
 
     public void MakePaths()
     {
-        GppAppDataPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "Goon++"
-        );
+        GppAppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Goon++");
         ConfigFilePath = Path.Combine(GppAppDataPath, "config.json");
 
         if (!Directory.Exists(GppAppDataPath)) Directory.CreateDirectory(GppAppDataPath);
@@ -48,21 +52,8 @@ public class CustomCfg : ViewModelBase
         }
     }
 
-    public void SaveConfig() => File.WriteAllText(
-        ConfigFilePath,
-        JsonConvert.SerializeObject(
-            this,
-            Formatting.Indented,
-            new CustomCfgSerializer()
-        )
-    );
-
-    private CustomCfg()
-    {
-        MakePaths();
-        LoadConfig();
-        SaveConfig();
-    }
+    public void SaveConfig() => File.WriteAllText(ConfigFilePath,
+        JsonConvert.SerializeObject(this, Formatting.Indented, new CustomCfgSerializer()));
 
     #region BackingFields
 

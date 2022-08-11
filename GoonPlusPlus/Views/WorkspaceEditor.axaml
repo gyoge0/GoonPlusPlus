@@ -1,21 +1,21 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="clr-namespace:GoonPlusPlus.ViewModels"
-        xmlns:controls="clr-namespace:GoonPlusPlus.Controls"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="GoonPlusPlus.Views.WorkspaceEditor"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:GoonPlusPlus.ViewModels"
+    xmlns:controls="clr-namespace:GoonPlusPlus.Controls"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="GoonPlusPlus.Views.WorkspaceEditor"
 
-        Width="500"
-        MinWidth="360"
-        Height="500"
+    Width="500"
+    MinWidth="360"
+    Height="500"
 
-        Icon="/Assets/logo.ico"
-        Title="Configure Workspace"
-        TransparencyLevelHint="AcrylicBlur"
-        Background="Transparent"
-        ExtendClientAreaToDecorationsHint="True">
+    Icon="/Assets/logo.ico"
+    Title="Configure Workspace"
+    TransparencyLevelHint="AcrylicBlur"
+    Background="Transparent"
+    ExtendClientAreaToDecorationsHint="True">
 
     <Window.DataContext>
         <vm:WorkspaceEditorViewModel />
@@ -57,7 +57,7 @@
 
                         <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0, 0, 0, 15">
                             <Button Command="{Binding AddItems}"
-                                    CommandParameter="{Binding $parent[Window]}">
+                                CommandParameter="{Binding $parent[Window]}">
                                 <PathIcon Data="{StaticResource AddRegular}" />
                                 <ToolTip.Tip>
                                     <TextBlock Text="Add Item(s)" />

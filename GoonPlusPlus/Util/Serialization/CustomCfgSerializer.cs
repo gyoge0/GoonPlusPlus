@@ -1,24 +1,21 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using Avalonia.Media;
+﻿using Avalonia.Media;
 using GoonPlusPlus.ViewModels;
 using Newtonsoft.Json;
+using System;
+using System.Linq;
+using System.Text;
 
 namespace GoonPlusPlus.Util.Serialization;
 
 /// <summary>
-/// Custom attribute for the default JSON string representation of a property on <see cref="CustomCfg"/>
+///     Custom attribute for the default JSON string representation of a property on <see cref="CustomCfg" />
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
 public class CustomCfgDefaultAttribute : Attribute
 {
-    public CustomCfgDefaultAttribute(string name)
-    {
-        // WARNING
-        // Adding extra arguments requires changing the LINQ query in CustomCfgSerializer.WriteJson
-        Name = name;
-    }
+    // WARNING
+    // Adding extra arguments requires changing the LINQ query in CustomCfgSerializer.WriteJson
+    public CustomCfgDefaultAttribute(string name) => Name = name;
 
     // This is accessed by reflection
     // ReSharper disable once MemberCanBePrivate.Global
@@ -28,6 +25,8 @@ public class CustomCfgDefaultAttribute : Attribute
 
 public class CustomCfgSerializer : JsonConverter<CustomCfg>
 {
+    public override bool CanRead => false;
+
     public override void WriteJson(JsonWriter writer, CustomCfg? value, JsonSerializer serializer)
     {
         if (value == null)
@@ -39,24 +38,16 @@ public class CustomCfgSerializer : JsonConverter<CustomCfg>
         }
 
         writer.WriteStartObject();
-        value
-            .GetType()
+        value.GetType()
             .GetProperties()
             .Where(p =>
             {
-                var attrs = p
-                    .CustomAttributes
-                    .Select(a => a.AttributeType)
-                    .ToArray();
-                return
-                    !attrs.Contains(typeof(JsonIgnoreAttribute)) &&
-                    attrs.Contains(typeof(CustomCfgDefaultAttribute));
+                var attrs = p.CustomAttributes.Select(a => a.AttributeType).ToArray();
+                return !attrs.Contains(typeof(JsonIgnoreAttribute))
+                    && attrs.Contains(typeof(CustomCfgDefaultAttribute));
             })
-            .Where(p => p
-                .CustomAttributes
-                .Single(a => a.AttributeType == typeof(CustomCfgDefaultAttribute))
-                .ConstructorArguments
-                .Single()
+            .Where(p => p.CustomAttributes.Single(a => a.AttributeType == typeof(CustomCfgDefaultAttribute))
+                .ConstructorArguments.Single()
                 .Value as string != ValueToString(p.GetValue(value)))
             .ToList()
             .ForEach(p =>
@@ -74,16 +65,16 @@ public class CustomCfgSerializer : JsonConverter<CustomCfg>
         double d => $"{d}",
         bool b => b ? "true" : "false",
         IBrush or FontStyle or FontWeight => '"' + value.ToString() + '"',
-        _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+        _ => throw new ArgumentOutOfRangeException(nameof(value), value, null),
     };
 
     /// <summary>
-    /// Converts UpperCamelCaseText to lower_snake_case_text
+    ///     Converts UpperCamelCaseText to lower_snake_case_text
     /// </summary>
     /// <param name="text">Text to convert</param>
     /// <returns>Text in lower_snake_case</returns>
     /// <exception cref="ArgumentNullException">If Text is null</exception>
-    public static string ToSnakeCase(string text)
+    private static string ToSnakeCase(string text)
     {
         if (text == null) throw new ArgumentNullException(nameof(text));
         if (text.Length < 2) return text;
@@ -107,14 +98,7 @@ public class CustomCfgSerializer : JsonConverter<CustomCfg>
         return sb.ToString();
     }
 
-
-    public override bool CanRead => false;
-
     public override CustomCfg ReadJson(
-        JsonReader reader,
-        Type objectType,
-        CustomCfg? existingValue,
-        bool hasExistingValue,
-        JsonSerializer serializer
+        JsonReader reader, Type objectType, CustomCfg? existingValue, bool hasExistingValue, JsonSerializer serializer
     ) => throw new NotImplementedException();
 }

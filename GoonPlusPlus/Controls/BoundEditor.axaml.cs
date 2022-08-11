@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reactive.Linq;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Logging;
 using Avalonia.Markup.Xaml;
@@ -8,16 +6,14 @@ using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
 using GoonPlusPlus.Models;
 using ReactiveUI;
+using System;
+using System.Reactive.Linq;
 using TextMateSharp.Grammars;
 
 namespace GoonPlusPlus.Controls;
 
 public partial class BoundEditor : UserControl
 {
-    private string _boundText = null!;
-    private string? _extension;
-    private readonly RegistryOptions _registryOptions = new(ThemeName.DarkPlus);
-
     public static readonly DirectProperty<BoundEditor, string> BoundTextProperty =
         AvaloniaProperty.RegisterDirect<BoundEditor, string>("BoundText", o => o.BoundText, (o, v) => o.BoundText = v);
 
@@ -25,8 +21,9 @@ public partial class BoundEditor : UserControl
     public static readonly DirectProperty<BoundEditor, string?> ExtensionProperty =
         AvaloniaProperty.RegisterDirect<BoundEditor, string?>("Extension", o => o.Extension, (o, v) => o.Extension = v);
 
-
-    public TextEditor EditArea { get; }
+    private readonly RegistryOptions _registryOptions = new(ThemeName.DarkPlus);
+    private string _boundText = null!;
+    private string? _extension;
 
     public BoundEditor()
     {
@@ -44,10 +41,8 @@ public partial class BoundEditor : UserControl
                 try
                 {
                     textMate.SetGrammar(
-                        _registryOptions.GetScopeByLanguageId(_registryOptions.GetLanguageByExtension("." + x).Id)
-                    );
-                    Logger.TryGet(LogEventLevel.Debug, LogArea.Control)
-                        ?.Log(this, $"Found language for extension {x}");
+                        _registryOptions.GetScopeByLanguageId(_registryOptions.GetLanguageByExtension("." + x).Id));
+                    Logger.TryGet(LogEventLevel.Debug, LogArea.Control)?.Log(this, $"Found language for extension {x}");
                 }
                 catch (NullReferenceException)
                 {
@@ -74,6 +69,9 @@ public partial class BoundEditor : UserControl
     }
 
 
+    public TextEditor EditArea { get; }
+
+
     public string BoundText
     {
         get => _boundText;
@@ -86,8 +84,5 @@ public partial class BoundEditor : UserControl
         set => SetAndRaise(ExtensionProperty, ref _extension, value);
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+    private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 }

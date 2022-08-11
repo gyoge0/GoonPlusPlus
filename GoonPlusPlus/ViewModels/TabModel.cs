@@ -1,11 +1,11 @@
-﻿using System.IO;
-using System.Linq;
-using System.Reactive;
-using Avalonia.Logging;
+﻿using Avalonia.Logging;
 using GoonPlusPlus.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ReactiveUI;
+using System.IO;
+using System.Linq;
+using System.Reactive;
 
 namespace GoonPlusPlus.ViewModels;
 
@@ -29,7 +29,7 @@ public class TabModel : ViewModelBase
     }
 
     /// <summary>
-    /// Path modifies other properties if it is set.
+    ///     Path modifies other properties if it is set.
     /// </summary>
     [JsonProperty]
     public string? Path
@@ -89,6 +89,6 @@ public class TabModel : ViewModelBase
     /// <summary>
     ///     Closes the tab.
     /// </summary>
-    public ReactiveCommand<TabModel, Unit> Close { get; } = ReactiveCommand.Create<TabModel>(
-        tab => TabBuffer.Instance.RemoveTabs(tab));
+    public ReactiveCommand<TabModel, Unit> Close { get; } =
+        ReactiveCommand.Create<TabModel>(tab => TabBuffer.Instance.RemoveTabs(tab));
 }

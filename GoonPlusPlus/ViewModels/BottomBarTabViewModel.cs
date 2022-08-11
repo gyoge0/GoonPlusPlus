@@ -6,16 +6,12 @@ public class BottomBarTabViewModel : ViewModelBase
 {
     public enum TabIdx
     {
-        Compile,
-        Run
+        Compile, Run,
     }
 
     private int _currentTabIdx;
 
-    public BottomBarTabViewModel()
-    {
-        Instance = this;
-    }
+    public BottomBarTabViewModel() => Instance = this;
 
     public static BottomBarTabViewModel Instance { get; private set; }
 

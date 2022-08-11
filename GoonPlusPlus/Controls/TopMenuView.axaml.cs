@@ -5,13 +5,7 @@ namespace GoonPlusPlus.Controls;
 
 public partial class TopMenuView : UserControl
 {
-    public TopMenuView()
-    {
-        InitializeComponent();
-    }
+    public TopMenuView() => InitializeComponent();
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+    private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 }

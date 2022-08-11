@@ -1,7 +1,7 @@
-﻿using System.IO;
-using System.Linq;
-using GoonPlusPlus.Models;
+﻿using GoonPlusPlus.Models;
 using Newtonsoft.Json;
+using System.IO;
+using System.Linq;
 
 namespace GoonPlusPlus.ViewModels;
 
@@ -12,7 +12,7 @@ public class MainWindowViewModel : ViewModelBase
         switch (paths.Length)
         {
             case 1 when new FileInfo(paths.Single()).Name == "wksp.gpp":
-                WorkspaceViewModel.Instantiated += (_) =>
+                WorkspaceViewModel.Instantiated += _ =>
                 {
                     var wksp = JsonConvert.DeserializeObject<WorkspaceModel>(File.ReadAllText(paths.Single()));
                     if (wksp == null) return;
@@ -28,9 +28,7 @@ public class MainWindowViewModel : ViewModelBase
             }
             default:
             {
-                var models = paths
-                    .Select(p => new TabModel(p))
-                    .ToArray();
+                var models = paths.Select(p => new TabModel(p)).ToArray();
 
                 TabBuffer.Instance.AddTabs(models);
                 TabBuffer.Instance.CurrentTab = models.First();

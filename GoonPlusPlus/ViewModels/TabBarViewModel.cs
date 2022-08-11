@@ -1,10 +1,10 @@
-﻿using System;
+﻿using DynamicData;
+using GoonPlusPlus.Models;
+using ReactiveUI;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using DynamicData;
-using GoonPlusPlus.Models;
-using ReactiveUI;
 
 namespace GoonPlusPlus.ViewModels;
 
@@ -15,9 +15,7 @@ public class TabBarViewModel : ViewModelBase
 
     public TabBarViewModel()
     {
-        TabBuffer.Instance
-            .Buffer
-            .Connect()
+        TabBuffer.Instance.Buffer.Connect()
             .Bind(out _tabs)
             .OnItemRemoved(f =>
             {
@@ -28,17 +26,13 @@ public class TabBarViewModel : ViewModelBase
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe();
 
-        WorkspaceViewModel.Instantiated += sender => (sender as WorkspaceViewModel)
-            .WhenAnyValue(x => x!.Workspace)
+        WorkspaceViewModel.Instantiated += sender => (sender as WorkspaceViewModel).WhenAnyValue(x => x!.Workspace)
             .WhereNotNull()
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(p =>
             {
-                TabBuffer.Instance
-                    .Buffer
-                    .Clear();
-                TabBuffer.Instance
-                    .AddTabs(p.Tabs.ToArray());
+                TabBuffer.Instance.Buffer.Clear();
+                TabBuffer.Instance.AddTabs(p.Tabs.ToArray());
             });
     }
 
@@ -53,8 +47,7 @@ public class TabBarViewModel : ViewModelBase
             _currentTabMirror = value;
             // no tabs open
             if (_tabs.Count <= value || value < 0) return;
-            TabBuffer.Instance
-                .CurrentTab = _tabs[value];
+            TabBuffer.Instance.CurrentTab = _tabs[value];
         }
     }
 }

@@ -5,13 +5,7 @@ namespace GoonPlusPlus.Controls;
 
 public partial class TabBarView : UserControl
 {
-    public TabBarView()
-    {
-        InitializeComponent();
-    }
+    public TabBarView() => InitializeComponent();
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+    private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 }

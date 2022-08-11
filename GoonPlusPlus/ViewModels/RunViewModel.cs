@@ -1,9 +1,9 @@
-﻿using System;
+﻿using DynamicData;
+using ReactiveUI;
+using System;
 using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Text;
-using DynamicData;
-using ReactiveUI;
 
 namespace GoonPlusPlus.ViewModels;
 
@@ -36,8 +36,7 @@ public class RunViewModel : ViewModelBase
                 StdIn.Clear();
             });
 
-        Output
-            .Connect()
+        Output.Connect()
             .OnItemAdded(l =>
             {
                 // The process adds a null character when it terminates
@@ -56,8 +55,7 @@ public class RunViewModel : ViewModelBase
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe();
 
-        StdIn
-            .Connect()
+        StdIn.Connect()
             .OnItemAdded(l =>
             {
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract

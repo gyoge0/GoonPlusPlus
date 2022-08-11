@@ -1,16 +1,21 @@
-﻿using System;
+﻿using Avalonia.Logging;
+using ReactiveUI;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
-using Avalonia.Logging;
-using ReactiveUI;
 
 namespace GoonPlusPlus.Models.ExplorerTree;
 
 public class DirectoryNode : ExplorerNode
 {
-    public ObservableCollection<ExplorerNode> SubNodes { get; } = new();
-
     private bool _isExpanded;
+
+    public DirectoryNode(string strFullPath) : base(strFullPath)
+    {
+        if (Directory.GetFiles(FullPath).Length > 0) SubNodes.Add(new FileNode("{{ Dummy Node }}"));
+    }
+
+    public ObservableCollection<ExplorerNode> SubNodes { get; } = new();
 
     public bool IsExpanded
     {
@@ -21,11 +26,6 @@ public class DirectoryNode : ExplorerNode
             if (this.RaiseAndSetIfChanged(ref _isExpanded, value)) GetSubfolders();
             else if (Directory.GetFiles(FullPath).Length > 0) SubNodes.Add(new FileNode("{{ Dummy Node }}"));
         }
-    }
-
-    public DirectoryNode(string strFullPath) : base(strFullPath)
-    {
-        if (Directory.GetFiles(FullPath).Length > 0) SubNodes.Add(new FileNode("{{ Dummy Node }}"));
     }
 
     private void GetSubfolders()

@@ -45,23 +45,23 @@
                             </Style>
                             <Style Selector="Button:pointerover">
                                 <Setter Property="Background"
-                                        Value="{Binding Custom.TabBarHeaderButtonHoverBackground}" />
+                                    Value="{Binding Custom.TabBarHeaderButtonHoverBackground}" />
                                 <Setter Property="Foreground"
-                                        Value="{Binding Custom.TabBarHeaderButtonHoverForeground}" />
+                                    Value="{Binding Custom.TabBarHeaderButtonHoverForeground}" />
                                 <Setter Property="FontSize"
-                                        Value="{Binding Custom.TabBarHeaderButtonHoverSize}" />
+                                    Value="{Binding Custom.TabBarHeaderButtonHoverSize}" />
                                 <Setter Property="FontWeight"
-                                        Value="{Binding Custom.TabBarHeaderButtonHoverWeight}" />
+                                    Value="{Binding Custom.TabBarHeaderButtonHoverWeight}" />
                             </Style>
                             <Style Selector="Button:pressed">
                                 <Setter Property="Background"
-                                        Value="{Binding Custom.TabBarHeaderButtonPressedBackground}" />
+                                    Value="{Binding Custom.TabBarHeaderButtonPressedBackground}" />
                                 <Setter Property="Foreground"
-                                        Value="{Binding Custom.TabBarHeaderButtonPressedForeground}" />
+                                    Value="{Binding Custom.TabBarHeaderButtonPressedForeground}" />
                                 <Setter Property="FontSize"
-                                        Value="{Binding Custom.TabBarHeaderButtonPressedSize}" />
+                                    Value="{Binding Custom.TabBarHeaderButtonPressedSize}" />
                                 <Setter Property="FontWeight"
-                                        Value="{Binding Custom.TabBarHeaderButtonPressedWeight}" />
+                                    Value="{Binding Custom.TabBarHeaderButtonPressedWeight}" />
                             </Style>
                         </Button.Styles>
                     </Button>

@@ -1,96 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>3.10</ProductVersion>
-    <ProjectGuid>0b767eeb-4b81-48ec-b9e5-5d98b408f5ff</ProjectGuid>
-    <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>Goon++.$(Configuration)-$(Platform)</OutputName>
-    <OutputType>Package</OutputType>
-	<Cultures>;</Cultures>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release\</OutputPath>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Components.wxs" />
-    <Compile Include="ComponentsGenerated.wxs" />
-    <Compile Include="Directories.wxs" />
-    <Compile Include="Product.wxs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Defs.wxl" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\GoonPlusPlus\GoonPlusPlus.csproj">
-      <Name>GoonPlusPlus</Name>
-      <Project>{743f9d42-de2a-4e78-974f-e3674ca128e6}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WixExtension Include="WixUtilExtension">
-      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
-      <Name>WixUtilExtension</Name>
-    </WixExtension>
-    <WixExtension Include="WixUIExtension">
-      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
-      <Name>WixUIExtension</Name>
-    </WixExtension>
-  </ItemGroup>
-  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
-  <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
-    <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
-  </Target>
-  <!-- Execute commands before build -->
-  <Target Name="BeforeBuild">
-<!--    &lt;!&ndash; Remove existing build from bin &ndash;&gt;-->
-<!--    <Exec Command="rd /s /q ..\GoonPlusPlus\bin\$(Configuration)\net6.0\win-$(Platform)\" />-->
-
-<!--	  &lt;!&ndash; Publish .NET app &ndash;&gt;-->
-<!--    <Exec Command="dotnet publish ..\GoonPlusPlus\GoonPlusPlus.csproj &#45;&#45;sc -r win-$(Platform) -c $(Configuration)" />-->
-<!--	  -->
-    
-	  <!-- Retrieve assembly version -->
-    <GetAssemblyIdentity AssemblyFiles="..\GoonPlusPlus\bin\Release\net6.0\win-$(Platform)\publish\GoonPlusPlus.dll">
-      <Output TaskParameter="Assemblies" ItemName="AssemblyVersion" />
-    </GetAssemblyIdentity>
-    <!-- Auto load build version -->
     <PropertyGroup>
-      <DefineConstants>BuildVersion=%(AssemblyVersion.Version);BasePath=..\GoonPlusPlus\bin\Release\net6.0\win-$(Platform)\publish</DefineConstants>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+        <ProductVersion>3.10</ProductVersion>
+        <ProjectGuid>0b767eeb-4b81-48ec-b9e5-5d98b408f5ff</ProjectGuid>
+        <SchemaVersion>2.0</SchemaVersion>
+        <OutputName>Goon++.$(Configuration)-$(Platform)</OutputName>
+        <OutputType>Package</OutputType>
+        <Cultures>;</Cultures>
     </PropertyGroup>
-	  
-    <!-- Rips file components from publish folder -->
-    <HeatDirectory OutputFile="ComponentsGenerated.wxs" DirectoryRefId="INSTALLFOLDER" ComponentGroupName="PublishedComponents" SuppressCom="true" Directory="..\GoonPlusPlus\bin\Release\net6.0\win-$(Platform)\publish\" SuppressFragments="true" SuppressRegistry="true" SuppressRootDirectory="true" AutoGenerateGuids="false" GenerateGuidsNow="true" ToolPath="$(WixToolPath)" PreprocessorVariable="var.BasePath" RunAsSeparateProcess="$(RunWixToolsOutOfProc)" />
-  </Target>
-  <Target Name="AfterBuild">
-	  <Exec Command="move bin\$(Platform)\$(Configuration)\$(OutputName).msi bin\Goon++.v%(AssemblyVersion.Version)-$(Configuration)-$(Platform).msi" />
-	  <Exec Command="rd /s /q bin\$(Configuration)" />
-  </Target>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+        <OutputPath>bin\$(Configuration)\</OutputPath>
+        <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+        <DefineConstants>Debug</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+        <OutputPath>bin\$(Configuration)\</OutputPath>
+        <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+        <DefineConstants>Debug</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+        <OutputPath>bin\x64\Release\</OutputPath>
+        <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+        <OutputPath>bin\x86\Release\</OutputPath>
+        <PlatformTarget>x86</PlatformTarget>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <OutputPath>bin\Debug\</OutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <OutputPath>bin\Release\</OutputPath>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Components.wxs"/>
+        <Compile Include="ComponentsGenerated.wxs"/>
+        <Compile Include="Directories.wxs"/>
+        <Compile Include="Product.wxs"/>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Defs.wxl"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\GoonPlusPlus\GoonPlusPlus.csproj">
+            <Name>GoonPlusPlus</Name>
+            <Project>{743f9d42-de2a-4e78-974f-e3674ca128e6}</Project>
+            <Private>True</Private>
+            <DoNotHarvest>True</DoNotHarvest>
+            <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+            <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+        </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+        <WixExtension Include="WixUtilExtension">
+            <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+            <Name>WixUtilExtension</Name>
+        </WixExtension>
+        <WixExtension Include="WixUIExtension">
+            <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
+            <Name>WixUIExtension</Name>
+        </WixExtension>
+    </ItemGroup>
+    <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' "/>
+    <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') "/>
+    <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
+        <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/"/>
+    </Target>
+    <!-- Execute commands before build -->
+    <Target Name="BeforeBuild">
+        <!--    &lt;!&ndash; Remove existing build from bin &ndash;&gt;-->
+        <!--    <Exec Command="rd /s /q ..\GoonPlusPlus\bin\$(Configuration)\net6.0\win-$(Platform)\" />-->
+
+        <!--	  &lt;!&ndash; Publish .NET app &ndash;&gt;-->
+        <!--    <Exec Command="dotnet publish ..\GoonPlusPlus\GoonPlusPlus.csproj &#45;&#45;sc -r win-$(Platform) -c $(Configuration)" />-->
+        <!--	  -->
+
+        <!-- Retrieve assembly version -->
+        <GetAssemblyIdentity AssemblyFiles="..\GoonPlusPlus\bin\Release\net6.0\win-$(Platform)\publish\GoonPlusPlus.dll">
+            <Output TaskParameter="Assemblies" ItemName="AssemblyVersion"/>
+        </GetAssemblyIdentity>
+        <!-- Auto load build version -->
+        <PropertyGroup>
+            <DefineConstants>BuildVersion=%(AssemblyVersion.Version);BasePath=..\GoonPlusPlus\bin\Release\net6.0\win-$(Platform)\publish</DefineConstants>
+        </PropertyGroup>
+
+        <!-- Rips file components from publish folder -->
+        <HeatDirectory OutputFile="ComponentsGenerated.wxs" DirectoryRefId="INSTALLFOLDER" ComponentGroupName="PublishedComponents" SuppressCom="true" Directory="..\GoonPlusPlus\bin\Release\net6.0\win-$(Platform)\publish\" SuppressFragments="true" SuppressRegistry="true" SuppressRootDirectory="true" AutoGenerateGuids="false" GenerateGuidsNow="true" ToolPath="$(WixToolPath)" PreprocessorVariable="var.BasePath" RunAsSeparateProcess="$(RunWixToolsOutOfProc)"/>
+    </Target>
+    <Target Name="AfterBuild">
+        <Exec Command="move bin\$(Platform)\$(Configuration)\$(OutputName).msi bin\Goon++.v%(AssemblyVersion.Version)-$(Configuration)-$(Platform).msi"/>
+        <Exec Command="rd /s /q bin\$(Configuration)"/>
+    </Target>
 </Project>

@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using DynamicData;
+﻿using DynamicData;
 using GoonPlusPlus.Controls;
 using GoonPlusPlus.ViewModels;
 using ReactiveUI;
+using System.Linq;
 
 namespace GoonPlusPlus.Models;
 
@@ -21,31 +21,20 @@ public class TabBuffer : ReactiveObject
 
     public SourceList<TabModel> Buffer { get; } = new();
 
-    public void AddTabs(params string[] paths) => paths
-        .ToList()
-        .ConvertAll(p => new TabModel(p))
-        .ForEach(Buffer.Add);
+    public void AddTabs(params string[] paths) => paths.ToList().ConvertAll(p => new TabModel(p)).ForEach(Buffer.Add);
 
-    public void AddTabs(params TabModel[] models) => models
-        .ToList()
-        .ForEach(Buffer.Add);
+    public void AddTabs(params TabModel[] models) => models.ToList().ForEach(Buffer.Add);
 
     public void RemoveTabs(params TabModel[] models)
     {
         // SourceCache won't remove untitled items if their content is changed from ""
-        models
-            .Where(m => m.IsUntitled)
-            .ToList()
-            .ForEach(m => m.Content = "");
+        models.Where(m => m.IsUntitled).ToList().ForEach(m => m.Content = "");
         Buffer.RemoveMany(models);
     }
 
     public int NumUntitled()
     {
-        var tabs = Instance
-            .Buffer
-            .Items
-            .Where(k => k.IsUntitled)
+        var tabs = Instance.Buffer.Items.Where(k => k.IsUntitled)
             .Select(k => k.Name.Split(" ").Last())
             .Select(int.Parse)
             .ToArray();

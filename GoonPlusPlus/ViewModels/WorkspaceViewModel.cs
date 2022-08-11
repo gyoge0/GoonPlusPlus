@@ -25,8 +25,5 @@ public class WorkspaceViewModel : ViewModelBase
 
     public static event InstantiatedEventHandler? Instantiated;
 
-    private void OnInstantiated()
-    {
-        Instantiated?.Invoke(this);
-    }
+    private void OnInstantiated() => Instantiated?.Invoke(this);
 }

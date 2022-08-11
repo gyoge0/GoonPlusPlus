@@ -5,13 +5,7 @@ namespace GoonPlusPlus.Controls;
 
 public partial class AcrylicBlurView : UserControl
 {
-    public AcrylicBlurView()
-    {
-        InitializeComponent();
-    }
+    public AcrylicBlurView() => InitializeComponent();
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+    private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 }

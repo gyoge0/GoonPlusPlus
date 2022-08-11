@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
-using Avalonia.Logging;
+﻿using Avalonia.Logging;
 using DynamicData;
 using GoonPlusPlus.ViewModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ReactiveUI;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace GoonPlusPlus.Models;
 
@@ -30,9 +30,7 @@ public class WorkspaceModel
             .OnItemRemoved(i => CpAsList.Add(i))
             .Subscribe();
 
-        TabBuffer.Instance
-            .Buffer
-            .Connect()
+        TabBuffer.Instance.Buffer.Connect()
             .OnItemAdded(x =>
             {
                 if (Tabs.Contains(x)) return;

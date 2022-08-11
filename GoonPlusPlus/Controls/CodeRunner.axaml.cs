@@ -7,15 +7,9 @@ namespace GoonPlusPlus.Controls;
 
 public partial class CodeRunner : UserControl
 {
-    public CodeRunner()
-    {
-        InitializeComponent();
-    }
+    public CodeRunner() => InitializeComponent();
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+    private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 
     private void Collapse_OnTapped(object? sender, RoutedEventArgs _)
     {
