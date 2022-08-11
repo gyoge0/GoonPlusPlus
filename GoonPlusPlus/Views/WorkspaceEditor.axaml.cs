@@ -1,13 +1,17 @@
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
 namespace GoonPlusPlus.Views;
 
-public partial class MainWindow : Window
+public partial class WorkspaceEditor : Window
 {
-    public MainWindow()
+    public WorkspaceEditor()
     {
         InitializeComponent();
+#if DEBUG
+        this.AttachDevTools();
+#endif
     }
 
     private void InitializeComponent()

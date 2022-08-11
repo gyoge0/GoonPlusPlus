@@ -45,6 +45,22 @@
                 </MenuItem>
             </MenuItem>
 
+            <MenuItem Header="Workspace">
+                <MenuItem
+                    Header="Create" Command="{Binding Create}"
+                    IsEnabled="{Binding OpenProject}" />
+                <MenuItem
+                    Header="Open" Command="{Binding Open}"
+                    CommandParameter="{Binding $parent[Window]}" />
+                <MenuItem
+                    Header="Exit" Command="{Binding Exit}"
+                    IsEnabled="{Binding OpenProject, Converter={x:Static BoolConverters.Not}}" />
+                <MenuItem
+                    Header="Configure" Command="{Binding Configure}"
+                    IsEnabled="{Binding OpenProject, Converter={x:Static BoolConverters.Not}}"
+                    CommandParameter="{Binding $parent[Window]}" />
+            </MenuItem>
+
             <MenuItem
                 Command="{Binding Compile}"
                 IsVisible="{Binding FileCanCompile}">

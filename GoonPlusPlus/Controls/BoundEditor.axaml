@@ -18,7 +18,6 @@
         Margin="30"
         HorizontalScrollBarVisibility="Auto"
         VerticalScrollBarVisibility="Visible"
-
         Background="{Binding Custom.EditorBackground}"
         Foreground="{Binding Custom.EditorForeground}"
         ShowLineNumbers="{Binding Custom.EditorShowLineNumbers}"

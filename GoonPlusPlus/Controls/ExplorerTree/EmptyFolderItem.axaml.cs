@@ -1,19 +1,17 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using AvaloniaEdit;
 
 namespace GoonPlusPlus.Controls.ExplorerTree;
 
 public partial class EmptyFolderItem : UserControl
 {
-    public TextBlock TextBlock { get; }
-
     public EmptyFolderItem()
     {
         InitializeComponent();
         TextBlock = this.FindControl<TextBlock>("Block");
     }
+
+    public TextBlock TextBlock { get; }
 
     private void InitializeComponent()
     {

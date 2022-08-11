@@ -3,18 +3,42 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Text;
 using Avalonia.Controls;
+using Avalonia.Logging;
+using CliWrap;
+using CliWrap.Buffered;
 using DynamicData;
 using DynamicData.Binding;
 using GoonPlusPlus.Models;
 using GoonPlusPlus.Models.ExplorerTree;
 using GoonPlusPlus.Util;
+using GoonPlusPlus.Views;
 using ReactiveUI;
 
 namespace GoonPlusPlus.ViewModels;
 
 public class TopMenuViewModel : ViewModelBase
 {
+    private bool _fileCanCompile;
+    private bool _fileCanRun;
+    private bool _openProject;
+
+    public TopMenuViewModel()
+    {
+        TabBuffer.Instance
+            .WhenPropertyChanged(x => x.CurrentTab)
+            .WhereNotNull()
+            .Subscribe(x =>
+            {
+                FileCanCompile = FileNode.CompilableExtensions.Contains(x.Value?.Extension);
+                FileCanRun = FileNode.RunnableExtensions.Contains(x.Value?.Extension);
+            });
+        WorkspaceViewModel.Instantiated += sender => (sender as WorkspaceViewModel)
+            .WhenAnyValue(x => x!.Workspace)
+            .Subscribe(p => OpenProject = p == null);
+    }
+
     public ReactiveCommand<Window, Unit> OpenFile { get; } = ReactiveCommand.CreateFromTask(async (Window source) =>
     {
         var paths = await new OpenFileDialog().ShowAsync(source);
@@ -22,30 +46,37 @@ public class TopMenuViewModel : ViewModelBase
     });
 
     /// <summary>
-    /// Opens an untitled tab.
+    ///     Opens an untitled tab.
     /// </summary>
     public ReactiveCommand<Unit, Unit> NewTab { get; } = ReactiveCommand.Create(() =>
-        TabBuffer.Instance.AddTabs(new TabModel { Name = $"Untitled {TabBuffer.Instance.NumUntitiled() + 1}" }));
+        TabBuffer.Instance.AddTabs(new TabModel { Name = $"Untitled {TabBuffer.Instance.NumUntitled() + 1}" }));
 
     /// <summary>
-    /// Saves the current tab if it is not untitled.
+    ///     Saves the current tab if it is not untitled.
     /// </summary>
     public ReactiveCommand<Unit, Unit> SaveFile { get; } = ReactiveCommand.CreateFromTask(async () =>
     {
+        var wksp = WorkspaceViewModel.Instance.Workspace?.Save();
+
         var tab = TabBuffer.Instance.CurrentTab;
         if (tab == null || tab.IsUntitled) return;
         await File.WriteAllTextAsync(
             tab.Path!,
             tab.Content
         );
+
+        if (wksp == null) return;
+        await wksp;
     });
 
     /// <summary>
-    /// Opens a file chooser menu to allow the user to choose what file to save the current tab's content to.
-    /// Also modifies the tab's data to match that of the chosen file.
+    ///     Opens a file chooser menu to allow the user to choose what file to save the current tab's content to.
+    ///     Also modifies the tab's data to match that of the chosen file.
     /// </summary>
     public ReactiveCommand<Window, Unit> SaveFileAs { get; } = ReactiveCommand.CreateFromTask(async (Window source) =>
     {
+        var wksp = WorkspaceViewModel.Instance.Workspace?.Save();
+
         var path = await new SaveFileDialog().ShowAsync(source);
 
         if (path == null) return;
@@ -62,15 +93,18 @@ public class TopMenuViewModel : ViewModelBase
 
         if (dup != null) TabBuffer.Instance.RemoveTabs(dup);
 
-        tab.LoadFromFile(path);
+        tab.Path = path;
         await File.WriteAllTextAsync(
             path,
             tab.Content
         );
+
+        if (wksp == null) return;
+        await wksp;
     });
 
     /// <summary>
-    /// Closes the current open tab.
+    ///     Closes the current open tab.
     /// </summary>
     public ReactiveCommand<Unit, Unit> CloseFile { get; } = ReactiveCommand.Create(() =>
     {
@@ -79,7 +113,7 @@ public class TopMenuViewModel : ViewModelBase
     });
 
     /// <summary>
-    /// If the current tab has a selection highlighted, will copy it to the system clipboard.
+    ///     If the current tab has a selection highlighted, will copy it to the system clipboard.
     /// </summary>
     public ReactiveCommand<Unit, Unit> CopyText { get; } = ReactiveCommand.Create(() =>
     {
@@ -88,7 +122,7 @@ public class TopMenuViewModel : ViewModelBase
     });
 
     /// <summary>
-    /// If the current tab has a selection highlighted, will copy it to the system clipboard and delete the selection.
+    ///     If the current tab has a selection highlighted, will copy it to the system clipboard and delete the selection.
     /// </summary>
     public ReactiveCommand<Unit, Unit> CutText { get; } = ReactiveCommand.Create(() =>
     {
@@ -97,8 +131,9 @@ public class TopMenuViewModel : ViewModelBase
     });
 
     /// <summary>
-    /// If the current tab has a selection highlighted, will paste the contents of the system clipboard to replace the selection.
-    /// Otherwise, will insert the contents of the system clipboard at the current cursor position.
+    ///     If the current tab has a selection highlighted, will paste the contents of the system clipboard to replace the
+    ///     selection.
+    ///     Otherwise, will insert the contents of the system clipboard at the current cursor position.
     /// </summary>
     public ReactiveCommand<Unit, Unit> PasteText { get; } = ReactiveCommand.Create(() =>
     {
@@ -112,9 +147,68 @@ public class TopMenuViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> ReloadCustomCfg { get; } = ReactiveCommand.Create(() =>
         CustomCfg.Instance.LoadConfig());
 
+
+    public ReactiveCommand<Unit, Unit> Create { get; } = ReactiveCommand.CreateFromTask(async () =>
+    {
+        var fullPath = FileExplorerViewModel.Instance.Root[0].FullPath;
+        var workspace = new WorkspaceModel(fullPath);
+        // ReSharper disable once StringLiteralTypo
+        var path = Path.Join(fullPath, "wksp.gpp");
+        TabBuffer.Instance.Buffer.Items.ToList().ForEach(workspace.Tabs.Add);
+
+        try
+        {
+            File.Create(path).Close();
+            await workspace.Save();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            Logger.TryGet(LogEventLevel.Warning, LogArea.Binding)?.Log(workspace, $"Access denied to {path}");
+            return;
+        }
+
+        WorkspaceViewModel.Instance.Workspace = workspace;
+    });
+
+    public ReactiveCommand<Window, Unit> Open { get; } = ReactiveCommand.CreateFromTask(async (Window source) =>
+    {
+        var selected = await new OpenFileDialog
+        {
+            Filters =
+            {
+                new FileDialogFilter
+                {
+                    Name = "Goon++ Project (*.gpp)",
+                    Extensions = { "gpp" }
+                }
+            }
+        }.ShowAsync(source);
+
+        if (selected == null
+            || selected.Length < 1
+            || selected[0].Split(".").Last() != "gpp")
+            return;
+
+        var proj = WorkspaceModel.Load(selected[0]);
+        if (proj == null) return;
+        WorkspaceViewModel.Instance.Workspace = proj;
+    });
+
+    public ReactiveCommand<Unit, Unit> Exit { get; } = ReactiveCommand.CreateFromTask(async () =>
+    {
+        var proj = WorkspaceViewModel.Instance.Workspace!;
+        var task = proj.Save();
+        WorkspaceViewModel.Instance.Workspace = null;
+        await task;
+    });
+
+    public ReactiveCommand<Window, Unit> Configure { get; } = ReactiveCommand.CreateFromTask(async (Window source)
+        => await new WorkspaceEditor().ShowDialog(source));
+
+
     private bool _fileCanCompile;
     private bool _fileCanRun;
-
+    
     public bool FileCanCompile
     {
         get => _fileCanCompile;
@@ -127,16 +221,10 @@ public class TopMenuViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _fileCanRun, value);
     }
 
-    public TopMenuViewModel()
+    public bool OpenProject
     {
-        TabBuffer.Instance
-            .WhenPropertyChanged(x => x.CurrentTab)
-            .WhereNotNull()
-            .Subscribe(x =>
-            {
-                FileCanCompile = FileNode.CompilableExtensions.Contains(x.Value?.Extension);
-                FileCanRun = FileNode.RunnableExtensions.Contains(x.Value?.Extension);
-            });
+        get => _openProject;
+        set => this.RaiseAndSetIfChanged(ref _openProject, value);
     }
 
     public ReactiveCommand<Unit, Unit> Compile { get; } = ReactiveCommand.CreateFromTask(async () =>
@@ -144,49 +232,62 @@ public class TopMenuViewModel : ViewModelBase
         var currentTab = TabBuffer.Instance.CurrentTab;
         if (currentTab == null) return;
 
+        // ReSharper disable once IdentifierTypo
+        var compilevm = CompileViewModel.Instance;
+        var wksp = WorkspaceViewModel.Instance.Workspace;
 
-        using var compile = new Process
-        {
-            StartInfo = new ProcessStartInfo
+        var compile = Cli.Wrap("javac")
+            .WithArguments(args =>
             {
-                FileName = "javac",
-                Arguments = currentTab.Path,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            }
-        };
+                args.Add(currentTab.Path);
 
-        compile.Start();
+                if (wksp == null) return;
+
+                args.Add("--source-path");
+                args.Add(wksp.SourcePath);
+                
+                args.Add("-cp");
+                
+                var sb = new StringBuilder();
+                // sb.Append('"');
+                wksp.Classpath.Items.ToList().ForEach(d => sb.Append($"{d};"));
+                // sb.Append('"');
+                
+                args.Add(sb.ToString());
+                
+                if (!Directory.Exists(wksp.OutputDir))
+                {
+                    Directory.CreateDirectory(wksp.OutputDir);
+                }
+
+                args.Add("-d");
+                args.Add($"{wksp.OutputDir}");
+            })
+            .WithValidation(CommandResultValidation.None);
+
+        var res = await compile.ExecuteBufferedAsync();
+
         BottomBarTabViewModel.Instance.CurrentTabIdx = (int)BottomBarTabViewModel.TabIdx.Compile;
 
-        await compile.WaitForExitAsync();
-        var vm = CompileViewModel.Instance;
+        compilevm.CompileOutput = string.Empty;
 
-        vm.CompileOutput = string.Empty;
-
-        var stdout = await compile.StandardOutput.ReadToEndAsync();
-        if (stdout != string.Empty)
+        if (res.StandardOutput.Length > 0)
         {
-            vm.CompileOutput += "<-- Standard Output -->\n\n";
-            vm.CompileOutput += stdout;
-            vm.CompileOutput += "<-- End Standard Output --> \n\n";
+            compilevm.CompileOutput += "<-- Standard Output -->\n\n";
+            compilevm.CompileOutput += res.StandardOutput;
+            compilevm.CompileOutput += "<-- End Standard Output --> \n\n";
         }
 
-        var stderr = await compile.StandardError.ReadToEndAsync();
-        if (stderr != string.Empty)
+        if (res.StandardError.Length > 0)
         {
-            vm.CompileOutput += "<-- Standard Error -->\n\n";
-            vm.CompileOutput += stderr;
-            vm.CompileOutput += "\n<-- End Standard Error --> \n\n";
+            compilevm.CompileOutput += "<-- Standard Error -->\n\n";
+            compilevm.CompileOutput += res.StandardError;
+            compilevm.CompileOutput += "\n<-- End Standard Error --> \n\n";
         }
 
-        vm.CompileOutput += $"Process exited with code {compile.ExitCode} --- Compilation ";
-        vm.CompileOutput += compile.ExitCode == 0 ? "Successful" : "Failed";
-        vm.CompileOutput += ".";
-
-        compile.Dispose();
+        compilevm.CompileOutput += $"Process exited with code {res.ExitCode} --- Compilation ";
+        compilevm.CompileOutput += res.ExitCode == 0 ? "Successful" : "Failed";
+        compilevm.CompileOutput += ".";
     });
 
     public ReactiveCommand<Unit, Unit> Run { get; } = ReactiveCommand.CreateFromTask(async () =>
@@ -194,12 +295,25 @@ public class TopMenuViewModel : ViewModelBase
         var currentTab = TabBuffer.Instance.CurrentTab;
         if (currentTab == null) return;
 
+        var sb = new StringBuilder();
+        var wksp = WorkspaceViewModel.Instance.Workspace;
+
+        if (wksp != null)
+        {
+            sb.Append(" -cp \"");
+            sb.Append($"{wksp.OutputDir};");
+            wksp.Classpath.Items.ToList().ForEach(j => sb.Append(j + ";"));
+            sb.Append("\" ");
+        }
+
+        sb.Append(Path.GetFileNameWithoutExtension(currentTab.Path));
+
         using var process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
                 FileName = "java.exe",
-                Arguments = Path.GetFileName(currentTab.Path),
+                Arguments = sb.ToString(),
                 WorkingDirectory = Path.GetDirectoryName(currentTab.Path),
                 UseShellExecute = false,
                 CreateNoWindow = true,
@@ -212,12 +326,19 @@ public class TopMenuViewModel : ViewModelBase
 
         var automator = new ConsoleAutomator(process.StandardInput, process.StandardOutput);
 
-        automator.StandardInputRead += (_, args) => RunViewModel.Instance.StdOut.Add(args.Input);
+        automator.StandardInputRead += (_, args) => RunViewModel.Instance.Output.Add(args.Input);
         automator.StartAutomating();
         RunViewModel.Instance.RunProcess = process;
         BottomBarTabViewModel.Instance.CurrentTabIdx = (int)BottomBarTabViewModel.TabIdx.Run;
 
         await process.WaitForExitAsync();
         RunViewModel.Instance.RunProcess = null;
+        var stderr = process.StandardError.ReadToEnd();
+        if (stderr.Length > 0)
+        {
+            RunViewModel.Instance.Output.Add("\n\n<-- Standard Error -->\n\n");
+            RunViewModel.Instance.Output.Add(stderr);
+            RunViewModel.Instance.Output.Add("\n<-- End Standard Error --> \n\n");
+        }
     });
 }

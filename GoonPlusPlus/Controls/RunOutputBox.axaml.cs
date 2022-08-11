@@ -12,85 +12,13 @@ namespace GoonPlusPlus.Controls;
 
 public partial class RunOutputBox : TextBox, IStyleable
 {
-    Type IStyleable.StyleKey => typeof(TextBox);
+    private int _accessCaretIndex;
+    private bool _caretCanMove;
+    private StringBuilder _editingBuilder = new();
 
 
     private StringBuilder _stdInBuilder = new();
-    private StringBuilder _editingBuilder = new();
     private int _vCaretIndex;
-    private int _accessCaretIndex;
-    private bool _caretCanMove;
-
-    #region DirectProperties
-
-    public StringBuilder StdInBuilder
-    {
-        get => _stdInBuilder;
-        set => SetAndRaise(StdInBuilderProperty, ref _stdInBuilder, value);
-    }
-
-    public StringBuilder EditingBuilder
-    {
-        get => _editingBuilder;
-        set => SetAndRaise(EditingBuilderProperty, ref _editingBuilder, value);
-    }
-
-    public int VCaretIndex
-    {
-        get => _vCaretIndex;
-        set => SetAndRaise(VCaretIndexProperty, ref _vCaretIndex, value);
-    }
-
-    public int AccessCaretIndex
-    {
-        get => _accessCaretIndex;
-        set
-        {
-            _caretCanMove = true;
-            SetAndRaise(AccessCaretIndexProperty, ref _accessCaretIndex, value);
-            CaretIndex = value;
-            _caretCanMove = false;
-        }
-    }
-
-    public bool CaretCanMove
-    {
-        get => _caretCanMove;
-        set => SetAndRaise(CaretCanMoveProperty, ref _caretCanMove, value);
-    }
-
-
-    public static readonly DirectProperty<RunOutputBox, StringBuilder> StdInBuilderProperty =
-        AvaloniaProperty.RegisterDirect<RunOutputBox, StringBuilder>
-        ("StdInBuilder",
-            o => o.StdInBuilder,
-            (o, v) => o.StdInBuilder = v);
-
-    public static readonly DirectProperty<RunOutputBox, StringBuilder> EditingBuilderProperty =
-        AvaloniaProperty.RegisterDirect<RunOutputBox, StringBuilder>
-        ("EditingBuilder",
-            o => o.EditingBuilder,
-            (o, v) => o.EditingBuilder = v);
-
-    public static readonly DirectProperty<RunOutputBox, int> VCaretIndexProperty =
-        AvaloniaProperty.RegisterDirect<RunOutputBox, int>
-        ("VCaretIndex",
-            o => o.VCaretIndex,
-            (o, v) => o.VCaretIndex = v);
-
-    public static readonly DirectProperty<RunOutputBox, int> AccessCaretIndexProperty =
-        AvaloniaProperty.RegisterDirect<RunOutputBox, int>
-        ("AccessCaretIndex",
-            o => o.AccessCaretIndex,
-            (o, v) => o.AccessCaretIndex = v);
-
-    public static readonly DirectProperty<RunOutputBox, bool> CaretCanMoveProperty =
-        AvaloniaProperty.RegisterDirect<RunOutputBox, bool>
-        ("CaretCanMove",
-            o => o.CaretCanMove,
-            (o, v) => o.CaretCanMove = v);
-
-    #endregion
 
     public RunOutputBox()
     {
@@ -101,6 +29,8 @@ public partial class RunOutputBox : TextBox, IStyleable
         PastingFromClipboard += (_, args) => args.Handled = true;
         CuttingToClipboard += (_, args) => args.Handled = true;
     }
+
+    Type IStyleable.StyleKey => typeof(TextBox);
 
     protected override void OnKeyDown(KeyEventArgs e)
     {
@@ -193,4 +123,75 @@ public partial class RunOutputBox : TextBox, IStyleable
     {
         AvaloniaXamlLoader.Load(this);
     }
+
+    #region DirectProperties
+
+    public StringBuilder StdInBuilder
+    {
+        get => _stdInBuilder;
+        set => SetAndRaise(StdInBuilderProperty, ref _stdInBuilder, value);
+    }
+
+    public StringBuilder EditingBuilder
+    {
+        get => _editingBuilder;
+        set => SetAndRaise(EditingBuilderProperty, ref _editingBuilder, value);
+    }
+
+    public int VCaretIndex
+    {
+        get => _vCaretIndex;
+        set => SetAndRaise(VCaretIndexProperty, ref _vCaretIndex, value);
+    }
+
+    public int AccessCaretIndex
+    {
+        get => _accessCaretIndex;
+        set
+        {
+            _caretCanMove = true;
+            SetAndRaise(AccessCaretIndexProperty, ref _accessCaretIndex, value);
+            CaretIndex = value;
+            _caretCanMove = false;
+        }
+    }
+
+    public bool CaretCanMove
+    {
+        get => _caretCanMove;
+        set => SetAndRaise(CaretCanMoveProperty, ref _caretCanMove, value);
+    }
+
+
+    public static readonly DirectProperty<RunOutputBox, StringBuilder> StdInBuilderProperty =
+        AvaloniaProperty.RegisterDirect<RunOutputBox, StringBuilder>
+        ("StdInBuilder",
+            o => o.StdInBuilder,
+            (o, v) => o.StdInBuilder = v);
+
+    public static readonly DirectProperty<RunOutputBox, StringBuilder> EditingBuilderProperty =
+        AvaloniaProperty.RegisterDirect<RunOutputBox, StringBuilder>
+        ("EditingBuilder",
+            o => o.EditingBuilder,
+            (o, v) => o.EditingBuilder = v);
+
+    public static readonly DirectProperty<RunOutputBox, int> VCaretIndexProperty =
+        AvaloniaProperty.RegisterDirect<RunOutputBox, int>
+        ("VCaretIndex",
+            o => o.VCaretIndex,
+            (o, v) => o.VCaretIndex = v);
+
+    public static readonly DirectProperty<RunOutputBox, int> AccessCaretIndexProperty =
+        AvaloniaProperty.RegisterDirect<RunOutputBox, int>
+        ("AccessCaretIndex",
+            o => o.AccessCaretIndex,
+            (o, v) => o.AccessCaretIndex = v);
+
+    public static readonly DirectProperty<RunOutputBox, bool> CaretCanMoveProperty =
+        AvaloniaProperty.RegisterDirect<RunOutputBox, bool>
+        ("CaretCanMove",
+            o => o.CaretCanMove,
+            (o, v) => o.CaretCanMove = v);
+
+    #endregion
 }
