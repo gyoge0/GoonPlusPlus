@@ -13,7 +13,7 @@ public class BottomBarTabViewModel : ViewModelBase
 
     public BottomBarTabViewModel() => Instance = this;
 
-    public static BottomBarTabViewModel Instance { get; private set; }
+    public static BottomBarTabViewModel Instance { get; private set; } = null!;
 
     public int CurrentTabIdx
     {

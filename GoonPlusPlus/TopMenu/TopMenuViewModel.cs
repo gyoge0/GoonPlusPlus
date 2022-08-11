@@ -219,7 +219,7 @@ public class TopMenuViewModel : ViewModelBase
         var compile = Cli.Wrap("javac")
             .WithArguments(args =>
             {
-                args.Add(currentTab.Path);
+                args.Add(currentTab.Path!);
 
                 if (wksp == null) return;
 
