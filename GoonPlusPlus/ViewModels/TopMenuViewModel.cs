@@ -56,12 +56,17 @@ public class TopMenuViewModel : ViewModelBase
     /// </summary>
     public ReactiveCommand<Unit, Unit> SaveFile { get; } = ReactiveCommand.CreateFromTask(async () =>
     {
+        var wksp = WorkspaceViewModel.Instance.Workspace?.Save();
+
         var tab = TabBuffer.Instance.CurrentTab;
         if (tab == null || tab.IsUntitled) return;
         await File.WriteAllTextAsync(
             tab.Path!,
             tab.Content
         );
+
+        if (wksp == null) return;
+        await wksp;
     });
 
     /// <summary>
@@ -70,6 +75,8 @@ public class TopMenuViewModel : ViewModelBase
     /// </summary>
     public ReactiveCommand<Window, Unit> SaveFileAs { get; } = ReactiveCommand.CreateFromTask(async (Window source) =>
     {
+        var wksp = WorkspaceViewModel.Instance.Workspace?.Save();
+
         var path = await new SaveFileDialog().ShowAsync(source);
 
         if (path == null) return;
@@ -86,11 +93,14 @@ public class TopMenuViewModel : ViewModelBase
 
         if (dup != null) TabBuffer.Instance.RemoveTabs(dup);
 
-        tab.LoadFromFile(path);
+        tab.Path = path;
         await File.WriteAllTextAsync(
             path,
             tab.Content
         );
+
+        if (wksp == null) return;
+        await wksp;
     });
 
     /// <summary>
@@ -131,7 +141,7 @@ public class TopMenuViewModel : ViewModelBase
         TabBuffer.Instance.CurrentEditor.EditArea.Paste();
     });
 
-    public ReactiveCommand<Unit, Unit> Create { get; } = ReactiveCommand.Create(() =>
+    public ReactiveCommand<Unit, Unit> Create { get; } = ReactiveCommand.CreateFromTask(async () =>
     {
         var fullPath = FileExplorerViewModel.Instance.Root[0].FullPath;
         var workspace = new WorkspaceModel(fullPath);
@@ -142,7 +152,7 @@ public class TopMenuViewModel : ViewModelBase
         try
         {
             File.Create(path).Close();
-            workspace.Save(path);
+            await workspace.Save();
         }
         catch (UnauthorizedAccessException)
         {
@@ -177,11 +187,12 @@ public class TopMenuViewModel : ViewModelBase
         WorkspaceViewModel.Instance.Workspace = proj;
     });
 
-    public ReactiveCommand<Unit, Unit> Exit { get; } = ReactiveCommand.Create(() =>
+    public ReactiveCommand<Unit, Unit> Exit { get; } = ReactiveCommand.CreateFromTask(async () =>
     {
         var proj = WorkspaceViewModel.Instance.Workspace!;
-        proj.Save(Path.Join(proj.RootPath, "wksp.gpp"));
+        var task = proj.Save();
         WorkspaceViewModel.Instance.Workspace = null;
+        await task;
     });
 
     public ReactiveCommand<Window, Unit> Configure { get; } = ReactiveCommand.CreateFromTask(async (Window source)
