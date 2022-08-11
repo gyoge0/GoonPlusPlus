@@ -4,18 +4,25 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
+    xmlns:vm="clr-namespace:GoonPlusPlus.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="GoonPlusPlus.Controls.BoundEditor">
+
+    <UserControl.DataContext>
+        <vm:BoundEditorViewModel />
+    </UserControl.DataContext>
+
     <!-- ReSharper disable once MarkupAttributeTypo -->
     <avaloniaEdit:TextEditor
         Name="Editor"
-        FontFamily="Jetbrains Mono,Courier New,Monospace"
         Margin="30"
-        Foreground="#BBBBBB"
         HorizontalScrollBarVisibility="Auto"
         VerticalScrollBarVisibility="Visible"
-        FontWeight="Light"
-        FontSize="14"
-        Background="Transparent"
-        ShowLineNumbers="True" />
+        Background="{Binding Custom.EditorBackground}"
+        Foreground="{Binding Custom.EditorForeground}"
+        ShowLineNumbers="{Binding Custom.EditorShowLineNumbers}"
+        FontFamily="{Binding Custom.EditorFontFamily}"
+        FontSize="{Binding Custom.EditorFontSize}"
+        FontStyle="{Binding Custom.EditorFontStyle}"
+        FontWeight="{Binding Custom.EditorFontWeight}" />
 </UserControl>

@@ -18,25 +18,6 @@
             <Style Selector="TabItem">
                 <Setter Property="VerticalAlignment" Value="Stretch" />
             </Style>
-            <Style Selector="TextBox">
-                <Setter Property="FontFamily" Value="Consolas" />
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="BorderThickness" Value="0, 0, 0, 2" />
-                <Setter Property="BorderBrush" Value="#0078d7" />
-            </Style>
-            <Style Selector="TextBox:disabled /template/ Border#PART_BorderElement">
-                <Setter Property="BorderBrush" Value="#0078d7" />
-                <Setter Property="Background" Value="Transparent" />
-            </Style>
-            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                <Setter Property="BorderBrush" Value="#0078d7" />
-                <Setter Property="Background" Value="Transparent" />
-            </Style>
-            <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
-                <Setter Property="BorderBrush" Value="#0078d7" />
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="BorderThickness" Value="0, 0, 0, 2" />
-            </Style>
         </TabControl.Styles>
 
         <TabControl.DataContext>
@@ -44,7 +25,35 @@
         </TabControl.DataContext>
 
         <TabItem Header="Compile" DoubleTapped="Collapse_OnTapped">
-            <TextBox Text="{Binding CompileOutput}" IsReadOnly="true" CaretBrush="Transparent">
+            <TextBox
+                Text="{Binding CompileOutput}"
+                IsReadOnly="true"
+                CaretBrush="Transparent"
+                BorderThickness="0, 0, 0, 2"
+
+                Background="{Binding Custom.CompileBackground}"
+                Foreground="{Binding Custom.CompileForeground}"
+                BorderBrush="{Binding Custom.CompileAccent}"
+                FontFamily="{Binding Custom.CompileFontFamily}"
+                FontSize="{Binding Custom.CompileFontSize}"
+                FontStyle="{Binding Custom.CompileFontStyle}"
+                FontWeight="{Binding Custom.CompileFontWeight}">
+                <TextBox.Styles>
+                    <Style Selector="TextBox:disabled /template/ Border#PART_BorderElement">
+                        <Setter Property="Background" Value="{Binding Custom.CompileBackground}" />
+                        <Setter Property="BorderBrush" Value="{Binding Custom.CompileAccent}" />
+                    </Style>
+                    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                        <Setter Property="Background" Value="{Binding Custom.CompileBackground}" />
+                        <Setter Property="BorderBrush" Value="{Binding Custom.CompileAccent}" />
+                    </Style>
+                    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+                        <Setter Property="Background" Value="{Binding Custom.CompileBackground}" />
+                        <Setter Property="BorderBrush" Value="{Binding Custom.CompileAccent}" />
+                        <Setter Property="BorderThickness" Value="0, 0, 0, 2" />
+                    </Style>
+                </TextBox.Styles>
+
                 <TextBox.DataContext>
                     <vm:CompileViewModel />
                 </TextBox.DataContext>
@@ -59,7 +68,32 @@
                 AccessCaretIndex="{Binding AccessCaretIndex, Mode=TwoWay}"
                 CaretCanMove="{Binding CaretCanMove, Mode=TwoWay}"
                 Text="{Binding Text, Mode=TwoWay}"
-                IsEnabled="{Binding RunProcess, Converter={x:Static ObjectConverters.IsNotNull}}">
+                IsEnabled="{Binding RunProcess, Converter={x:Static ObjectConverters.IsNotNull}}"
+                BorderThickness="0, 0, 0, 2"
+
+                Background="{Binding Custom.RunBackground}"
+                Foreground="{Binding Custom.RunForeground}"
+                BorderBrush="{Binding Custom.RunAccent}"
+                FontFamily="{Binding Custom.RunFontFamily}"
+                FontSize="{Binding Custom.RunFontSize}"
+                FontStyle="{Binding Custom.RunFontStyle}"
+                FontWeight="{Binding Custom.RunFontWeight}">
+
+                <controls:RunOutputBox.Styles>
+                    <Style Selector="TextBox:disabled /template/ Border#PART_BorderElement">
+                        <Setter Property="Background" Value="{Binding Custom.RunBackground}" />
+                        <Setter Property="BorderBrush" Value="{Binding Custom.RunAccent}" />
+                    </Style>
+                    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                        <Setter Property="Background" Value="{Binding Custom.RunBackground}" />
+                        <Setter Property="BorderBrush" Value="{Binding Custom.RunAccent}" />
+                    </Style>
+                    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+                        <Setter Property="Background" Value="{Binding Custom.RunBackground}" />
+                        <Setter Property="BorderBrush" Value="{Binding Custom.RunAccent}" />
+                        <Setter Property="BorderThickness" Value="0, 0, 0, 2" />
+                    </Style>
+                </controls:RunOutputBox.Styles>
 
                 <controls:RunOutputBox.DataContext>
                     <vm:RunViewModel />

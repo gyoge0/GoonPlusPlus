@@ -141,6 +141,13 @@ public class TopMenuViewModel : ViewModelBase
         TabBuffer.Instance.CurrentEditor.EditArea.Paste();
     });
 
+    public ReactiveCommand<Unit, Unit> EditCustomCfg { get; } = ReactiveCommand.Create(() =>
+        TabBuffer.Instance.AddTabs(CustomCfg.Instance.ConfigFilePath));
+
+    public ReactiveCommand<Unit, Unit> ReloadCustomCfg { get; } = ReactiveCommand.Create(() =>
+        CustomCfg.Instance.LoadConfig());
+
+
     public ReactiveCommand<Unit, Unit> Create { get; } = ReactiveCommand.CreateFromTask(async () =>
     {
         var fullPath = FileExplorerViewModel.Instance.Root[0].FullPath;
@@ -198,6 +205,10 @@ public class TopMenuViewModel : ViewModelBase
     public ReactiveCommand<Window, Unit> Configure { get; } = ReactiveCommand.CreateFromTask(async (Window source)
         => await new WorkspaceEditor().ShowDialog(source));
 
+
+    private bool _fileCanCompile;
+    private bool _fileCanRun;
+    
     public bool FileCanCompile
     {
         get => _fileCanCompile;
@@ -322,7 +333,6 @@ public class TopMenuViewModel : ViewModelBase
 
         await process.WaitForExitAsync();
         RunViewModel.Instance.RunProcess = null;
-
         var stderr = process.StandardError.ReadToEnd();
         if (stderr.Length > 0)
         {

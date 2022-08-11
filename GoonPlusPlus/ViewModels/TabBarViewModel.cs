@@ -8,7 +8,7 @@ using ReactiveUI;
 
 namespace GoonPlusPlus.ViewModels;
 
-public class TabBarViewModel
+public class TabBarViewModel : ViewModelBase
 {
     private readonly ReadOnlyObservableCollection<TabModel> _tabs;
     private int _currentTabMirror;
