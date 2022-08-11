@@ -19,6 +19,7 @@ public class WorkspaceModel
     public WorkspaceModel(string rootPath)
     {
         RootPath = rootPath;
+        SourcePath = rootPath;
         OutputDir = rootPath;
         Classpath.Connect()
             .OnItemAdded(i =>
@@ -45,6 +46,7 @@ public class WorkspaceModel
     [JsonIgnore] public SourceList<string> Classpath { get; } = new();
     [JsonProperty("classpath")] private List<string> CpAsList { get; } = new();
     public string RootPath { get; set; }
+    public string SourcePath { get; set; }
     public string OutputDir { get; set; }
     public List<TabModel> Tabs { get; } = new();
 
