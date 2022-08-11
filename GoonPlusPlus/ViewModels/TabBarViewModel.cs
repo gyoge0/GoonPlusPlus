@@ -19,22 +19,11 @@ public class TabBarViewModel
             .Buffer
             .Connect()
             .Bind(out _tabs)
-            .OnItemAdded(f =>
-            {
-                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-                var tabs = WorkspaceViewModel.Instance?.Workspace?.Tabs;
-                if (tabs?.Contains(f) ?? true) return;
-                tabs.Add(f);
-            })
             .OnItemRemoved(f =>
             {
                 if (f != TabBuffer.Instance.CurrentTab) return;
                 CurrentTabMirror = _tabs.Count - 1;
                 TabBuffer.Instance.CurrentTab = _tabs.Count > 0 ? _tabs.Last() : null;
-
-                var project = WorkspaceViewModel.Instance.Workspace;
-                if (project == null || project.Tabs.Contains(f)) return;
-                project.Tabs.Remove(f);
             })
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe();
