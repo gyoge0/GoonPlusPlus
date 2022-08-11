@@ -55,8 +55,16 @@ public class WorkspaceModel
         return ret;
     }
 
-    public void Save(string path)
+    public async Task Save()
     {
-        File.WriteAllText(path, JsonConvert.SerializeObject(this, Formatting.Indented));
+        var path = Path.Join(RootPath, "wksp.gpp");
+        try
+        {
+            await File.WriteAllTextAsync(path, JsonConvert.SerializeObject(this, Formatting.Indented));
+        }
+        catch (UnauthorizedAccessException)
+        {
+            Logger.TryGet(LogEventLevel.Warning, LogArea.Binding)?.Log(this, $"Access to file {path} denied");
+        }
     }
 }
