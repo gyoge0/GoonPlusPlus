@@ -1,50 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 
-	<Fragment>
+    <Fragment>
 
-		<!-- Product components -->
-		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+        <!-- Product components -->
+        <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
 
-			<!-- Shortcut -->
-			<ComponentRef Id="StartMenuShortcut"/>
-			<ComponentRef Id="PathVariable"/>
+            <!-- Shortcut -->
+            <ComponentRef Id="StartMenuShortcut"/>
+            <ComponentRef Id="PathVariable"/>
 
-		</ComponentGroup>
+        </ComponentGroup>
 
-		<!-- Installed files -->
-		<DirectoryRef Id="INSTALLFOLDER" FileSource="..\GoonPlusPlus\bin\Debug\net6.0\win-$(var.Platform)\">
+        <!-- Installed files -->
+        <DirectoryRef Id="INSTALLFOLDER" FileSource="..\GoonPlusPlus\bin\Debug\net6.0\win-$(var.Platform)\">
 
-			<Component Id="StartMenuShortcut" Guid="{37FBD386-871F-4E30-BA44-996BE99B750B}">
-				
-				<Shortcut Id="StartMenuShortcut"
-						  Name="Goon++"
-						  Target="[INSTALLFOLDER]GoonPlusPlus.exe"
-						  Directory="ProgramMenuFolder"
-						  WorkingDirectory="INSTALLFOLDER"
-						  Icon="logo.ico"/>
-				
-				<!-- Unique key for the component/shortcut -->
-				<RegistryValue Id="RegShortcutKey" Root="HKCU" Key="SOFTWARE\!(loc.ProductNameSimple)" Name="Shortcut" Value="1" Type="integer" KeyPath="yes" />
-				
-				<!-- Need to remove start menu on uninstall -->
-				<RemoveFolder Id="RemoveStartMenu" Directory="InstallProgramMenuFolder" On="uninstall"/>
-			</Component>
+            <Component Id="StartMenuShortcut" Guid="{37FBD386-871F-4E30-BA44-996BE99B750B}">
 
-			<Component Id="PathVariable" Guid="{41909F03-B1B5-487B-8D27-02E4A5878DD4}">
-				<CreateFolder/>
-				<Environment 
-					Id="PATH" 
-					Name="PATH" 
-					Value="[INSTALLFOLDER]" 
-					Permanent="no" 
-					Part="last" 
-					Action="set" 
-					System="yes" />
-			</Component>
+                <Shortcut
+                        Id="StartMenuShortcut"
+                        Name="Goon++"
+                        Target="[INSTALLFOLDER]GoonPlusPlus.exe"
+                        Directory="ProgramMenuFolder"
+                        WorkingDirectory="INSTALLFOLDER"
+                        Icon="logo.ico"/>
 
-		</DirectoryRef>
+                <!-- Unique key for the component/shortcut -->
+                <RegistryValue
+                        Id="RegShortcutKey" Root="HKCU" Key="SOFTWARE\!(loc.ProductNameSimple)" Name="Shortcut"
+                        Value="1" Type="integer" KeyPath="yes"/>
 
-	</Fragment>
+                <!-- Need to remove start menu on uninstall -->
+                <RemoveFolder Id="RemoveStartMenu" Directory="InstallProgramMenuFolder" On="uninstall"/>
+            </Component>
+
+            <Component Id="PathVariable" Guid="{41909F03-B1B5-487B-8D27-02E4A5878DD4}">
+                <CreateFolder/>
+                <Environment
+                        Id="PATH"
+                        Name="PATH"
+                        Value="[INSTALLFOLDER]"
+                        Permanent="no"
+                        Part="last"
+                        Action="set"
+                        System="yes"/>
+            </Component>
+
+        </DirectoryRef>
+
+    </Fragment>
 
 </Wix>

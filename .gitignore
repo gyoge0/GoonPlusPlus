@@ -8,3 +8,7 @@
 
 # visual studio per user
 *.csproj.user
+
+# .dot settings
+*.DotSettings
+*.DotSettings.user

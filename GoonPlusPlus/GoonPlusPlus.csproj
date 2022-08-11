@@ -45,7 +45,6 @@
         <PlatformTarget>ARM64</PlatformTarget>
     </PropertyGroup>
     <ItemGroup>
-        <Folder Include="Models\" />
         <AvaloniaResource Include="Assets\**" />
         <None Remove=".gitignore" />
     </ItemGroup>
@@ -61,24 +60,64 @@
         <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.10.12.2" />
         <PackageReference Include="Avalonia.Desktop" Version="0.10.14" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.14"/>
-        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.14"/>
-        <PackageReference Include="AvaloniaEdit.TextMate" Version="0.10.12.2"/>
-        <PackageReference Include="AvaloniaEdit.TextMate.Grammars" Version="0.10.12"/>
-        <PackageReference Include="CliWrap" Version="3.4.4"/>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
-        <PackageReference Include="TextMateSharp" Version="1.0.38"/>
-        <PackageReference Include="TextMateSharp.Grammars" Version="1.0.38"/>
-        <PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4"/>
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.14" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.14" />
+        <PackageReference Include="AvaloniaEdit.TextMate" Version="0.10.12.2" />
+        <PackageReference Include="AvaloniaEdit.TextMate.Grammars" Version="0.10.12" />
+        <PackageReference Include="CliWrap" Version="3.4.4" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="TextMateSharp" Version="1.0.38" />
+        <PackageReference Include="TextMateSharp.Grammars" Version="1.0.38" />
+        <PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Update="Controls\TabBarView.axaml.cs">
-            <DependentUpon>TabBar.axaml</DependentUpon>
-            <SubType>Code</SubType>
+        <Compile Update="Explorer\EmptyFolderItem.axaml.cs">
+          <DependentUpon>EmptyFolderItem.axaml</DependentUpon>
+          <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Controls\TopMenuView.axaml.cs">
-            <DependentUpon>TopMenu.axaml</DependentUpon>
-            <SubType>Code</SubType>
+        <Compile Update="Explorer\FileItem.axaml.cs">
+          <DependentUpon>FileItem.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Explorer\FolderItem.axaml.cs">
+          <DependentUpon>FolderItem.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Explorer\FileExplorerView.axaml.cs">
+          <DependentUpon>FileExplorerView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Workspace\WorkspaceEditor.axaml.cs">
+          <DependentUpon>WorkspaceEditor.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="TabBar\TabBarView.axaml.cs">
+          <DependentUpon>TabBarView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="MainWindow.axaml.cs">
+          <DependentUpon>MainWindow.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="CodeRunner\CodeRunner.axaml.cs">
+          <DependentUpon>CodeRunner.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="CodeRunner\Run\RunOutputBox.axaml.cs">
+          <DependentUpon>RunOutputBox.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="TopMenu\TopMenuView.axaml.cs">
+          <DependentUpon>TopMenuView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="AcrylicBlurView.axaml.cs">
+          <DependentUpon>AcrylicBlurView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="BoundEditor\BoundEditor.axaml.cs">
+          <DependentUpon>BoundEditor.axaml</DependentUpon>
+          <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
 </Project>
