@@ -9,6 +9,7 @@
             <!-- Shortcut -->
             <ComponentRef Id="StartMenuShortcut"/>
             <ComponentRef Id="PathVariable"/>
+            <ComponentRef Id="FileAssociation"/>
 
         </ComponentGroup>
 
@@ -39,11 +40,27 @@
                 <Environment
                         Id="PATH"
                         Name="PATH"
-                        Value="[INSTALLFOLDER]"
+                        Value="[INSTALLFOLDER]\Scripts"
                         Permanent="no"
                         Part="last"
                         Action="set"
                         System="yes"/>
+            </Component>
+
+            <Component Id="FileAssociation" Guid="{9725F893-4528-4C38-AF69-39B4E9B399C4}">
+                <File Id="GppExe" Source="$(var.BasePath)\GoonPlusPlus.exe" KeyPath="yes"/>
+                <RegistryValue
+                        Root="HKLM"
+                        Key="SOFTWARE\Classes\GoonPlusPlus.WorkspaceConfig"
+                        Name="FriendlyTypeName"
+                        Value="!(loc.WkspDesc)"
+                        Type="string"/>
+                <ProgId Id="GoonPlusPlus.WorkspaceConfig" Description="!(loc.WkspDesc)" Icon="logo.ico" Advertise="yes">
+                    <Extension Id="gpp">
+                        <Verb Id="open" Command="!(loc.OpenWith)" Argument="&quot;%1&quot;"/>
+                        <MIME Advertise="yes" ContentType="application/gpp" Default="yes"/>
+                    </Extension>
+                </ProgId>
             </Component>
 
         </DirectoryRef>
