@@ -63,6 +63,9 @@
             <Name>WixUIExtension</Name>
         </WixExtension>
     </ItemGroup>
+    <ItemGroup>
+        <Content Include="RemoveExeComponentsTransform.xslt"/>
+    </ItemGroup>
     <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' "/>
     <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') "/>
     <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
@@ -87,7 +90,8 @@
         </PropertyGroup>
 
         <!-- Rips file components from publish folder -->
-        <HeatDirectory OutputFile="ComponentsGenerated.wxs" DirectoryRefId="INSTALLFOLDER" ComponentGroupName="PublishedComponents" SuppressCom="true" Directory="..\GoonPlusPlus\bin\Release\net6.0\win-$(Platform)\publish\" SuppressFragments="true" SuppressRegistry="true" SuppressRootDirectory="true" AutoGenerateGuids="false" GenerateGuidsNow="true" ToolPath="$(WixToolPath)" PreprocessorVariable="var.BasePath" RunAsSeparateProcess="$(RunWixToolsOutOfProc)"/>
+        <HeatDirectory OutputFile="ComponentsGenerated.wxs" DirectoryRefId="INSTALLFOLDER" ComponentGroupName="PublishedComponents" SuppressCom="true" Directory="..\GoonPlusPlus\bin\Release\net6.0\win-$(Platform)\publish\" SuppressFragments="true" SuppressRegistry="true" SuppressRootDirectory="true" AutoGenerateGuids="false" GenerateGuidsNow="true" ToolPath="$(WixToolPath)" PreprocessorVariable="var.BasePath" RunAsSeparateProcess="$(RunWixToolsOutOfProc)" Transforms="RemoveExeComponentsTransform.xslt"/>
+        
     </Target>
     <Target Name="AfterBuild">
         <Exec Command="move bin\$(Platform)\$(Configuration)\$(OutputName).msi bin\Goon++.v%(AssemblyVersion.Version)-$(Configuration)-$(Platform).msi"/>
