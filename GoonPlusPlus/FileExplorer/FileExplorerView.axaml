@@ -92,7 +92,7 @@
                     <Setter Property="FontStyle" Value="{Binding Custom.FileExplorerItemHoverFontStyle}" />
                     <Setter Property="FontWeight" Value="{Binding Custom.FileExplorerItemHoverFontWeight}" />
                 </Style>
-                <Style Selector="TreeView:selected">
+                <Style Selector="TreeViewItem:selected">
                     <Setter Property="Background" Value="{Binding Custom.FileExplorerItemSelectedBackground}" />
                     <Setter Property="Foreground" Value="{Binding Custom.FileExplorerItemSelectedForeground}" />
                     <Setter Property="FontFamily" Value="{Binding Custom.FileExplorerItemSelectedFontFamily}" />
