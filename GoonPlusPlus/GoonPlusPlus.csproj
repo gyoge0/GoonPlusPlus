@@ -6,9 +6,9 @@
         <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
         <TrimMode>copyused</TrimMode>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-        <AssemblyVersion>2.1.0</AssemblyVersion>
-        <FileVersion>2.1.0</FileVersion>
-        <PackageVersion>2.1.0.0</PackageVersion>
+        <AssemblyVersion>2.2.0</AssemblyVersion>
+        <FileVersion>2.2.0</FileVersion>
+        <PackageVersion>2.2.0.0</PackageVersion>
         <Title>Goon++</Title>
         <Authors>gyoge</Authors>
         <Company>gyoge</Company>
@@ -75,52 +75,52 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Explorer\EmptyFolderItem.axaml.cs">
-          <DependentUpon>EmptyFolderItem.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>EmptyFolderItem.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="Explorer\FileItem.axaml.cs">
-          <DependentUpon>FileItem.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>FileItem.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="Explorer\FolderItem.axaml.cs">
-          <DependentUpon>FolderItem.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>FolderItem.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="Explorer\FileExplorerView.axaml.cs">
-          <DependentUpon>FileExplorerView.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>FileExplorerView.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="Workspace\WorkspaceEditor.axaml.cs">
-          <DependentUpon>WorkspaceEditor.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>WorkspaceEditor.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="TabBar\TabBarView.axaml.cs">
-          <DependentUpon>TabBarView.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>TabBarView.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="MainWindow.axaml.cs">
-          <DependentUpon>MainWindow.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>MainWindow.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="CodeRunner\CodeRunner.axaml.cs">
-          <DependentUpon>CodeRunner.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>CodeRunner.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="CodeRunner\Run\RunOutputBox.axaml.cs">
-          <DependentUpon>RunOutputBox.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>RunOutputBox.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="TopMenu\TopMenuView.axaml.cs">
-          <DependentUpon>TopMenuView.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>TopMenuView.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="AcrylicBlurView.axaml.cs">
-          <DependentUpon>AcrylicBlurView.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>AcrylicBlurView.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="BoundEditor\BoundEditor.axaml.cs">
-          <DependentUpon>BoundEditor.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>BoundEditor.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
 </Project>
