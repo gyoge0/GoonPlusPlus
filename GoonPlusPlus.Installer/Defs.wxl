@@ -11,6 +11,8 @@
     <String Id="Company">gyoge</String>
 
     <String Id="Description">The premier text editor used by several people worldwide</String>
+    <String Id="WkspDesc">Goon++ Workspace Configuration File</String>
+    <String Id="OpenWith">Open with Goon++</String>
 
     <String Id="Keywords">text-editor</String>
 
