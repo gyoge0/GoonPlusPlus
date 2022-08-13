@@ -13,27 +13,38 @@ public partial class FileExplorerView : UserControl
     {
         InitializeComponent();
 
-        this.FindControl<TreeView>("ExplorerTree").ItemTemplate = new FuncTreeDataTemplate(o => o is ExplorerNode,
+        this.FindControl<TreeView>("ExplorerTree").ItemTemplate = new FuncTreeDataTemplate(
+            o => o is ExplorerNode,
             (o, _) =>
             {
                 var control = new ExplorerNodeBaseControl(o);
-                
-                control.DoubleTapped += o switch
+                control.AttachedToLogicalTree += (_, _) =>
                 {
-                    DirectoryNode node when node.SubNodes.Count > 1 => (_, _) => node.IsExpanded = true,
-                    FileNode => (_, _) =>
+                    if (control.Parent is not TreeViewItem p) return;
+                    p.DoubleTapped += (_, args) =>
                     {
-                        var buffer = TabBuffer.Instance;
-                        buffer.AddTabs(((FileNode) o).FullPath);
-                        buffer.CurrentTab = buffer.Buffer.Items.Last();
-                    },
-                    DirectoryNode => (_, _) => { },
-                    _ => throw new ArgumentOutOfRangeException(nameof(o), o, null),
+                        switch (o)
+                        {
+                            case DirectoryNode node when node.SubNodes.Any():
+                                node.IsExpanded = !node.IsExpanded;
+                                break;
+                            case DirectoryNode node when node.SubNodes.Count == 0: break;
+                            case FileNode node:
+                                var buffer = TabBuffer.Instance;
+                                buffer.AddTabs(node.FullPath);
+                                buffer.CurrentTab = buffer.Buffer.Items.Last();
+                                break;
+                            default: throw new ArgumentOutOfRangeException(nameof(o), o, null);
+                        }
+
+                        args.Handled = true;
+                    };
                 };
 
                 return control;
             },
-            o => (o as DirectoryNode)?.SubNodes);
+            o => (o as DirectoryNode)?.SubNodes
+        );
     }
 
     private void InitializeComponent() => AvaloniaXamlLoader.Load(this);

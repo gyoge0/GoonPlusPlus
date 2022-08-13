@@ -15,7 +15,6 @@ public class ExplorerNodeBaseControl : UserControl
         Content = new StackPanel
         {
             Spacing = 10,
-            Background = Brushes.Black,
             Orientation = Orientation.Horizontal,
             Children =
             {
@@ -26,11 +25,13 @@ public class ExplorerNodeBaseControl : UserControl
     }
 
 
-    private Geometry Icon => (Application.Current!.FindResource(DataContext switch
-    {
-        DirectoryNode node when node.SubNodes.Count > 0 => "FolderOpenRegular",
-        DirectoryNode => "FolderRegular",
-        FileNode => "DocumentRegular",
-        _ => throw new ArgumentOutOfRangeException(),
-    }) as Geometry)!;
+    private Geometry Icon => (Application.Current!.FindResource(
+        DataContext switch
+        {
+            DirectoryNode node when node.SubNodes.Count > 0 => "FolderOpenRegular",
+            DirectoryNode => "FolderRegular",
+            FileNode => "DocumentRegular",
+            _ => throw new ArgumentOutOfRangeException(),
+        }
+    ) as Geometry)!;
 }
