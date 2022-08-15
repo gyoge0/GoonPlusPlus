@@ -226,12 +226,15 @@ public class TopMenuViewModel : ViewModelBase
                 args.Add("--source-path");
                 args.Add(wksp.SourcePath);
 
-                args.Add("-cp");
+                if (wksp.Classpath.Count > 0)
+                {
+                    args.Add("-cp");
 
-                var sb = new StringBuilder();
-                wksp.Classpath.Items.ToList().ForEach(d => sb.Append($"{d};"));
+                    var sb = new StringBuilder();
+                    wksp.Classpath.Items.ToList().ForEach(d => sb.Append($"{d};"));
 
-                args.Add(sb.ToString());
+                    args.Add(sb.ToString());
+                }
 
                 if (!Directory.Exists(wksp.OutputDir)) Directory.CreateDirectory(wksp.OutputDir);
 
