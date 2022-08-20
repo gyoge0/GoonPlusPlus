@@ -1,4 +1,7 @@
-﻿using ReactiveUI;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using ReactiveUI;
+using System.Net.Mime;
 
 namespace GoonPlusPlus.Workspace;
 
