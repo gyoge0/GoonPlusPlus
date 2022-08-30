@@ -245,7 +245,7 @@ public class TopMenuViewModel : ViewModelBase
 
         var res = await compile.ExecuteBufferedAsync();
 
-        BottomBarTabViewModel.Instance.CurrentTabIdx = (int) BottomBarTabViewModel.TabIdx.Compile;
+        BottomBarTabViewModel.Instance.CurrentTabIdx = (int)BottomBarTabViewModel.TabIdx.Compile;
 
         compilevm.CompileOutput = string.Empty;
 
@@ -276,21 +276,35 @@ public class TopMenuViewModel : ViewModelBase
         var sb = new StringBuilder();
         var wksp = WorkspaceViewModel.Instance.Workspace;
 
-        if (wksp != null)
+        switch (currentTab.Extension)
         {
-            sb.Append(" -cp \"");
-            sb.Append((string?) $"{wksp.OutputDir};");
-            wksp.Classpath.Items.ToList().ForEach(j => sb.Append(j + ";"));
-            sb.Append("\" ");
+            case "java":
+                if (wksp != null)
+                {
+                    sb.Append(" -cp \"");
+                    sb.Append((string?)$"{wksp.OutputDir};");
+                    wksp.Classpath.Items.ToList().ForEach(j => sb.Append(j + ";"));
+                    sb.Append("\" ");
+                }
+
+                sb.Append(Path.GetFileNameWithoutExtension(currentTab.Path));
+                break;
+            case "py":
+                sb.Append(Path.GetFileName(currentTab.Path));
+                break;
         }
 
-        sb.Append(Path.GetFileNameWithoutExtension(currentTab.Path));
 
         using var process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = "java.exe",
+                FileName = currentTab.Extension switch
+                {
+                    "java" => "java.exe",
+                    "py" => "python.exe",
+                    _ => throw new ArgumentOutOfRangeException()
+                },
                 Arguments = sb.ToString(),
                 WorkingDirectory = Path.GetDirectoryName(currentTab.Path),
                 UseShellExecute = false,
@@ -307,7 +321,7 @@ public class TopMenuViewModel : ViewModelBase
         automator.StandardInputRead += (_, args) => RunViewModel.Instance.Output.Add(args.Input);
         automator.StartAutomating();
         RunViewModel.Instance.RunProcess = process;
-        BottomBarTabViewModel.Instance.CurrentTabIdx = (int) BottomBarTabViewModel.TabIdx.Run;
+        BottomBarTabViewModel.Instance.CurrentTabIdx = (int)BottomBarTabViewModel.TabIdx.Run;
 
         await process.WaitForExitAsync();
         RunViewModel.Instance.RunProcess = null;
