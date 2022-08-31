@@ -83,15 +83,17 @@ public class TopMenuViewModel : ViewModelBase
         var tab = TabBuffer.Instance.CurrentTab;
         if (tab == null) return;
 
+        // TODO: figure out if this code still needs to be here
         // remove the tab if it is open
         // prevents duplicate tabs
-        var dup = TabBuffer.Instance.Buffer.Items.Where(k => !k.IsUntitled)
-            .FirstOrDefault(k => k.Path!.ToLower().Equals(path.ToLower()));
+        // var dup = TabBuffer.Instance.Buffer.Items.Where(k => !k.IsUntitled)
+        //     .FirstOrDefault(k => k.Path!.ToLower().Equals(path.ToLower()));
+        // if (dup != null) TabBuffer.Instance.RemoveTabs(dup);
 
-        if (dup != null) TabBuffer.Instance.RemoveTabs(dup);
-
-        tab.Path = path;
         await File.WriteAllTextAsync(path, tab.Content);
+        
+        tab.Path = path;
+        tab.Name = Path.GetFileName(tab.Path);
 
         if (wksp == null) return;
         await wksp;
