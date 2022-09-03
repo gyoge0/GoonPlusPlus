@@ -24,9 +24,11 @@ public class DirectoryNode : ExplorerNode
         {
             SubNodes.Clear();
             if (this.RaiseAndSetIfChanged(ref _isExpanded, value)) GetSubfolders();
-            else if (Directory.GetFiles(FullPath).Length > 0) SubNodes.Add(new FileNode("{{ Dummy Node }}"));
+            else if (IsEmpty) SubNodes.Add(new FileNode("{{ Dummy Node }}"));
         }
     }
+
+    public bool IsEmpty => Directory.GetFiles(FullPath).Length > 0;
 
     private void GetSubfolders()
     {

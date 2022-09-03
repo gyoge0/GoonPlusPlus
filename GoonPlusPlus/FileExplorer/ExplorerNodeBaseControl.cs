@@ -28,8 +28,8 @@ public class ExplorerNodeBaseControl : UserControl
     private Geometry Icon => (Application.Current!.FindResource(
         DataContext switch
         {
-            DirectoryNode node when node.SubNodes.Count > 0 => "FolderOpenRegular",
-            DirectoryNode => "FolderRegular",
+            DirectoryNode { IsEmpty: false } => "FolderOpenRegular",
+            DirectoryNode { IsEmpty: true } => "FolderRegular",
             FileNode => "DocumentRegular",
             _ => throw new ArgumentOutOfRangeException(),
         }

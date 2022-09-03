@@ -25,10 +25,10 @@ public partial class FileExplorerView : UserControl
                     {
                         switch (o)
                         {
-                            case DirectoryNode node when node.SubNodes.Any():
+                            case DirectoryNode { IsEmpty: false } node:
                                 node.IsExpanded = !node.IsExpanded;
                                 break;
-                            case DirectoryNode node when node.SubNodes.Count == 0: break;
+                            case DirectoryNode { IsEmpty: true }: break;
                             case FileNode node:
                                 var buffer = TabBuffer.Instance;
                                 buffer.AddTabs(node.FullPath);
