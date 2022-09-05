@@ -52,7 +52,7 @@
                     <TextBlock Text="Go up a folder" />
                 </ToolTip.Tip>
             </Button>
-            <Button Command="{Binding OpenFolder}" CommandParameter="{Binding $parent[Window]}">
+            <Button Command="{Binding OpenFolderWithExplorer}" CommandParameter="{Binding $parent[Window]}">
                 <PathIcon Data="{StaticResource OpenFolderRegular}" />
                 <ToolTip.Tip>
                     <TextBlock Text="Open folder" />

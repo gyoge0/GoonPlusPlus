@@ -78,11 +78,8 @@ public class FileExplorerViewModel : ViewModelBase
         }
     });
 
-    public ReactiveCommand<Window, Unit> OpenFolder { get; } = ReactiveCommand.CreateFromTask(async (Window source) =>
+    public static void OpenFolder(DirectoryNode node)
     {
-        var path = await new OpenFolderDialog { Directory = Instance.Root[0].FullPath }.ShowAsync(source);
-        if (path == null) return;
-        var node = new DirectoryNode(path);
         SwapFolder(node);
 
         if (Instance.RedoStack.Count < 1)
@@ -98,7 +95,15 @@ public class FileExplorerViewModel : ViewModelBase
         {
             Instance.UndoStack.Push(Instance.RedoStack.Pop());
         }
-    });
+    }
+
+    public ReactiveCommand<Window, Unit> OpenFolderWithExplorer { get; } = ReactiveCommand.CreateFromTask(
+        async (Window source) =>
+        {
+            var path = await new OpenFolderDialog { Directory = Instance.Root[0].FullPath }.ShowAsync(source);
+            if (path == null) return;
+            OpenFolder(new DirectoryNode(path));
+        });
 
     public ReactiveCommand<Unit, Unit> Refresh { get; } = ReactiveCommand.Create(() =>
     {
