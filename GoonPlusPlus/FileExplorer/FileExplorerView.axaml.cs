@@ -21,6 +21,28 @@ public partial class FileExplorerView : UserControl
                 control.AttachedToLogicalTree += (_, _) =>
                 {
                     if (control.Parent is not TreeViewItem p) return;
+                    p.ContextMenu = new ContextMenu
+                    {
+                        Items = o switch
+                        {
+                            FileNode node => new MenuItem[]
+                            {
+                                new() { Header = "Open", Command = node.Open },
+                                new() { Header = "Delete", Command = node.Delete }
+                            },
+                            DirectoryNode { IsEmpty: false } node => new MenuItem[]
+                            {
+                                new() { Header = "Expand", Command = node.Expand },
+                                new() { Header = "Open", Command = node.Open }
+                            },
+                            DirectoryNode { IsEmpty: true } node => new MenuItem[]
+                            {
+                                new() { Header = "Open", Command = node.Open }
+                            },
+                            _ => throw new ArgumentOutOfRangeException(nameof(o), o, null)
+                        }
+                    };
+
                     p.DoubleTapped += (_, args) =>
                     {
                         switch (o)

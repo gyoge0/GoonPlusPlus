@@ -3,6 +3,7 @@ using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Reactive;
 
 namespace GoonPlusPlus.FileExplorer;
 
@@ -12,7 +13,9 @@ public class DirectoryNode : ExplorerNode
 
     public DirectoryNode(string strFullPath) : base(strFullPath)
     {
-        if (Directory.GetFiles(FullPath).Length > 0) SubNodes.Add(new FileNode("{{ Dummy Node }}"));
+        if (!IsEmpty) SubNodes.Add(new FileNode("{{ Dummy Node }}"));
+        Expand = ReactiveCommand.Create(() => { IsExpanded = true; });
+        Open = ReactiveCommand.Create(() => FileExplorerViewModel.OpenFolder(this));
     }
 
     public ObservableCollection<ExplorerNode> SubNodes { get; } = new();
@@ -29,6 +32,9 @@ public class DirectoryNode : ExplorerNode
     }
 
     public bool IsEmpty => Directory.GetFiles(FullPath).Length > 0;
+
+    public ReactiveCommand<Unit, Unit> Expand { get; }
+    public ReactiveCommand<Unit, Unit> Open { get; }
 
     private void GetSubfolders()
     {
