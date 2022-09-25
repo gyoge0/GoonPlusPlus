@@ -71,7 +71,7 @@ public class WorkspaceModel
         var path = Path.Join(RootPath, "wksp.gpp");
         try
         {
-            await using var fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+            await using var fs = new FileStream(path, FileMode.Truncate, FileAccess.Write);
             await using var writer = new StreamWriter(fs);
             await writer.WriteAsync(JsonConvert.SerializeObject(this, Formatting.Indented));
         }

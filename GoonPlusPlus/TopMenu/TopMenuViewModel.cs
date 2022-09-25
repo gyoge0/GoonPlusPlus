@@ -95,7 +95,7 @@ public class TopMenuViewModel : ViewModelBase
         //     .FirstOrDefault(k => k.Path!.ToLower().Equals(path.ToLower()));
         // if (dup != null) TabBuffer.Instance.RemoveTabs(dup);
 
-        await using var fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+        await using var fs = new FileStream(path, FileMode.Truncate, FileAccess.Write);
         await using var writer = new StreamWriter(fs);
         await writer.WriteAsync(tab.Content);
 
