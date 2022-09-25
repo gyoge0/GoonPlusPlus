@@ -3,6 +3,7 @@ using GoonPlusPlus.Workspace;
 using Newtonsoft.Json;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace GoonPlusPlus;
 
@@ -15,7 +16,17 @@ public class MainWindowViewModel : ViewModelBase
             case 1 when new FileInfo(paths.Single()).Name == "wksp.gpp":
                 WorkspaceViewModel.Instantiated += _ =>
                 {
-                    var wksp = JsonConvert.DeserializeObject<WorkspaceModel>(File.ReadAllText(paths.Single()));
+                    var sb = new StringBuilder();
+                    using (var fs = new FileStream(paths.Single(), FileMode.Open, FileAccess.Read))
+                    using (var reader = new StreamReader(fs))
+                    {
+                        while (!reader.EndOfStream)
+                        {
+                            sb.Append(reader.ReadLine());
+                        }
+                    }
+
+                    var wksp = JsonConvert.DeserializeObject<WorkspaceModel>(sb.ToString());
                     if (wksp == null) return;
                     WorkspaceViewModel.Instance.Workspace = wksp;
                 };

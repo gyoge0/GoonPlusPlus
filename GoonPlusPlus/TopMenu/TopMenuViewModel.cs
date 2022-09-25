@@ -63,7 +63,12 @@ public class TopMenuViewModel : ViewModelBase
 
         var tab = TabBuffer.Instance.CurrentTab;
         if (tab == null || tab.IsUntitled) return;
-        await File.WriteAllTextAsync(tab.Path!, tab.Content);
+
+        await using (var fs = new FileStream(tab.Path!, FileMode.Truncate, FileAccess.Write))
+        await using (var writer = new StreamWriter(fs))
+        {
+            await writer.WriteAsync(tab.Content);
+        }
 
         if (wksp == null) return;
         await wksp;
@@ -90,8 +95,10 @@ public class TopMenuViewModel : ViewModelBase
         //     .FirstOrDefault(k => k.Path!.ToLower().Equals(path.ToLower()));
         // if (dup != null) TabBuffer.Instance.RemoveTabs(dup);
 
-        await File.WriteAllTextAsync(path, tab.Content);
-        
+        await using var fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+        await using var writer = new StreamWriter(fs);
+        await writer.WriteAsync(tab.Content);
+
         tab.Path = path;
         tab.Name = Path.GetFileName(tab.Path);
 
