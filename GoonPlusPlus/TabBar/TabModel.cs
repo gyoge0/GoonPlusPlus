@@ -5,6 +5,7 @@ using ReactiveUI;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Text;
 
 namespace GoonPlusPlus.TabBar;
 
@@ -44,7 +45,19 @@ public class TabModel : ViewModelBase
 
             try
             {
-                Content = File.ReadAllText(value);
+                // File.ReadAllText() fails for some reason
+                var sb = new StringBuilder();
+                using (var fs = new FileStream(value, FileMode.Open, FileAccess.Read))
+                using (var reader = new StreamReader(fs))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        sb.Append(reader.ReadLine());
+                    }
+                }
+
+                Content = sb.ToString();
+
                 Name = value.Split('\\').Last();
                 Extension = value.Split("\\").Last().Contains('.') ? value.Split('.').Last() : null;
                 IsUntitled = false;

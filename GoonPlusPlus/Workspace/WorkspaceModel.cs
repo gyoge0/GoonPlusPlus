@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace GoonPlusPlus.Workspace;
@@ -50,7 +51,17 @@ public class WorkspaceModel
 
     public static WorkspaceModel? Load(string path)
     {
-        var ret = JsonConvert.DeserializeObject<WorkspaceModel>(File.ReadAllText(path));
+        var sb = new StringBuilder();
+        using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+        using (var reader = new StreamReader(fs))
+        {
+            while (!reader.EndOfStream)
+            {
+                sb.Append(reader.ReadLine());
+            }
+        }
+
+        var ret = JsonConvert.DeserializeObject<WorkspaceModel>(sb.ToString());
         ret?.CpAsList.ToList().ForEach(i => ret.Classpath.Add(i));
         return ret;
     }
@@ -60,7 +71,9 @@ public class WorkspaceModel
         var path = Path.Join(RootPath, "wksp.gpp");
         try
         {
-            await File.WriteAllTextAsync(path, JsonConvert.SerializeObject(this, Formatting.Indented));
+            await using var fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+            await using var writer = new StreamWriter(fs);
+            await writer.WriteAsync(JsonConvert.SerializeObject(this, Formatting.Indented));
         }
         catch (UnauthorizedAccessException)
         {

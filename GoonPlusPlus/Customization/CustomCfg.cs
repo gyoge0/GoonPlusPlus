@@ -6,6 +6,7 @@ using ReactiveUI;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text;
 
 namespace GoonPlusPlus.Customization;
 
@@ -34,7 +35,8 @@ public class CustomCfg : ViewModelBase
         // ReSharper disable once InvertIf
         if (!File.Exists(ConfigFilePath))
         {
-            using var writer = File.CreateText(ConfigFilePath);
+            using var fs = new FileStream(ConfigFilePath, FileMode.Create, FileAccess.Write);
+            using var writer = new StreamWriter(fs);
             writer.WriteLine("{}");
         }
     }
@@ -43,7 +45,17 @@ public class CustomCfg : ViewModelBase
     {
         try
         {
-            JsonConvert.PopulateObject(File.ReadAllText(ConfigFilePath), this);
+            var sb = new StringBuilder();
+            using (var fs = new FileStream(ConfigFilePath, FileMode.Open, FileAccess.Read))
+            using (var reader = new StreamReader(fs))
+            {
+                while (!reader.EndOfStream)
+                {
+                    sb.Append(reader.ReadLine());
+                }
+            }
+
+            JsonConvert.PopulateObject(sb.ToString(), this);
         }
         catch (JsonSerializationException)
         {
@@ -51,8 +63,14 @@ public class CustomCfg : ViewModelBase
         }
     }
 
-    public void SaveConfig() => File.WriteAllText(ConfigFilePath,
-        JsonConvert.SerializeObject(this, Formatting.Indented, new CustomCfgSerializer()));
+    public void SaveConfig()
+    {
+        using var fs = new FileStream(ConfigFilePath, FileMode.Create, FileAccess.Write);
+        using var writer = new StreamWriter(fs);
+        writer.Write(
+            JsonConvert.SerializeObject(this, Formatting.Indented, new CustomCfgSerializer())
+        );
+    }
 
     #region BackingFields
 
