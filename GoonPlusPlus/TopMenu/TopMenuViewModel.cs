@@ -228,23 +228,21 @@ public class TopMenuViewModel : ViewModelBase
         var compile = Cli.Wrap("javac")
             .WithArguments(args =>
             {
+                args.Add("-cp . ");
                 args.Add(currentTab.Path!);
 
                 if (wksp == null) return;
 
-                args.Add("--source-path");
+                args.Add("-cp");
                 args.Add(wksp.SourcePath);
-
-                if (wksp.Classpath.Count > 0)
-                {
-                    args.Add("-cp");
-
+                
+                if (wksp.Classpath.Count > 0) {
                     var sb = new StringBuilder();
                     wksp.Classpath.Items.ToList().ForEach(d => sb.Append($"{d};"));
 
                     args.Add(sb.ToString());
                 }
-
+                
                 if (!Directory.Exists(wksp.OutputDir)) Directory.CreateDirectory(wksp.OutputDir);
 
                 args.Add("-d");
