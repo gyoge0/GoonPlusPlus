@@ -63,14 +63,16 @@
 
             <MenuItem
                 Command="{Binding Compile}"
-                IsVisible="{Binding FileCanCompile}">
+                IsVisible="{Binding FileCanCompile}"
+                HotKey="F9">
                 <MenuItem.Header>
                     <PathIcon Data="{StaticResource DocumentToolboxRegular}" />
                 </MenuItem.Header>
             </MenuItem>
             <MenuItem
                 Command="{Binding Run}"
-                IsVisible="{Binding FileCanRun}">
+                IsVisible="{Binding FileCanRun}"
+                HotKey="F10">
                 <MenuItem.Header>
                     <PathIcon Data="{StaticResource RunRegular}" />
                 </MenuItem.Header>
