@@ -47,7 +47,7 @@ public class TabModel : ViewModelBase
             {
                 // File.ReadAllText() fails for some reason
                 var sb = new StringBuilder();
-                using (var fs = new FileStream(value, FileMode.Open, FileAccess.Read))
+                using (var fs = new FileStream(value, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 using (var reader = new StreamReader(fs))
                 {
                     while (!reader.EndOfStream)
